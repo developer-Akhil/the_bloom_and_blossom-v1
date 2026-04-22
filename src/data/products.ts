@@ -285,7 +285,6 @@ export const categories = [
   'Jewelled Bows',
   'Alligator Clips',
   'Scrunchies',
-  'Bows',
   'Headbands',
   'Hairbands',
   'Embroidery Bows',

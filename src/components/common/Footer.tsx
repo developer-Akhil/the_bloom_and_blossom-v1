@@ -38,8 +38,8 @@ export function Footer() {
             <h4 className="font-serif text-lg font-bold mb-6">Explore</h4>
             <ul className="space-y-4 text-sm text-gray-500">
               <li><FooterLink to="/collections">All Collections</FooterLink></li>
-              <li><FooterLink to="/collections?cat=bows">Bows</FooterLink></li>
-              <li><FooterLink to="/collections?cat=scrunchies">Scrunchies</FooterLink></li>
+              <li><FooterLink to="/collections?cat=Customised Name Bows">Customised Bows</FooterLink></li>
+              <li><FooterLink to="/collections?cat=Scrunchies">Scrunchies</FooterLink></li>
               <li><FooterLink to="/new-arrivals">New Arrivals</FooterLink></li>
               <li><FooterLink to="/about">Our Story</FooterLink></li>
             </ul>

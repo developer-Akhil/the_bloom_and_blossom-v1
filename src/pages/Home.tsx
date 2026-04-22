@@ -254,7 +254,8 @@ function CategoryCard({ title, index }: { title: string; index: number }) {
       'Alligator Clips': '/images/product_images/alligator_clips.jpg',
       'Customised Name Sunglasses': '/images/product_images/customised_name_sunglasses.jpg',
       'Headbands': '/images/product_images/headbands.jpg',
-      'Customised Caps': '/images/product_images/customised_caps.jpg'
+      'Customised Caps': '/images/product_images/customised_caps.jpg',
+      'Scrunchies': '/images/product_images/scrunchies.jpg'
     };
     
     // Final check: if everything else fails, try to construct a direct path based on slug
