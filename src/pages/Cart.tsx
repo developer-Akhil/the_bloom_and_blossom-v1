@@ -1,0 +1,173 @@
+import { useState } from 'react';
+import { useCart } from '../context/CartContext';
+import { useAuth } from '../context/AuthContext';
+import { Link, useNavigate } from 'react-router-dom';
+import { Trash2, ShoppingBag, ArrowRight, Minus, Plus, ShieldCheck } from 'lucide-react';
+import { motion, AnimatePresence } from 'motion/react';
+import { cn } from '../lib/utils';
+import { OptimizedImage } from '../components/common/OptimizedImage';
+
+export function Cart() {
+  const { cart, removeFromCart, updateQuantity, cartTotal, cartCount } = useCart();
+  const { user } = useAuth();
+  const navigate = useNavigate();
+
+  const isFirstOrderEligible = user && !user.user_metadata?.has_used_first_discount && cartTotal >= 500;
+  const discountAmount = isFirstOrderEligible ? cartTotal * 0.05 : 0;
+  const shippingCost = cartTotal > 2000 ? 0 : 80;
+  const finalTotal = cartTotal - discountAmount + shippingCost;
+
+  if (cart.length === 0) {
+    return (
+      <div className="container mx-auto px-4 py-32 flex flex-col items-center justify-center space-y-8 text-center">
+        <div className="p-8 bg-bloom-pink rounded-full text-bloom-rose">
+          <ShoppingBag size={64} />
+        </div>
+        <h1 className="font-serif text-4xl font-bold">Your Bag is Empty</h1>
+        <p className="text-gray-500 max-w-sm">Looks like you haven't added anything to your bag yet. Let's find something beautiful for you.</p>
+        <Link to="/collections" className="px-8 py-4 bg-bloom-rose text-white rounded-full font-bold shadow-xl shadow-bloom-rose/20 hover:scale-105 transition-all">
+          Start Shopping
+        </Link>
+      </div>
+    );
+  }
+
+  return (
+    <div className="container mx-auto px-4 md:px-6 py-12">
+      <h1 className="font-serif text-4xl font-bold mb-12">Your Shopping Bag ({cartCount})</h1>
+
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-16">
+        {/* Cart Items */}
+        <div className="lg:col-span-2 space-y-8">
+          <AnimatePresence>
+            {cart.map((item, idx) => (
+              <motion.div 
+                key={`${item.id}-${item.customizationName}-${JSON.stringify(item.selectedOptions)}-${idx}`}
+                layout
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: 20 }}
+                className="flex items-center space-x-6 pb-8 border-b border-gray-100 group"
+              >
+                <div className="w-24 sm:w-32 aspect-square rounded-2xl overflow-hidden bg-gray-50 flex-shrink-0">
+                  <OptimizedImage src={item.images[0].includes('unsplash.com') ? `${item.images[0]}&w=300` : item.images[0]} alt={item.name} className="w-full h-full object-cover" />
+                </div>
+                
+                <div className="flex-grow space-y-2">
+                  <div className="flex justify-between items-start">
+                    <div>
+                      <h3 className="font-bold text-lg group-hover:text-bloom-rose transition-colors">{item.name}</h3>
+                      <p className="text-xs text-gray-400 capitalize">{item.category}</p>
+                    </div>
+                    <p className="font-bold text-lg">₹{item.price * item.quantity}</p>
+                  </div>
+                  
+                  <div className="flex flex-wrap gap-2">
+                    {item.customizationName && (
+                      <p className="text-[10px] text-bloom-rose bg-bloom-pink/50 inline-block px-2 py-1 rounded-md">
+                        Customised: <span className="font-bold">{item.customizationName}</span>
+                      </p>
+                    )}
+                    {item.selectedOptions && Object.entries(item.selectedOptions).map(([key, value]) => (
+                      <p key={key} className="text-[10px] text-gray-500 bg-gray-100 inline-block px-2 py-1 rounded-md">
+                        {key}: <span className="font-bold">{value}</span>
+                      </p>
+                    ))}
+                  </div>
+
+                  <div className="flex items-center justify-between pt-4">
+                    <div className="flex items-center border border-gray-100 rounded-full h-12 px-5 bg-gray-50/50">
+                      <button 
+                        onClick={() => updateQuantity(item.id, item.quantity - 1, item.customizationName, item.selectedOptions)}
+                        className="p-1.5 hover:text-bloom-rose transition-colors"
+                      >
+                        <Minus size={16} />
+                      </button>
+                      <span className="w-10 text-center text-base font-bold">{item.quantity}</span>
+                      <button 
+                        onClick={() => updateQuantity(item.id, item.quantity + 1, item.customizationName, item.selectedOptions)}
+                        className="p-1.5 hover:text-bloom-rose transition-colors"
+                      >
+                        <Plus size={16} />
+                      </button>
+                    </div>
+                    
+                    <button 
+                      onClick={() => removeFromCart(item.id, item.customizationName, item.selectedOptions)}
+                      className="p-2 text-gray-300 hover:text-red-500 transition-colors"
+                    >
+                      <Trash2 size={18} />
+                    </button>
+                  </div>
+                </div>
+              </motion.div>
+            ))}
+          </AnimatePresence>
+          
+          <Link to="/collections" className="inline-flex items-center text-sm font-bold text-gray-400 hover:text-bloom-rose transition-colors">
+            <ShoppingBag size={18} className="mr-2" />
+            Continue Shopping
+          </Link>
+        </div>
+
+        {/* Summary */}
+        <div className="lg:sticky lg:top-32 h-fit bg-gray-50 rounded-[2.5rem] p-10 space-y-8 border border-white">
+          <h3 className="font-serif text-2xl font-bold">Order Summary</h3>
+          
+          <div className="space-y-4">
+            <div className="flex justify-between text-gray-500">
+              <span>Subtotal</span>
+              <span className="font-mono">₹{cartTotal}</span>
+            </div>
+            {discountAmount > 0 && (
+              <div className="flex justify-between text-bloom-rose font-medium">
+                <span>First Order Discount (5%)</span>
+                <span>-₹{discountAmount.toFixed(2)}</span>
+              </div>
+            )}
+            {cartTotal > 0 && cartTotal < 500 && (
+              <div className="text-xs text-gray-400 bg-gray-100 p-2 rounded-lg mt-2">
+                New Customer? Add ₹{500 - cartTotal} more to unlock 5% off your first order at checkout!
+              </div>
+            )}
+            <div className="flex justify-between text-gray-500">
+              <span>Estimated Shipping</span>
+              <span className={cn(shippingCost === 0 ? "text-green-600 font-medium" : "text-gray-500 font-mono")}>
+                {shippingCost === 0 ? 'FREE' : `₹${shippingCost}`}
+              </span>
+            </div>
+            {shippingCost > 0 && (
+              <p className="text-[10px] text-gray-400 italic">Free shipping on orders above ₹2000</p>
+            )}
+            <div className="flex justify-between text-gray-500">
+              <span>Tax</span>
+              <span className="font-mono">₹0</span>
+            </div>
+            <div className="h-px bg-gray-200 mt-4" />
+            <div className="flex justify-between text-xl font-bold pt-4">
+              <span>Total</span>
+              <span className="text-bloom-rose font-mono text-2xl">₹{finalTotal.toFixed(2)}</span>
+            </div>
+          </div>
+
+          <div className="p-4 bg-white rounded-2xl border border-gray-100 flex items-center space-x-3">
+             <div className="p-2 bg-bloom-pink rounded-xl text-bloom-rose">
+               <ShieldCheck size={20} />
+             </div>
+             <p className="text-[10px] text-gray-400 font-medium uppercase tracking-widest">
+                Secure checkout via KnitPay UPI
+             </p>
+          </div>
+
+          <button 
+            onClick={() => navigate('/checkout')}
+            className="w-full h-16 bg-bloom-rose text-white rounded-full font-bold text-lg hover:bg-bloom-rose/90 transition-all flex items-center justify-center space-x-3 shadow-xl shadow-bloom-rose/20"
+          >
+            <span>Proceed to Checkout</span>
+            <ArrowRight size={20} />
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}

@@ -1,0 +1,63 @@
+/**
+ * @license
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { Layout } from './components/common/Layout';
+import { Home } from './pages/Home';
+import { Collections } from './pages/Collections';
+import { ProductDetail } from './pages/ProductDetail';
+import { Cart } from './pages/Cart';
+import { Checkout } from './pages/Checkout';
+import { Auth } from './pages/Auth';
+import { About } from './pages/About';
+import { Dashboard } from './pages/Dashboard';
+import { Contact } from './pages/Contact';
+import { Returns } from './pages/Returns';
+import { Admin } from './pages/Admin';
+import { AdminLogin } from './pages/AdminLogin';
+import { CartProvider } from './context/CartContext';
+import { AuthProvider } from './context/AuthContext';
+import { AdminAuthProvider } from './context/AdminAuthContext';
+import { MediaProvider } from './context/MediaContext';
+import { ProductProvider } from './context/ProductContext';
+
+// Placeholder pages for now
+const NewArrivals = () => <div className="container py-20">New Arrivals Page Coming Soon</div>;
+const Wishlist = () => <div className="container py-20">Wishlist Page Coming Soon</div>;
+
+export default function App() {
+  return (
+    <AuthProvider>
+      <AdminAuthProvider>
+        <MediaProvider>
+          <ProductProvider>
+            <CartProvider>
+              <BrowserRouter>
+                <Routes>
+                  <Route path="/" element={<Layout />}>
+                    <Route index element={<Home />} />
+                    <Route path="collections" element={<Collections />} />
+                    <Route path="products/:id" element={<ProductDetail />} />
+                    <Route path="cart" element={<Cart />} />
+                    <Route path="checkout" element={<Checkout />} />
+                    <Route path="auth" element={<Auth />} />
+                    <Route path="about" element={<About />} />
+                    <Route path="dashboard" element={<Dashboard />} />
+                    <Route path="contact" element={<Contact />} />
+                    <Route path="returns" element={<Returns />} />
+                    <Route path="admin" element={<Admin />} />
+                    <Route path="admin/login" element={<AdminLogin />} />
+                    <Route path="new-arrivals" element={<NewArrivals />} />
+                    <Route path="wishlist" element={<Wishlist />} />
+                  </Route>
+                </Routes>
+              </BrowserRouter>
+            </CartProvider>
+          </ProductProvider>
+        </MediaProvider>
+      </AdminAuthProvider>
+    </AuthProvider>
+  );
+}

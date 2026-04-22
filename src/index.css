@@ -1,0 +1,84 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-serif: "Playfair Display", serif;
+  --font-sans: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
+  
+  --color-primary: #D4A373;
+  --color-accent: #E9EDC9;
+  --color-rose-light: #FAD2E1;
+  --color-dark: #4A4E69;
+  --color-bg: #FFF9F9;
+  --color-text: #5E503F;
+  --color-shadow: rgba(0, 0, 0, 0.05);
+
+  --color-bloom-pink: #FAD2E1;
+  --color-bloom-rose: #D4A373;
+  --color-bloom-sage: #E9EDC9;
+  --color-bloom-cream: #FFF9F9;
+}
+
+@layer base {
+  body {
+    @apply bg-bloom-cream text-text font-sans;
+  }
+}
+
+.floral-gradient {
+  background: radial-gradient(circle at 10% 20%, rgba(253, 242, 248, 1) 0%, rgba(255, 241, 242, 1) 100%);
+}
+
+.glass-morphism {
+  @apply backdrop-blur-md bg-white/70 border border-white/20;
+}
+
+@keyframes float {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+  100% { transform: translateY(0px); }
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+section {
+  content-visibility: auto;
+  contain-intrinsic-size: 1px 1000px;
+}
+
+@layer base {
+  html {
+    -webkit-tap-highlight-color: transparent;
+    scroll-behavior: smooth;
+  }
+}
+
+/* Custom scrollbar for mobile optimization */
+::-webkit-scrollbar {
+  width: 4px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-bloom-rose/20 rounded-full;
+}
+
+@media (max-width: 640px) {
+  .container {
+    @apply px-4;
+  }
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}

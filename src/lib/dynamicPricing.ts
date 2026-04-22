@@ -1,0 +1,42 @@
+import { useProductContext } from '../context/ProductContext';
+import { supabase } from './supabase';
+
+// Legacy hook wrapper for compatibility
+export const useDynamicProducts = (baseProducts?: any) => {
+  const { products } = useProductContext();
+  return products;
+};
+
+export const updateDynamicPricesBatch = async (updates: Record<string, number>) => {
+  if (Object.keys(updates).length === 0) return;
+
+  // 1. Instantly update local
+  const dynamicPrices = JSON.parse(localStorage.getItem('bloom_dynamic_prices') || '{}');
+  Object.entries(updates).forEach(([id, price]) => {
+    dynamicPrices[id] = price;
+  });
+  localStorage.setItem('bloom_dynamic_prices', JSON.stringify(dynamicPrices));
+  window.dispatchEvent(new Event('dynamic_price_updated'));
+
+  // 2. Persist to Supabase
+  try {
+    const records = Object.entries(updates).map(([id, price]) => ({
+      product_id: id,
+      price: price
+    }));
+
+    const { error } = await supabase
+      .from('dynamic_prices')
+      .upsert(records, { onConflict: 'product_id' });
+      
+    if (error) {
+      console.error("Failed to sync prices to DB:", error);
+    }
+  } catch (e) {
+    console.error("Supabase sync exception:", e);
+  }
+};
+
+export const updateDynamicPrice = async (productId: string, newPrice: number) => {
+  return updateDynamicPricesBatch({ [productId]: newPrice });
+};
