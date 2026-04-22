@@ -103,9 +103,17 @@ export function MediaProvider({ children }: { children: React.ReactNode }) {
           }
         }
 
-        // 3. Fix malformed public/ prefixes
+        // 3. Fix malformed or relative path prefixes
         if (newUrl.includes('/public/images/')) {
           newUrl = newUrl.replace(/^.*\/public\/images\//, '/images/');
+        }
+        if (newUrl.includes('images/')) {
+          const splitPoint = newUrl.indexOf('images/');
+          if (splitPoint >= 0 && newUrl[splitPoint - 1] !== '/') {
+            newUrl = '/' + newUrl.slice(splitPoint);
+          } else if (newUrl.startsWith('../') || newUrl.startsWith('./')) {
+            newUrl = '/' + newUrl.slice(newUrl.indexOf('images/'));
+          }
         }
 
         // 4. Force lowercase on collection directories (case-sensitive safety)
