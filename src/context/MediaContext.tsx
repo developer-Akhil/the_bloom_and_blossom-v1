@@ -103,8 +103,10 @@ export function MediaProvider({ children }: { children: React.ReactNode }) {
       const diskFolders = (import.meta as any).glob('../../public/images/collections/**/*', { eager: true });
       const productImages = (import.meta as any).glob('../../public/images/product_images/*', { eager: true });
       const bestSellers = (import.meta as any).glob('../../public/images/our_best_sellers/*', { eager: true });
+      const homeImages = (import.meta as any).glob('../../public/images/home_images/*', { eager: true });
+      const logoImages = (import.meta as any).glob('../../public/images/logo/*', { eager: true });
       
-      const allDisks = { ...diskFolders, ...productImages, ...bestSellers };
+      const allDisks = { ...diskFolders, ...productImages, ...bestSellers, ...homeImages, ...logoImages };
       
       Object.keys(allDisks).forEach((path, idx) => {
         if (path.endsWith('.keep')) return;
@@ -119,6 +121,8 @@ export function MediaProvider({ children }: { children: React.ReactNode }) {
         let folderId = 'product_images';
         if (path.includes('collections')) folderId = `collections/${folderName.toLowerCase()}`;
         if (path.includes('our_best_sellers')) folderId = 'our_best_sellers';
+        if (path.includes('home_images')) folderId = 'home_images';
+        if (path.includes('logo')) folderId = 'logo';
 
         defaultAssets.push({
           id: `builtin_${idx}`,

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { cn } from '../../lib/utils';
 
 interface OptimizedImageProps extends React.ImgHTMLAttributes<HTMLImageElement> {
@@ -16,6 +16,13 @@ export function OptimizedImage({
 }: OptimizedImageProps) {
   const [error, setError] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const imgRef = useRef<HTMLImageElement>(null);
+
+  useEffect(() => {
+    if (imgRef.current?.complete) {
+      setIsLoading(false);
+    }
+  }, []);
 
   const handleError = () => {
     setError(true);
@@ -34,6 +41,7 @@ export function OptimizedImage({
         </div>
       )}
       <img
+        ref={imgRef}
         src={error ? fallbackSrc : src}
         alt={alt}
         onLoad={handleLoad}

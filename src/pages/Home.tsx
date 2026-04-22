@@ -232,13 +232,13 @@ function CategoryCard({ title, index }: { title: string; index: number }) {
     // 1. Try to find a custom uploaded image securely placed in the product_images folder
     // whose file name matches the category title roughly.
     const slug = title.toLowerCase().replace(/\s+/g, '_');
-    const customProdImage = assets.reverse().find(a => 
+    const customProdImage = [...assets].reverse().find(a => 
        a.folder_id === 'product_images' && a.file_name.toLowerCase().includes(slug)
     );
     if (customProdImage) return customProdImage.file_url;
 
     // 2. Try the collections/ fallback
-    const customColImage = assets.reverse().find(a => 
+    const customColImage = [...assets].reverse().find(a => 
       a.folder_id === `collections/${slug}`
     );
     if (customColImage) return customColImage.file_url;
