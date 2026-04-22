@@ -96,7 +96,7 @@ export const products: Product[] = [
     category: 'Scrunchies',
     price: 149,
     description: 'Classic red scrunchie.',
-    images: ['/images/collections/Scrunchies/Red_Scrunchies.jpg'],
+    images: ['/images/collections/scrunchies/red.jpg'],
     stock: 50,
     isCustomizable: false,
     rating: 4.8
@@ -107,7 +107,7 @@ export const products: Product[] = [
     category: 'Scrunchies',
     price: 149,
     description: 'Classic black scrunchie.',
-    images: ['/images/collections/Scrunchies/Black_Scrunchies.jpg'],
+    images: ['/images/collections/scrunchies/black.jpg'],
     stock: 60,
     isCustomizable: false,
     rating: 4.9
@@ -118,7 +118,7 @@ export const products: Product[] = [
     category: 'Scrunchies',
     price: 149,
     description: 'Classic purple scrunchie.',
-    images: ['/images/collections/Scrunchies/Purple_Scrunchies.jpg'],
+    images: ['/images/collections/scrunchies/purple.jpg'],
     stock: 45,
     isCustomizable: false,
     rating: 4.7
@@ -129,7 +129,7 @@ export const products: Product[] = [
     category: 'Scrunchies',
     price: 149,
     description: 'Classic white scrunchie.',
-    images: ['/images/collections/Scrunchies/White_Scrunchies.jpg'],
+    images: ['/images/collections/scrunchies/white.jpg'],
     stock: 55,
     isCustomizable: false,
     rating: 4.8

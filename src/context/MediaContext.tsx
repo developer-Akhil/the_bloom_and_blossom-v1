@@ -78,14 +78,62 @@ export function MediaProvider({ children }: { children: React.ReactNode }) {
       let currentAssets: MediaAsset[] = JSON.parse(savedAssets);
       let needsUpdate = false;
 
-      // Migration: Fix "chochet" typos in indexed media
+      // Migration: Robust media URL migration and normalization layer
       const updatedAssets = currentAssets.map(asset => {
-        if (asset.file_url.includes('chochet')) {
+        let newUrl = asset.file_url || '';
+        let newFileName = asset.file_name || '';
+        let newFolderId = asset.folder_id || '';
+
+        // 1. Fix legacy 'chochet' typos
+        if (newUrl.includes('chochet') || newFileName.includes('chochet') || newFolderId.includes('chochet')) {
+          newUrl = newUrl.replace('chochet', 'crochet');
+          newFileName = newFileName.replace('chochet', 'crochet');
+          newFolderId = newFolderId.replace('chochet', 'crochet');
+        }
+
+        // 2. Normalize absolute same-origin URLs
+        if (newUrl.startsWith('http')) {
+          try {
+            const parsed = new URL(newUrl);
+            if (parsed.pathname.includes('/images/') || parsed.pathname.includes('/public/')) {
+              newUrl = parsed.pathname;
+            }
+          } catch (e) {
+             // Safe fallback for malformed URLs
+          }
+        }
+
+        // 3. Fix malformed public/ prefixes
+        if (newUrl.includes('/public/images/')) {
+          newUrl = newUrl.replace(/^.*\/public\/images\//, '/images/');
+        }
+
+        // 4. Force lowercase on collection directories (case-sensitive safety)
+        if (newUrl.includes('/images/collections/')) {
+          const parts = newUrl.split('/');
+          const colIndex = parts.indexOf('collections');
+          if (colIndex !== -1 && parts.length > colIndex + 1) {
+            parts[colIndex + 1] = parts[colIndex + 1].toLowerCase();
+            newUrl = parts.join('/');
+          }
+        }
+
+        // Normalize folder mapping case
+        if (newFolderId.startsWith('collections/')) {
+          newFolderId = newFolderId.toLowerCase();
+        }
+
+        if (
+          newUrl !== asset.file_url || 
+          newFileName !== asset.file_name || 
+          newFolderId !== asset.folder_id
+        ) {
           needsUpdate = true;
           return {
             ...asset,
-            file_url: asset.file_url.replace('chochet', 'crochet'),
-            file_name: asset.file_name.replace('chochet', 'crochet')
+            file_url: newUrl,
+            file_name: newFileName,
+            folder_id: newFolderId
           };
         }
         return asset;
