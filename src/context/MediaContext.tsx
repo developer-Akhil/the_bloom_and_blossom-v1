@@ -99,19 +99,22 @@ export function MediaProvider({ children }: { children: React.ReactNode }) {
       }
     } else {
       const defaultAssets: MediaAsset[] = [];
-      const diskFolders = (import.meta as any).glob('/public/images/collections/**/*', { eager: true });
-      const productImages = (import.meta as any).glob('/public/images/product_images/*', { eager: true });
-      const bestSellers = (import.meta as any).glob('/public/images/our_best_sellers/*', { eager: true });
+      // Use relative paths for better portability across build environments
+      const diskFolders = (import.meta as any).glob('../../public/images/collections/**/*', { eager: true });
+      const productImages = (import.meta as any).glob('../../public/images/product_images/*', { eager: true });
+      const bestSellers = (import.meta as any).glob('../../public/images/our_best_sellers/*', { eager: true });
       
       const allDisks = { ...diskFolders, ...productImages, ...bestSellers };
       
       Object.keys(allDisks).forEach((path, idx) => {
         if (path.endsWith('.keep')) return;
-        const url = path.replace('/public', '');
+        
+        // Normalize path to get the correct browser URL
+        // From: ../../public/images/folder/file.jpg  To: /images/folder/file.jpg
+        const url = path.replace(/^.*\/public/, '');
         const parts = path.split('/');
         const filename = parts.pop() || '';
         const folderName = parts.pop() || '';
-        const parentFolderName = parts.pop() || '';
         
         let folderId = 'product_images';
         if (path.includes('collections')) folderId = `collections/${folderName.toLowerCase()}`;

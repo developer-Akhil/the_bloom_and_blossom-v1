@@ -114,7 +114,8 @@ export function ProductProvider({ children }: { children: React.ReactNode }) {
       .filter(f => f.parent === 'collections')
       .map(f => f.name.split('_').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' '));
     
-    const diskImages = (import.meta as any).glob('/public/images/product_images/*');
+    // Use relative path for production build consistency
+    const diskImages = (import.meta as any).glob('../../public/images/product_images/*', { eager: true });
     const autoCategories = Object.keys(diskImages)
       .filter(path => !path.endsWith('.keep'))
       .map(path => {
