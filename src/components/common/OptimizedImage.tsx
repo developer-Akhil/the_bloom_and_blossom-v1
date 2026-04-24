@@ -51,7 +51,6 @@ export function OptimizedImage({
           isLoading ? "opacity-0" : "opacity-100",
           className
         )}
-        referrerPolicy="no-referrer"
         loading="lazy"
         {...props}
       />
