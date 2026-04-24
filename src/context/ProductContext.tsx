@@ -62,14 +62,27 @@ export function ProductProvider({ children }: { children: React.ReactNode }) {
          .filter(a => a.folder_id === `collections/${slug}` || a.folder_id === 'our_best_sellers')
          .filter(a => {
             if (a.id.startsWith('builtin_')) { consumedAssetIds.add(a.id); return false; }
+            const categoryWords = product.category.toLowerCase().split(' ');
+            // Remove 's' from category words for singular matching (e.g. 'scrunchies' -> 'scrunchie')
+            const singularCategoryWords = categoryWords.map(w => w.endsWith('s') ? w.slice(0, -1) : w);
+            const ignoreWords = new Set([...categoryWords, ...singularCategoryWords]);
+            
             const searchName = a.file_name.toLowerCase();
-            const keywords = product.name.toLowerCase().split(' ');
-            return keywords.some(k => searchName.includes(k) && k.length > 2);
+            const keywords = product.name.toLowerCase().split(' ')
+                 .filter(k => !ignoreWords.has(k) && k.length > 2);
+                 
+            // If we successfully filtered it down to distinguishing words, use those. 
+            // If it's empty (e.g. the product name is just "Scrunchies"), fallback to just requiring the name.
+            if (keywords.length > 0) {
+               return keywords.some(k => searchName.includes(k));
+            }
+            return searchName.includes(product.name.toLowerCase());
          });
 
       if (customImages.length > 0) {
          customImages.forEach(a => consumedAssetIds.add(a.id));
-         updatedProduct.images = [...customImages.map(a => a.file_url).reverse(), ...updatedProduct.images];
+         const mergedImageUrls = [...customImages.map(a => a.file_url).reverse(), ...updatedProduct.images];
+         updatedProduct.images = Array.from(new Set(mergedImageUrls));
       }
       return updatedProduct;
     }).filter(p => p.images.length > 0);

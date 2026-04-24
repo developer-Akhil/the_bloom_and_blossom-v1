@@ -229,21 +229,16 @@ function CategoryCard({ title, index }: { title: string; index: number }) {
   const { assets } = useMediaContext();
   
   const getCategoryImage = () => {
-    // 1. Try to find a custom uploaded image securely placed in the product_images folder
-    // whose file name matches the category title roughly.
+    // 1. Convert Category Title to exact expected filename (e.g. "Customised Name Bows" -> "customised_name_bows")
     const slug = title.toLowerCase().replace(/\s+/g, '_');
-    const customProdImage = [...assets].reverse().find(a => 
-       a.folder_id === 'product_images' && a.file_name.toLowerCase().includes(slug)
+    
+    // 2. Check if this exact file exists in our uploaded media assets inside 'product_images'
+    const exactMatch = [...assets].reverse().find(a => 
+       a.folder_id === 'product_images' && a.file_name.toLowerCase().startsWith(`${slug}.`)
     );
-    if (customProdImage) return customProdImage.file_url;
+    if (exactMatch) return exactMatch.file_url;
 
-    // 2. Try the collections/ fallback
-    const customColImage = [...assets].reverse().find(a => 
-      a.folder_id === `collections/${slug}`
-    );
-    if (customColImage) return customColImage.file_url;
-
-    // 3. System Defaults
+    // 3. System Defaults as strict map
     const defaults: Record<string, string> = {
       'Customised Name Bows': '/images/product_images/customised_name_bows.jpg',
       'Premium Doll Bows': '/images/product_images/premium_doll_bows.jpg',
@@ -255,7 +250,8 @@ function CategoryCard({ title, index }: { title: string; index: number }) {
       'Customised Name Sunglasses': '/images/product_images/customised_name_sunglasses.jpg',
       'Headbands': '/images/product_images/headbands.jpg',
       'Customised Caps': '/images/product_images/customised_caps.jpg',
-      'Scrunchies': '/images/product_images/scrunchies.jpg'
+      'Scrunchies': '/images/product_images/scrunchies.jpg',
+      'Bows': '/images/product_images/bows.jpg'
     };
     
     // Final check: if everything else fails, try to construct a direct path based on slug
