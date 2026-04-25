@@ -45,7 +45,7 @@ async function startServer() {
       const publicUrl = `/images/${subParts.join('/')}/${safeFileName}`;
 
       res.json({ success: true, url: publicUrl });
-    } catch (e: any) {
+    } catch (e) {
       console.error(e);
       res.status(500).json({ error: e.message });
     }
@@ -70,7 +70,7 @@ async function startServer() {
         fs.writeFileSync(path.join(targetPath, ".keep"), "");
       }
       res.json({ success: true, path: targetPath });
-    } catch (e: any) {
+    } catch (e) {
       console.error(e);
       res.status(500).json({ error: e.message });
     }
