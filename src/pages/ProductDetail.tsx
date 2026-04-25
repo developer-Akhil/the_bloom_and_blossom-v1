@@ -3,7 +3,7 @@ import { useParams, Link, useNavigate } from 'react-router-dom';
 import { products as baseProducts } from '../data/products';
 import { useProductContext } from '../context/ProductContext';
 import { useCart } from '../context/CartContext';
-import { Star, ShieldCheck, Truck, RefreshCw, Heart, ShoppingBag, ChevronRight, ChevronLeft, Minus, Plus, Share2 } from 'lucide-react';
+import { Star, ShieldCheck, Truck, Heart, ShoppingBag, ChevronRight, ChevronLeft, Minus, Plus, Share2 } from 'lucide-react';
 import { motion } from 'motion/react';
 import { cn } from '../lib/utils';
 import { ProductCard } from './Home';
@@ -256,10 +256,9 @@ export function ProductDetail() {
           </button>
 
           {/* Trust Badges */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 pt-8 border-t">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 pt-8 border-t">
             <TrustBadge icon={<Truck size={20} />} title="Free Delivery" desc="On orders above ₹2000" />
             <TrustBadge icon={<ShieldCheck size={20} />} title="Secure Payment" desc="Upi via KnitPay" />
-            <TrustBadge icon={<RefreshCw size={20} />} title="Easy Returns" desc="Within 7 days" />
           </div>
         </div>
       </div>

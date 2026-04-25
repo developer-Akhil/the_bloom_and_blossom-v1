@@ -28,6 +28,7 @@ export interface Product {
   images: string[];
   stock: number;
   isCustomizable: boolean;
+  isBestSeller?: boolean;
   rating?: number;
   reviews?: Review[];
   options?: ProductOption[];

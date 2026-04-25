@@ -19,6 +19,10 @@ export function ProductProvider({ children }: { children: React.ReactNode }) {
     const localPrices = localStorage.getItem('bloom_dynamic_prices');
     return localPrices ? JSON.parse(localPrices) : {};
   });
+  const [bestSellersSet, setBestSellersSet] = useState<Set<string>>(() => {
+    const localBestSellers = localStorage.getItem('bloom_best_sellers');
+    return localBestSellers ? new Set(JSON.parse(localBestSellers)) : new Set();
+  });
 
   const fetchSupabasePrices = useCallback(async () => {
     try {
@@ -40,8 +44,16 @@ export function ProductProvider({ children }: { children: React.ReactNode }) {
       const localPrices = localStorage.getItem('bloom_dynamic_prices');
       if (localPrices) setPriceOverrides(JSON.parse(localPrices));
     };
+    const handleBestSellersUpdate = () => {
+      const localBestSellers = localStorage.getItem('bloom_best_sellers');
+      if (localBestSellers) setBestSellersSet(new Set(JSON.parse(localBestSellers)));
+    };
     window.addEventListener('dynamic_price_updated', handleUpdate);
-    return () => window.removeEventListener('dynamic_price_updated', handleUpdate);
+    window.addEventListener('best_sellers_updated', handleBestSellersUpdate);
+    return () => {
+       window.removeEventListener('dynamic_price_updated', handleUpdate);
+       window.removeEventListener('best_sellers_updated', handleBestSellersUpdate);
+    };
   }, [fetchSupabasePrices]);
 
   const mergedProducts = useMemo(() => {
@@ -50,6 +62,11 @@ export function ProductProvider({ children }: { children: React.ReactNode }) {
     let updatedProducts = baseProducts.map((product) => {
       let updatedProduct = { ...product };
       if (priceOverrides[product.id]) updatedProduct.price = priceOverrides[product.id];
+      
+      const adminBestSellersStr = localStorage.getItem('bloom_best_sellers');
+      if (adminBestSellersStr) {
+          updatedProduct.isBestSeller = bestSellersSet.has(product.id);
+      }
 
       const productAssets = allAssets.filter(a => a.id.startsWith(`builtin_${product.id}_`));
       updatedProduct.images = product.images.filter((img, idx) => {
@@ -106,6 +123,12 @@ export function ProductProvider({ children }: { children: React.ReactNode }) {
         if (asset.folder_id === 'product_images' && productName.toLowerCase() === categoryTitle.toLowerCase()) return;
 
         const productId = `custom_${asset.id}`;
+        let isBestSeller = false;
+        const adminBestSellersStr = localStorage.getItem('bloom_best_sellers');
+        if (adminBestSellersStr) {
+           isBestSeller = bestSellersSet.has(productId);
+        }
+
         newlyConstructedProducts.push({
            id: productId,
            name: productName, 
@@ -115,12 +138,13 @@ export function ProductProvider({ children }: { children: React.ReactNode }) {
            images: [asset.file_url],
            stock: 10,
            isCustomizable: false,
+           isBestSeller,
            rating: 5.0
         });
     });
 
     return [...updatedProducts, ...newlyConstructedProducts];
-  }, [baseProducts, assets, allAssets, folders, priceOverrides]);
+  }, [baseProducts, assets, allAssets, folders, priceOverrides, bestSellersSet]);
 
   const mergedCategories = useMemo(() => {
     const adminFolders = folders

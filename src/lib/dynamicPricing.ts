@@ -40,3 +40,8 @@ export const updateDynamicPricesBatch = async (updates: Record<string, number>) 
 export const updateDynamicPrice = async (productId: string, newPrice: number) => {
   return updateDynamicPricesBatch({ [productId]: newPrice });
 };
+
+export const updateBestSellers = async (bestSellerIds: string[]) => {
+  localStorage.setItem('bloom_best_sellers', JSON.stringify(bestSellerIds));
+  window.dispatchEvent(new Event('best_sellers_updated'));
+};

@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { Navigate, Link } from 'react-router-dom';
 import { products as baseProducts } from '../data/products';
-import { updateDynamicPrice, updateDynamicPricesBatch, useDynamicProducts } from '../lib/dynamicPricing';
-import { Settings, Save, CheckCircle2, ShieldAlert, Image as ImageIcon, IndianRupee, LogOut } from 'lucide-react';
+import { updateDynamicPrice, updateDynamicPricesBatch, useDynamicProducts, updateBestSellers } from '../lib/dynamicPricing';
+import { Settings, Save, CheckCircle2, ShieldAlert, Image as ImageIcon, IndianRupee, LogOut, Star } from 'lucide-react';
 import { AdminImageManager } from '../components/admin/AdminImageManager';
 import { useAdminAuth } from '../context/AdminAuthContext';
 
@@ -10,6 +10,7 @@ export function Admin() {
   const { isAdminAuthenticated, logout } = useAdminAuth();
   const dynamicProducts = useDynamicProducts(baseProducts);
   const [edits, setEdits] = useState<Record<string, number>>({});
+  const [bestSellerEdits, setBestSellerEdits] = useState<Record<string, boolean>>({});
   const [showSaved, setShowSaved] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [activeTab, setActiveTab] = useState<'media' | 'pricing'>('media');
@@ -30,12 +31,28 @@ export function Admin() {
     }
   };
 
+  const handleBestSellerToggle = (id: string, currentStatus: boolean) => {
+    const isCurrentlyBestSeller = bestSellerEdits[id] !== undefined ? bestSellerEdits[id] : currentStatus;
+    setBestSellerEdits({ ...bestSellerEdits, [id]: !isCurrentlyBestSeller });
+  };
+
   const handleSave = async () => {
     setIsSaving(true);
     
     try {
-      await updateDynamicPricesBatch(edits);
+      if (Object.keys(edits).length > 0) {
+          await updateDynamicPricesBatch(edits);
+      }
+      
+      if (Object.keys(bestSellerEdits).length > 0) {
+          const finalBestSellers = dynamicProducts
+              .filter(p => bestSellerEdits[p.id] !== undefined ? bestSellerEdits[p.id] : p.isBestSeller)
+              .map(p => p.id);
+          await updateBestSellers(finalBestSellers);
+      }
+      
       setEdits({});
+      setBestSellerEdits({});
       setShowSaved(true);
       setTimeout(() => setShowSaved(false), 3000);
     } catch (err) {
@@ -81,7 +98,7 @@ export function Admin() {
                 className={`flex-1 md:flex-none flex items-center space-x-2 px-6 py-2.5 rounded-xl font-medium text-sm transition-all ${activeTab === 'pricing' ? 'bg-white shadow-sm text-bloom-rose' : 'text-gray-500 hover:text-gray-900'}`}
              >
                 <IndianRupee size={16} />
-                <span>Dynamic Pricing</span>
+                <span>Product Settings</span>
              </button>
           </div>
         </div>
@@ -95,15 +112,15 @@ export function Admin() {
             <div className="flex justify-end">
               <button 
                 onClick={handleSave}
-                disabled={Object.keys(edits).length === 0 || isSaving}
+                disabled={(Object.keys(edits).length === 0 && Object.keys(bestSellerEdits).length === 0) || isSaving}
                 className={`mt-4 md:mt-0 flex items-center space-x-2 px-6 py-3 rounded-full font-bold transition-all shadow-lg ${
-                  Object.keys(edits).length > 0 && !isSaving
+                  (Object.keys(edits).length > 0 || Object.keys(bestSellerEdits).length > 0) && !isSaving
                     ? 'bg-bloom-rose text-white hover:scale-105 shadow-bloom-rose/20' 
                     : 'bg-gray-100 text-gray-400 cursor-not-allowed shadow-none'
                 }`}
               >
                 {showSaved ? <CheckCircle2 size={18} /> : <Save size={18} />}
-                <span>{isSaving ? 'Saving to DB...' : showSaved ? 'Saved Successfully' : 'Apply Dynamic Pricing'}</span>
+                <span>{isSaving ? 'Saving...' : showSaved ? 'Saved Successfully' : 'Apply Settings'}</span>
               </button>
             </div>
 
@@ -113,11 +130,14 @@ export function Admin() {
                   <tr className="bg-gray-50 text-gray-500 text-xs uppercase tracking-wider">
                     <th className="p-4 font-bold border-b">Product</th>
                     <th className="p-4 font-bold border-b">Category</th>
+                    <th className="p-4 font-bold border-b text-center w-32">Best Seller</th>
                     <th className="p-4 font-bold border-b w-48">Dynamic Price (₹)</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y">
-                  {dynamicProducts.map((product) => (
+                  {dynamicProducts.map((product) => {
+                    const isBestSeller = bestSellerEdits[product.id] !== undefined ? bestSellerEdits[product.id] : !!product.isBestSeller;
+                    return (
                     <tr key={product.id} className="hover:bg-gray-50/50 transition-colors">
                       <td className="p-4">
                         <div className="flex items-center space-x-3">
@@ -126,6 +146,14 @@ export function Admin() {
                         </div>
                       </td>
                       <td className="p-4 text-sm text-gray-500">{product.category}</td>
+                      <td className="p-4 text-center">
+                         <button
+                           onClick={() => handleBestSellerToggle(product.id, !!product.isBestSeller)}
+                           className={`p-2 rounded-full transition-colors ${isBestSeller ? 'bg-bloom-pink/30 text-bloom-rose' : 'bg-gray-100 text-gray-400 hover:bg-gray-200'}`}
+                         >
+                           <Star size={18} className={isBestSeller ? 'fill-bloom-rose' : ''} />
+                         </button>
+                      </td>
                       <td className="p-4">
                         <div className="relative">
                           <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 font-medium">₹</span>
@@ -142,7 +170,7 @@ export function Admin() {
                         </div>
                       </td>
                     </tr>
-                  ))}
+                  )})}
                 </tbody>
               </table>
             </div>

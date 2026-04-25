@@ -7,9 +7,10 @@ export const products: Product[] = [
     category: 'Customised Name Bows',
     price: 499,
     description: 'Beautiful soft velvet bow with your name embroidered perfectly.',
-    images: ['/images/our_best_sellers/premium_name_bows.jpg'],
+    images: ['/images/collections/customised_name_bows/premium_name_bows.jpg'],
     stock: 9,
     isCustomizable: true,
+    isBestSeller: true,
     rating: 4.8,
     options: [
       {
@@ -24,9 +25,10 @@ export const products: Product[] = [
     category: 'Alligator Clips',
     price: 199,
     description: 'Adorable colorful popsicle designs perfect for a playful look.',
-    images: ['/images/our_best_sellers/popsicle_clips.jpg'],
+    images: ['/images/collections/alligator_clips/popsicle_clips.jpg'],
     stock: 100,
     isCustomizable: false,
+    isBestSeller: true,
     rating: 4.9,
     options: [
       {
@@ -41,9 +43,10 @@ export const products: Product[] = [
     category: 'Crochet Clips',
     price: 299,
     description: 'Handcrafted crochet rainbows to brighten up any hairstyle.',
-    images: ['/images/our_best_sellers/crochet_rainbow_clips.jpg'],
+    images: ['/images/collections/crochet_clips/crochet_rainbow_clip.jpg'],
     stock: 75,
     isCustomizable: false,
+    isBestSeller: true,
     rating: 4.7
   },
   {
@@ -52,9 +55,10 @@ export const products: Product[] = [
     category: 'Alligator Clips',
     price: 899,
     description: 'Luxurious velvet bow adorned with premium sparkling stones.',
-    images: ['/images/our_best_sellers/velvet_stone_bows.jpg'],
+    images: ['/images/collections/alligator_clips/velvet_stone_bows.jpg'],
     stock: 20,
     isCustomizable: false,
+    isBestSeller: true,
     rating: 5.0
   },
   {
@@ -208,17 +212,6 @@ export const products: Product[] = [
     description: 'Beautifully embroidered alligator clip.',
     images: ['/images/collections/embroidery_bows/embroidery_alligator.png'],
     stock: 22,
-    isCustomizable: false,
-    rating: 4.8
-  },
-  {
-    id: '19',
-    name: 'Crochet Rainbow Clip Classic',
-    category: 'Crochet Clips',
-    price: 299,
-    description: 'Handcrafted crochet rainbow clip.',
-    images: ['/images/collections/crochet_clips/crochet_rainbow_clip.jpg'],
-    stock: 18,
     isCustomizable: false,
     rating: 4.8
   },
