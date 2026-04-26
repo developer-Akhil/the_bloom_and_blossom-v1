@@ -21,12 +21,16 @@ export default defineConfig(({mode}) => {
       hmr: process.env.DISABLE_HMR !== 'true',
     },
     build: {
+      chunkSizeWarningLimit: 1500,
       rollupOptions: {
         output: {
           manualChunks(id) {
             if (id.includes('node_modules')) {
-              if (id.includes('react')) return 'vendor-react';
-              if (id.includes('lucide-react')) return 'vendor-icons';
+              if (id.includes('react-router-dom') || id.includes('@remix-run') || id.includes('react-router')) return 'router';
+              if (id.includes('lucide-react')) return 'icons';
+              if (id.includes('framer-motion') || id.includes('motion')) return 'motion';
+              if (id.includes('firebase')) return 'firebase';
+              if (id.includes('react') || id.includes('react-dom')) return 'react';
               return 'vendor';
             }
           }

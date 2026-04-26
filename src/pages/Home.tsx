@@ -17,7 +17,7 @@ export function Home() {
   // Custom helper to dynamically find an overridden image from the admin "home_images" folder
   const getHeroImage = () => {
     const customHero = assets.find(a => a.folder_id === 'home_images');
-    return customHero ? customHero.file_url : 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&q=60&w=1920';
+    return customHero ? customHero.file_url : 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&q=80&w=1920';
   };
 
   return (

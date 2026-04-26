@@ -7,7 +7,7 @@ export const products: Product[] = [
     category: 'Customised Name Bows',
     price: 499,
     description: 'Beautiful soft velvet bow with your name embroidered perfectly.',
-    images: ['/images/collections/customised_name_bows/premium_name_bows.jpg'],
+    images: ['/images/collections/customised_name_bows/golden_glitter_bow.jpeg'],
     stock: 9,
     isCustomizable: true,
     isBestSeller: true,
