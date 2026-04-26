@@ -71,7 +71,7 @@ export function Footer() {
               </div>
               <div className="flex items-center space-x-3 text-sm text-gray-500">
                 <Mail size={18} className="text-bloom-rose shrink-0" />
-                <span>thebloomblossom23@gmail.com</span>
+                <span>info@bloomandblossom.in</span>
               </div>
             </div>
           </div>

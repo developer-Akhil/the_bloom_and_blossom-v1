@@ -29,7 +29,7 @@ export function Returns() {
             We pride ourselves on the quality and delicate details of our hair accessories, and we want you to love your purchase. By completing your purchase, you acknowledge and agree to this final sale policy.
           </p>
           <p>
-            If your item arrives damaged or there is a rare issue with your order (such as receiving the wrong item), please reach out to us within 48 hours of delivery at <strong>thebloomblossom23@gmail.com</strong> providing photos and details of your issue, so we can review it and make it right.
+            If your item arrives damaged or there is a rare issue with your order (such as receiving the wrong item), please reach out to us within 48 hours of delivery at <strong>info@bloomandblossom.in</strong> providing photos and details of your issue, so we can review it and make it right.
           </p>
           <p className="font-bold text-gray-800">
             We sincerely appreciate your understanding and continued support for our small business!
