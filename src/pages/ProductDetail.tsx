@@ -123,9 +123,7 @@ export function ProductDetail() {
 
           <p className="text-gray-500 leading-relaxed font-light">
             {product.description}
-          </p>
-
-          {/* Options Selection */}
+          </p>          {/* Options Selection */}
           {product.options?.map((option) => (
             <div key={option.name} className="space-y-4">
               <label className="block text-xs font-bold uppercase tracking-widest text-gray-500">
@@ -161,99 +159,113 @@ export function ProductDetail() {
             </div>
           ))}
 
-          {/* Stock Indicator */}
-          {product.stock < 20 && (
-            <div className="space-y-2">
-              <p className="text-sm font-bold text-red-600">
-                Hurry up! Only {product.stock} left
-              </p>
-              <div className="h-2 w-full bg-gray-100 rounded-full overflow-hidden">
-                <motion.div 
-                  initial={{ width: 0 }}
-                  animate={{ width: `${(product.stock / 20) * 100}%` }}
-                  className="h-full bg-gradient-to-r from-red-500 to-green-500"
-                />
+          {!product.inStock ? (
+            <div className="bg-red-50 border border-red-100 rounded-2xl p-6 flex items-center space-x-4">
+              <div className="p-3 bg-red-100 rounded-full text-red-500">
+                <Minus size={24} />
+              </div>
+              <div>
+                <h3 className="font-bold text-red-700">Out of Stock</h3>
+                <p className="text-sm text-red-500">This product is currently unavailable.</p>
               </div>
             </div>
-          )}
+          ) : (
+            <>
+              {/* Stock Indicator */}
+              {product.stock < 20 && (
+                <div className="space-y-2">
+                  <p className="text-sm font-bold text-red-600">
+                    Hurry up! Only {product.stock} left
+                  </p>
+                  <div className="h-2 w-full bg-gray-100 rounded-full overflow-hidden">
+                    <motion.div 
+                      initial={{ width: 0 }}
+                      animate={{ width: `${(product.stock / 20) * 100}%` }}
+                      className="h-full bg-gradient-to-r from-red-500 to-green-500"
+                    />
+                  </div>
+                </div>
+              )}
 
-          <div className="h-px bg-gray-100 w-full" />
+              <div className="h-px bg-gray-100 w-full" />
 
-          {/* Customization */}
-          {product.isCustomizable && (
-            <div className="space-y-4">
-              <label className="block text-sm font-bold text-gray-700 uppercase tracking-widest">
-                Enter Custom Name
-              </label>
-              <input 
-                type="text" 
-                value={customName}
-                onChange={(e) => setCustomName(e.target.value)}
-                placeholder="e.g. Blossom"
-                className="w-full px-6 py-4 bg-white border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-bloom-rose/20 focus:border-bloom-rose transition-all"
-              />
-              <p className="text-[10px] text-gray-400">Please double check spelling. Customised orders are non-refundable.</p>
-            </div>
-          )}
+              {/* Customization */}
+              {product.isCustomizable && (
+                <div className="space-y-4">
+                  <label className="block text-sm font-bold text-gray-700 uppercase tracking-widest">
+                    Enter Custom Name
+                  </label>
+                  <input 
+                    type="text" 
+                    value={customName}
+                    onChange={(e) => setCustomName(e.target.value)}
+                    placeholder="e.g. Blossom"
+                    className="w-full px-6 py-4 bg-white border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-bloom-rose/20 focus:border-bloom-rose transition-all"
+                  />
+                  <p className="text-[10px] text-gray-400">Please double check spelling. Customised orders are non-refundable.</p>
+                </div>
+              )}
 
-          {/* Quantity & Add to Cart */}
-          <div className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
-            <div className="flex items-center border border-gray-200 rounded-full h-16 w-full sm:w-auto px-6">
-              <button 
-                onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                className="p-1 hover:text-bloom-rose transition-colors"
-              >
-                <Minus size={20} />
-              </button>
-              <span className="w-12 text-center font-bold text-lg">{quantity}</span>
-              <button 
-                onClick={() => setQuantity(quantity + 1)}
-                className="p-1 hover:text-bloom-rose transition-colors"
-              >
-                <Plus size={20} />
-              </button>
-            </div>
-            
-            {isAdded ? (
-              <Link 
-                to="/cart"
-                className="flex-grow h-16 bg-white text-bloom-rose border-2 border-bloom-rose rounded-full font-bold text-lg hover:bg-bloom-pink transition-all flex items-center justify-center space-x-3 shadow-xl shadow-bloom-rose/10"
-              >
-                <ShoppingBag size={20} />
-                <span>Go to Bag</span>
-              </Link>
-            ) : (
+              {/* Quantity & Add to Cart */}
+              <div className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
+                <div className="flex items-center border border-gray-200 rounded-full h-16 w-full sm:w-auto px-6">
+                  <button 
+                    onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                    className="p-1 hover:text-bloom-rose transition-colors"
+                  >
+                    <Minus size={20} />
+                  </button>
+                  <span className="w-12 text-center font-bold text-lg">{quantity}</span>
+                  <button 
+                    onClick={() => setQuantity(quantity + 1)}
+                    className="p-1 hover:text-bloom-rose transition-colors"
+                  >
+                    <Plus size={20} />
+                  </button>
+                </div>
+                
+                {isAdded ? (
+                  <Link 
+                    to="/cart"
+                    className="flex-grow h-16 bg-white text-bloom-rose border-2 border-bloom-rose rounded-full font-bold text-lg hover:bg-bloom-pink transition-all flex items-center justify-center space-x-3 shadow-xl shadow-bloom-rose/10"
+                  >
+                    <ShoppingBag size={20} />
+                    <span>Go to Bag</span>
+                  </Link>
+                ) : (
+                  <button 
+                    onClick={() => {
+                      addToCart(product, customName, selectedOptions, quantity);
+                      setIsAdded(true);
+                    }}
+                    className="flex-grow h-16 bg-bloom-rose text-white rounded-full font-bold text-lg hover:bg-bloom-rose/90 transition-all flex items-center justify-center space-x-3 shadow-xl shadow-bloom-rose/20"
+                  >
+                    <ShoppingBag size={20} />
+                    <span>Add to Bag</span>
+                  </button>
+                )}
+                
+                <div className="flex space-x-2 text-bloom-rose">
+                  <button className="h-16 w-16 flex items-center justify-center border border-gray-200 rounded-full hover:bg-gray-50 transition-all text-gray-500 hover:text-bloom-rose">
+                    <Heart size={24} />
+                  </button>
+                  <button className="h-16 w-16 flex items-center justify-center border border-gray-200 rounded-full hover:bg-gray-50 transition-all text-gray-500 hover:text-bloom-rose">
+                    <Share2 size={24} />
+                  </button>
+                </div>
+              </div>
+
               <button 
                 onClick={() => {
                   addToCart(product, customName, selectedOptions, quantity);
-                  setIsAdded(true);
+                  navigate('/checkout');
                 }}
-                className="flex-grow h-16 bg-bloom-rose text-white rounded-full font-bold text-lg hover:bg-bloom-rose/90 transition-all flex items-center justify-center space-x-3 shadow-xl shadow-bloom-rose/20"
+                className="w-full h-16 bg-white text-bloom-rose border-2 border-bloom-rose rounded-full font-bold text-lg hover:bg-bloom-pink transition-all flex items-center justify-center shadow-lg"
               >
-                <ShoppingBag size={20} />
-                <span>Add to Bag</span>
+                Buy
               </button>
-            )}
-            
-            <div className="flex space-x-2 text-bloom-rose">
-              <button className="h-16 w-16 flex items-center justify-center border border-gray-200 rounded-full hover:bg-gray-50 transition-all text-gray-500 hover:text-bloom-rose">
-                <Heart size={24} />
-              </button>
-              <button className="h-16 w-16 flex items-center justify-center border border-gray-200 rounded-full hover:bg-gray-50 transition-all text-gray-500 hover:text-bloom-rose">
-                <Share2 size={24} />
-              </button>
-            </div>
-          </div>
-
-          <button 
-            onClick={() => {
-              addToCart(product, customName, selectedOptions, quantity);
-              navigate('/checkout');
-            }}
-            className="w-full h-16 bg-white text-bloom-rose border-2 border-bloom-rose rounded-full font-bold text-lg hover:bg-bloom-pink transition-all flex items-center justify-center shadow-lg"
-          >
-            Buy
-          </button>
+            </>
+          )}
 
           {/* Trust Badges */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 pt-8 border-t">

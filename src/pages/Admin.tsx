@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { Navigate, Link } from 'react-router-dom';
 import { products as baseProducts } from '../data/products';
-import { updateDynamicPrice, updateDynamicPricesBatch, useDynamicProducts, updateBestSellers } from '../lib/dynamicPricing';
-import { Settings, Save, CheckCircle2, ShieldAlert, Image as ImageIcon, IndianRupee, LogOut, Star } from 'lucide-react';
+import { updateDynamicPrice, updateDynamicPricesBatch, useDynamicProducts, updateBestSellers, updateAvailabilityBatch } from '../lib/dynamicPricing';
+import { Settings, Save, CheckCircle2, ShieldAlert, Image as ImageIcon, IndianRupee, LogOut, Star, Package, PackageX } from 'lucide-react';
 import { AdminImageManager } from '../components/admin/AdminImageManager';
 import { useAdminAuth } from '../context/AdminAuthContext';
 
@@ -11,6 +11,7 @@ export function Admin() {
   const dynamicProducts = useDynamicProducts(baseProducts);
   const [edits, setEdits] = useState<Record<string, number>>({});
   const [bestSellerEdits, setBestSellerEdits] = useState<Record<string, boolean>>({});
+  const [availabilityEdits, setAvailabilityEdits] = useState<Record<string, boolean>>({});
   const [showSaved, setShowSaved] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [activeTab, setActiveTab] = useState<'media' | 'pricing'>('media');
@@ -36,6 +37,11 @@ export function Admin() {
     setBestSellerEdits({ ...bestSellerEdits, [id]: !isCurrentlyBestSeller });
   };
 
+  const handleAvailabilityToggle = (id: string, currentStatus: boolean) => {
+    const isCurrentlyInStock = availabilityEdits[id] !== undefined ? availabilityEdits[id] : currentStatus;
+    setAvailabilityEdits({ ...availabilityEdits, [id]: !isCurrentlyInStock });
+  };
+
   const handleSave = async () => {
     setIsSaving(true);
     
@@ -51,8 +57,13 @@ export function Admin() {
           await updateBestSellers(finalBestSellers);
       }
       
+      if (Object.keys(availabilityEdits).length > 0) {
+          await updateAvailabilityBatch(availabilityEdits);
+      }
+      
       setEdits({});
       setBestSellerEdits({});
+      setAvailabilityEdits({});
       setShowSaved(true);
       setTimeout(() => setShowSaved(false), 3000);
     } catch (err) {
@@ -112,9 +123,9 @@ export function Admin() {
             <div className="flex justify-end">
               <button 
                 onClick={handleSave}
-                disabled={(Object.keys(edits).length === 0 && Object.keys(bestSellerEdits).length === 0) || isSaving}
+                disabled={(Object.keys(edits).length === 0 && Object.keys(bestSellerEdits).length === 0 && Object.keys(availabilityEdits).length === 0) || isSaving}
                 className={`mt-4 md:mt-0 flex items-center space-x-2 px-6 py-3 rounded-full font-bold transition-all shadow-lg ${
-                  (Object.keys(edits).length > 0 || Object.keys(bestSellerEdits).length > 0) && !isSaving
+                  (Object.keys(edits).length > 0 || Object.keys(bestSellerEdits).length > 0 || Object.keys(availabilityEdits).length > 0) && !isSaving
                     ? 'bg-bloom-rose text-white hover:scale-105 shadow-bloom-rose/20' 
                     : 'bg-gray-100 text-gray-400 cursor-not-allowed shadow-none'
                 }`}
@@ -131,12 +142,14 @@ export function Admin() {
                     <th className="p-4 font-bold border-b">Product</th>
                     <th className="p-4 font-bold border-b">Category</th>
                     <th className="p-4 font-bold border-b text-center w-32">Best Seller</th>
+                    <th className="p-4 font-bold border-b text-center w-32">Status</th>
                     <th className="p-4 font-bold border-b w-48">Dynamic Price (₹)</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y">
                   {dynamicProducts.map((product) => {
                     const isBestSeller = bestSellerEdits[product.id] !== undefined ? bestSellerEdits[product.id] : !!product.isBestSeller;
+                    const inStock = availabilityEdits[product.id] !== undefined ? availabilityEdits[product.id] : product.inStock;
                     return (
                     <tr key={product.id} className="hover:bg-gray-50/50 transition-colors">
                       <td className="p-4">
@@ -152,6 +165,16 @@ export function Admin() {
                            className={`p-2 rounded-full transition-colors ${isBestSeller ? 'bg-bloom-pink/30 text-bloom-rose' : 'bg-gray-100 text-gray-400 hover:bg-gray-200'}`}
                          >
                            <Star size={18} className={isBestSeller ? 'fill-bloom-rose' : ''} />
+                         </button>
+                      </td>
+                      <td className="p-4 text-center">
+                         <button
+                           onClick={() => handleAvailabilityToggle(product.id, !!product.inStock)}
+                           title={inStock ? "Mark Out of Stock" : "Mark In Stock"}
+                           className={`px-3 py-1.5 rounded-full text-xs font-bold transition-colors flex items-center space-x-1 mx-auto ${inStock ? 'bg-green-100 text-green-700 hover:bg-green-200' : 'bg-red-100 text-red-700 hover:bg-red-200'}`}
+                         >
+                           {inStock ? <Package size={14}/> : <PackageX size={14}/>}
+                           <span>{inStock ? 'In Stock' : 'Out of Stock'}</span>
                          </button>
                       </td>
                       <td className="p-4">

@@ -1,14 +1,16 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
+import { useProductContext } from '../context/ProductContext';
 import { Link, useNavigate } from 'react-router-dom';
-import { Trash2, ShoppingBag, ArrowRight, Minus, Plus, ShieldCheck } from 'lucide-react';
+import { Trash2, ShoppingBag, ArrowRight, Minus, Plus, ShieldCheck, AlertTriangle } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { cn } from '../lib/utils';
 import { OptimizedImage } from '../components/common/OptimizedImage';
 
 export function Cart() {
   const { cart, removeFromCart, updateQuantity, cartTotal, cartCount } = useCart();
+  const { products } = useProductContext();
   const { user } = useAuth();
   const navigate = useNavigate();
 
@@ -16,6 +18,13 @@ export function Cart() {
   const discountAmount = isFirstOrderEligible ? cartTotal * 0.05 : 0;
   const shippingCost = cartTotal > 2000 ? 0 : 80;
   const finalTotal = cartTotal - discountAmount + shippingCost;
+
+  const hasOutofStockItems = useMemo(() => {
+    return cart.some(cartItem => {
+       const p = products.find(prod => prod.id === cartItem.id);
+       return p && p.inStock === false;
+    });
+  }, [cart, products]);
 
   if (cart.length === 0) {
     return (
@@ -40,14 +49,18 @@ export function Cart() {
         {/* Cart Items */}
         <div className="lg:col-span-2 space-y-8">
           <AnimatePresence>
-            {cart.map((item, idx) => (
+            {cart.map((item, idx) => {
+              const currentProduct = products.find(p => p.id === item.id);
+              const isItemOutofStock = currentProduct && currentProduct.inStock === false;
+
+              return (
               <motion.div 
                 key={`${item.id}-${item.customizationName}-${JSON.stringify(item.selectedOptions)}-${idx}`}
                 layout
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: 20 }}
-                className="flex items-center space-x-6 pb-8 border-b border-gray-100 group"
+                className={cn("flex items-center space-x-6 pb-8 border-b border-gray-100 group", isItemOutofStock && "opacity-60")}
               >
                 <div className="w-24 sm:w-32 aspect-square rounded-2xl overflow-hidden bg-gray-50 flex-shrink-0">
                   <OptimizedImage src={item.images[0].includes('unsplash.com') ? `${item.images[0]}&w=300` : item.images[0]} alt={item.name} className="w-full h-full object-cover" />
@@ -58,6 +71,12 @@ export function Cart() {
                     <div>
                       <h3 className="font-bold text-lg group-hover:text-bloom-rose transition-colors">{item.name}</h3>
                       <p className="text-xs text-gray-400 capitalize">{item.category}</p>
+                      {isItemOutofStock && (
+                         <p className="text-xs font-bold text-red-500 mt-1 flex items-center">
+                            <AlertTriangle size={12} className="mr-1" />
+                            Out of Stock
+                         </p>
+                      )}
                     </div>
                     <p className="font-bold text-lg">₹{item.price * item.quantity}</p>
                   </div>
@@ -101,7 +120,8 @@ export function Cart() {
                   </div>
                 </div>
               </motion.div>
-            ))}
+              );
+            })}
           </AnimatePresence>
           
           <Link to="/collections" className="inline-flex items-center text-sm font-bold text-gray-400 hover:text-bloom-rose transition-colors">
@@ -161,10 +181,15 @@ export function Cart() {
 
           <button 
             onClick={() => navigate('/checkout')}
-            className="w-full h-16 bg-bloom-rose text-white rounded-full font-bold text-lg hover:bg-bloom-rose/90 transition-all flex items-center justify-center space-x-3 shadow-xl shadow-bloom-rose/20"
+            disabled={hasOutofStockItems}
+            className={cn("w-full h-16 rounded-full font-bold text-lg transition-all flex items-center justify-center space-x-3 shadow-xl", 
+               hasOutofStockItems 
+                 ? "bg-gray-200 text-gray-400 cursor-not-allowed shadow-none"
+                 : "bg-bloom-rose text-white hover:bg-bloom-rose/90 shadow-bloom-rose/20"
+            )}
           >
-            <span>Proceed to Checkout</span>
-            <ArrowRight size={20} />
+            <span>{hasOutofStockItems ? "Remove out of stock items" : "Proceed to Checkout"}</span>
+            {!hasOutofStockItems && <ArrowRight size={20} />}
           </button>
         </div>
       </div>

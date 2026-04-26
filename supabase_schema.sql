@@ -55,6 +55,13 @@ CREATE TABLE IF NOT EXISTS bb_ecommerce_sc.dynamic_prices (
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL
 );
 
+-- 5b. Product Availability Table
+CREATE TABLE IF NOT EXISTS bb_ecommerce_sc.product_availability (
+  product_id TEXT PRIMARY KEY,
+  in_stock BOOLEAN DEFAULT TRUE,
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL
+);
+
 -- 6. Wishlist Table
 CREATE TABLE IF NOT EXISTS bb_ecommerce_sc.wishlist (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -109,12 +116,17 @@ GRANT ALL ON ALL FUNCTIONS IN SCHEMA bb_ecommerce_sc TO anon, authenticated;
 ALTER TABLE bb_ecommerce_sc.profiles ENABLE ROW LEVEL SECURITY;
 ALTER TABLE bb_ecommerce_sc.admin_users ENABLE ROW LEVEL SECURITY;
 ALTER TABLE bb_ecommerce_sc.dynamic_prices ENABLE ROW LEVEL SECURITY;
+ALTER TABLE bb_ecommerce_sc.product_availability ENABLE ROW LEVEL SECURITY;
 ALTER TABLE bb_ecommerce_sc.orders ENABLE ROW LEVEL SECURITY;
 ALTER TABLE bb_ecommerce_sc.wishlist ENABLE ROW LEVEL SECURITY;
 
 -- Dynamic Prices: Anyone can read, only authenticated users (future: admin check) can write
 CREATE POLICY "Dynamic prices are readable by everyone" ON bb_ecommerce_sc.dynamic_prices FOR SELECT USING (true);
 CREATE POLICY "Dynamic prices can be updated by authenticated users in admin board" ON bb_ecommerce_sc.dynamic_prices FOR ALL USING (auth.role() = 'authenticated');
+
+-- Product Availability
+CREATE POLICY "Product availability is readable by everyone" ON bb_ecommerce_sc.product_availability FOR SELECT USING (true);
+CREATE POLICY "Product availability can be updated by authenticated users" ON bb_ecommerce_sc.product_availability FOR ALL USING (auth.role() = 'authenticated');
 
 -- Admin Users: Allow anon access for login checks (since it doesn't use auth.uid)
 CREATE POLICY "Admin users check" ON bb_ecommerce_sc.admin_users FOR SELECT USING (true);

@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
-import { useNavigate } from 'react-router-dom';
+import { useProductContext } from '../context/ProductContext';
+import { useNavigate, Navigate } from 'react-router-dom';
 import { ShieldCheck, ArrowLeft, QrCode, CheckCircle2, Loader2, CreditCard } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { OptimizedImage } from '../components/common/OptimizedImage';
@@ -9,10 +10,22 @@ import { supabase } from '../lib/supabase';
 
 export function Checkout() {
   const { cart, cartTotal, clearCart } = useCart();
+  const { products } = useProductContext();
   const { user } = useAuth();
   const navigate = useNavigate();
   
   const [step, setStep] = useState<'details' | 'payment' | 'success'>('details');
+
+  const hasOutofStockItems = useMemo(() => {
+    return cart.some(cartItem => {
+       const p = products.find(prod => prod.id === cartItem.id);
+       return p && p.inStock === false;
+    });
+  }, [cart, products]);
+
+  if (hasOutofStockItems) {
+    return <Navigate to="/cart" replace />;
+  }
   const [isProcessing, setIsProcessing] = useState(false);
   const [shippingData, setShippingData] = useState({
     name: user?.user_metadata?.full_name || '',

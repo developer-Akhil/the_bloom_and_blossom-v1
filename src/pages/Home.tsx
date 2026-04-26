@@ -7,6 +7,7 @@ import { useMediaContext } from '../context/MediaContext';
 import { useProductContext } from '../context/ProductContext';
 import { useCart } from '../context/CartContext';
 import { type Product } from '../types';
+import { cn } from '../lib/utils';
 
 import { OptimizedImage } from '../components/common/OptimizedImage';
 
@@ -291,6 +292,7 @@ export function ProductCard({ product, redirectToCategory = false }: { product: 
 
   const handleQuickAdd = (e: React.MouseEvent) => {
     e.preventDefault();
+    if (!product.inStock) return;
     const defaultOptions: Record<string, string> = {};
     product.options?.forEach(opt => {
       defaultOptions[opt.name] = opt.values[0];
@@ -304,14 +306,16 @@ export function ProductCard({ product, redirectToCategory = false }: { product: 
         <OptimizedImage 
           src={product.images[0].includes('unsplash.com') ? `${product.images[0]}&w=600` : product.images[0]} 
           alt={product.name} 
-          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+          className={cn("w-full h-full object-cover transition-transform duration-700 group-hover:scale-110", !product.inStock && "opacity-60")}
         />
         
         {/* Badges */}
-        <div className="absolute top-4 left-4">
-          {product.isCustomizable && (
-            <span className="px-3 py-1 bg-bloom-rose text-white text-[10px] font-bold uppercase rounded-full">Customizable</span>
-          )}
+        <div className="absolute top-4 left-4 flex flex-col space-y-2">
+          {!product.inStock ? (
+            <span className="px-3 py-1 bg-red-500 text-white text-[10px] shadow-sm font-bold uppercase rounded-full">Out of Stock</span>
+          ) : product.isCustomizable ? (
+            <span className="px-3 py-1 bg-bloom-rose text-white text-[10px] font-bold uppercase rounded-full shadow-sm">Customizable</span>
+          ) : null}
         </div>
 
         {/* Hover Actions (Desktop) / Action Bar (Mobile) */}
@@ -323,12 +327,14 @@ export function ProductCard({ product, redirectToCategory = false }: { product: 
             {redirectToCategory ? 'Explore Category' : 'View Details'}
           </Link>
           <div className="flex space-x-2 translate-y-4 md:group-hover:translate-y-0 transition-all duration-300 delay-75">
-            <button 
-              onClick={handleQuickAdd}
-              className="p-3 bg-white/90 rounded-full text-gray-700 hover:text-bloom-rose hover:scale-110 transition-all shadow-lg shadow-black/10"
-            >
-              <ShoppingBag size={18} />
-            </button>
+            {product.inStock && (
+              <button 
+                onClick={handleQuickAdd}
+                className="p-3 bg-white/90 rounded-full text-gray-700 hover:text-bloom-rose hover:scale-110 transition-all shadow-lg shadow-black/10"
+              >
+                <ShoppingBag size={18} />
+              </button>
+            )}
             <button className="p-3 bg-white/90 rounded-full text-gray-700 hover:text-bloom-rose hover:scale-110 transition-all shadow-lg shadow-black/10">
               <Heart size={18} />
             </button>
@@ -344,12 +350,14 @@ export function ProductCard({ product, redirectToCategory = false }: { product: 
               >
                 {redirectToCategory ? 'Explore Category' : 'View Details'}
               </Link>
-              <button 
-                onClick={handleQuickAdd}
-                className="w-8 h-8 flex items-center justify-center bg-gray-100 text-gray-600 rounded-xl"
-              >
-                <ShoppingBag size={14} />
-              </button>
+              {product.inStock && (
+                <button 
+                  onClick={handleQuickAdd}
+                  className="w-8 h-8 flex items-center justify-center bg-gray-100 text-gray-600 rounded-xl"
+                >
+                  <ShoppingBag size={14} />
+                </button>
+              )}
            </div>
         </div>
       </div>

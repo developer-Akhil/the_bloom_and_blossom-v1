@@ -45,3 +45,34 @@ export const updateBestSellers = async (bestSellerIds: string[]) => {
   localStorage.setItem('bloom_best_sellers', JSON.stringify(bestSellerIds));
   window.dispatchEvent(new Event('best_sellers_updated'));
 };
+
+export const updateAvailabilityBatch = async (updates: Record<string, boolean>) => {
+  if (Object.keys(updates).length === 0) return;
+
+  // 1. Instantly update local
+  const localAvailability = JSON.parse(localStorage.getItem('bloom_product_availability') || '{}');
+  Object.entries(updates).forEach(([id, inStock]) => {
+    localAvailability[id] = inStock;
+  });
+  localStorage.setItem('bloom_product_availability', JSON.stringify(localAvailability));
+  window.dispatchEvent(new Event('availability_updated'));
+
+  // 2. Persist to Supabase
+  try {
+    const records = Object.entries(updates).map(([id, inStock]) => ({
+      product_id: id,
+      in_stock: inStock
+    }));
+
+    const { error } = await supabase
+      .from('product_availability')
+      .upsert(records, { onConflict: 'product_id' });
+      
+    if (error) {
+      console.error("Failed to sync availability to DB:", error);
+    }
+  } catch (e) {
+    console.error("Supabase sync exception:", e);
+  }
+};
+
