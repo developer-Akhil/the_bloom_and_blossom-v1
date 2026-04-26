@@ -21,8 +21,12 @@ export function OptimizedImage({
   useEffect(() => {
     if (imgRef.current?.complete) {
       setIsLoading(false);
+      setError(false);
+    } else {
+      setIsLoading(true);
+      setError(false);
     }
-  }, []);
+  }, [src]);
 
   const handleError = () => {
     setError(true);
@@ -31,6 +35,7 @@ export function OptimizedImage({
 
   const handleLoad = () => {
     setIsLoading(false);
+    setError(false);
   };
 
   return (
@@ -51,7 +56,6 @@ export function OptimizedImage({
           isLoading ? "opacity-0" : "opacity-100",
           className
         )}
-        loading="lazy"
         {...props}
       />
     </div>

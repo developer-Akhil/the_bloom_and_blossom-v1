@@ -16,11 +16,29 @@ export function ProductDetail() {
   const { addToCart } = useCart();
   const [quantity, setQuantity] = useState(1);
   const [customName, setCustomName] = useState('');
+  const [customNameError, setCustomNameError] = useState('');
   const [activeImage, setActiveImage] = useState(0);
   const [selectedOptions, setSelectedOptions] = useState<Record<string, string>>({});
   const [isAdded, setIsAdded] = useState(false);
 
   const product = useMemo(() => products.find(p => p.id === id), [id, products]);
+
+  const handleCustomNameChange = (val: string) => {
+    setCustomName(val);
+    if (!val.trim()) {
+      setCustomNameError('Custom name is required');
+    } else if (val.length < 2) {
+      setCustomNameError('Name must be at least 2 characters');
+    } else if (val.length > 20) {
+      setCustomNameError('Name must be less than 20 characters');
+    } else if (!/^[a-zA-Z0-9\s]+$/.test(val)) {
+      setCustomNameError('Only alphanumeric characters and spaces are allowed');
+    } else {
+      setCustomNameError('');
+    }
+  };
+
+  const isFormValid = product?.isCustomizable ? (customName.trim().length > 0 && customNameError === '') : true;
 
   useEffect(() => {
     if (product?.options) {
@@ -193,16 +211,23 @@ export function ProductDetail() {
               {product.isCustomizable && (
                 <div className="space-y-4">
                   <label className="block text-sm font-bold text-gray-700 uppercase tracking-widest">
-                    Enter Custom Name
+                    Enter Custom Name <span className="text-red-500">*</span>
                   </label>
                   <input 
                     type="text" 
                     value={customName}
-                    onChange={(e) => setCustomName(e.target.value)}
+                    onChange={(e) => handleCustomNameChange(e.target.value)}
                     placeholder="e.g. Blossom"
-                    className="w-full px-6 py-4 bg-white border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-bloom-rose/20 focus:border-bloom-rose transition-all"
+                    className={cn(
+                       "w-full px-6 py-4 bg-white border rounded-2xl focus:outline-none focus:ring-2 transition-all",
+                       customNameError ? "border-red-500 focus:ring-red-200" : "border-gray-200 focus:ring-bloom-rose/20 focus:border-bloom-rose"
+                    )}
                   />
-                  <p className="text-[10px] text-gray-400">Please double check spelling. Customised orders are non-refundable.</p>
+                  {customNameError ? (
+                    <p className="text-sm font-bold text-red-500">{customNameError}</p>
+                  ) : (
+                    <p className="text-[10px] text-gray-400">Please double check spelling. Customised orders are non-refundable.</p>
+                  )}
                 </div>
               )}
 
@@ -234,11 +259,17 @@ export function ProductDetail() {
                   </Link>
                 ) : (
                   <button 
+                    disabled={!isFormValid}
                     onClick={() => {
                       addToCart(product, customName, selectedOptions, quantity);
                       setIsAdded(true);
                     }}
-                    className="flex-grow h-16 bg-bloom-rose text-white rounded-full font-bold text-lg hover:bg-bloom-rose/90 transition-all flex items-center justify-center space-x-3 shadow-xl shadow-bloom-rose/20"
+                    className={cn(
+                       "flex-grow h-16 rounded-full font-bold text-lg transition-all flex items-center justify-center space-x-3 shadow-xl",
+                       !isFormValid 
+                          ? "bg-gray-200 text-gray-400 cursor-not-allowed shadow-none" 
+                          : "bg-bloom-rose text-white hover:bg-bloom-rose/90 shadow-bloom-rose/20"
+                    )}
                   >
                     <ShoppingBag size={20} />
                     <span>Add to Bag</span>
@@ -256,11 +287,17 @@ export function ProductDetail() {
               </div>
 
               <button 
+                disabled={!isFormValid}
                 onClick={() => {
                   addToCart(product, customName, selectedOptions, quantity);
                   navigate('/checkout');
                 }}
-                className="w-full h-16 bg-white text-bloom-rose border-2 border-bloom-rose rounded-full font-bold text-lg hover:bg-bloom-pink transition-all flex items-center justify-center shadow-lg"
+                className={cn(
+                  "w-full h-16 rounded-full font-bold text-lg transition-all flex items-center justify-center shadow-lg",
+                  !isFormValid
+                    ? "bg-gray-100 text-gray-400 border-2 border-gray-200 cursor-not-allowed shadow-none"
+                    : "bg-white text-bloom-rose border-2 border-bloom-rose hover:bg-bloom-pink"
+                )}
               >
                 Buy
               </button>

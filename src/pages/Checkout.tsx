@@ -247,6 +247,11 @@ export function Checkout() {
                   <div className="flex-grow min-w-0">
                     <h4 className="font-bold text-sm line-clamp-1">{item.name}</h4>
                     <div className="flex flex-wrap gap-1 mt-1">
+                      {item.customizationName && (
+                        <span className="text-[9px] text-bloom-rose bg-bloom-pink/50 px-1.5 py-0.5 rounded uppercase font-bold tracking-tighter">
+                          {item.customizationName}
+                        </span>
+                      )}
                       {item.selectedOptions && Object.entries(item.selectedOptions).map(([key, value]) => (
                         <span key={key} className="text-[9px] text-gray-400 bg-gray-100 px-1.5 py-0.5 rounded uppercase font-bold tracking-tighter">
                           {key}: {value}

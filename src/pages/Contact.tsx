@@ -27,7 +27,7 @@ export function Contact() {
             <ContactInfoCard 
               icon={<Mail />} 
               title="Email Us" 
-              desc="thebloomblossom23@gmail.com" 
+              desc="info@bloomandblossom.in" 
               sub="We reply within 24 hours" 
             />
             <ContactInfoCard 

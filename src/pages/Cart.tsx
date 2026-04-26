@@ -8,6 +8,116 @@ import { motion, AnimatePresence } from 'motion/react';
 import { cn } from '../lib/utils';
 import { OptimizedImage } from '../components/common/OptimizedImage';
 
+function CartItemComponent({ item, idx }: { item: any, idx: number }) {
+  const { removeFromCart, updateQuantity, updateCustomizationName } = useCart();
+  const { products } = useProductContext();
+  const [isEditing, setIsEditing] = useState(false);
+  const [editName, setEditName] = useState(item.customizationName || '');
+  const [error, setError] = useState('');
+
+  const currentProduct = products.find(p => p.id === item.id);
+  const isItemOutofStock = currentProduct && currentProduct.inStock === false;
+
+  const handleSave = () => {
+    if (!editName.trim()) {
+      setError('Required');
+      return;
+    }
+    if (editName.length < 2 || editName.length > 20 || !/^[a-zA-Z0-9\s]+$/.test(editName)) {
+      setError('Invalid name');
+      return;
+    }
+    setError('');
+    setIsEditing(false);
+    updateCustomizationName(item.id, item.customizationName, editName, item.selectedOptions);
+  };
+
+  return (
+    <motion.div 
+      layout
+      initial={{ opacity: 0, x: -20 }}
+      animate={{ opacity: 1, x: 0 }}
+      exit={{ opacity: 0, x: 20 }}
+      className={cn("flex items-center space-x-6 pb-8 border-b border-gray-100 group", isItemOutofStock && "opacity-60")}
+    >
+      <div className="w-24 sm:w-32 aspect-square rounded-2xl overflow-hidden bg-gray-50 flex-shrink-0">
+        <OptimizedImage src={item.images[0].includes('unsplash.com') ? `${item.images[0]}&w=300` : item.images[0]} alt={item.name} className="w-full h-full object-cover" />
+      </div>
+      
+      <div className="flex-grow space-y-2">
+        <div className="flex justify-between items-start">
+          <div>
+            <h3 className="font-bold text-lg group-hover:text-bloom-rose transition-colors">{item.name}</h3>
+            <p className="text-xs text-gray-400 capitalize">{item.category}</p>
+            {isItemOutofStock && (
+                <p className="text-xs font-bold text-red-500 mt-1 flex items-center">
+                  <AlertTriangle size={12} className="mr-1" />
+                  Out of Stock
+                </p>
+            )}
+          </div>
+          <p className="font-bold text-lg">₹{item.price * item.quantity}</p>
+        </div>
+        
+        <div className="flex flex-wrap gap-2 items-center">
+          {item.customizationName !== undefined && (
+            <div className="flex items-center gap-2">
+              {isEditing ? (
+                <div className="flex items-center gap-2">
+                  <input 
+                    type="text" 
+                    value={editName}
+                    onChange={(e) => setEditName(e.target.value)}
+                    className={cn("text-xs border rounded-md px-2 py-1", error ? "border-red-500" : "border-gray-300")}
+                  />
+                  <button onClick={handleSave} className="text-xs bg-bloom-rose text-white px-2 py-1 rounded-md">Save</button>
+                  <button onClick={() => { setIsEditing(false); setEditName(item.customizationName || ''); setError(''); }} className="text-xs text-gray-500 hover:text-gray-700">Cancel</button>
+                  {error && <span className="text-[10px] text-red-500">{error}</span>}
+                </div>
+              ) : (
+                <p className="text-[10px] text-bloom-rose bg-bloom-pink/50 flex items-center px-2 py-1 rounded-md">
+                  Customised: <span className="font-bold ml-1">{item.customizationName}</span>
+                  <button onClick={() => setIsEditing(true)} className="ml-2 text-bloom-rose underline hover:text-bloom-rose/70">Edit</button>
+                </p>
+              )}
+            </div>
+          )}
+          {item.selectedOptions && Object.entries(item.selectedOptions).map(([key, value]) => (
+            <p key={key} className="text-[10px] text-gray-500 bg-gray-100 inline-block px-2 py-1 rounded-md">
+              {key}: <span className="font-bold">{value as React.ReactNode}</span>
+            </p>
+          ))}
+        </div>
+
+        <div className="flex items-center justify-between pt-4">
+          <div className="flex items-center border border-gray-100 rounded-full h-12 px-5 bg-gray-50/50">
+            <button 
+              onClick={() => updateQuantity(item.id, item.quantity - 1, item.customizationName, item.selectedOptions)}
+              className="p-1.5 hover:text-bloom-rose transition-colors"
+            >
+              <Minus size={16} />
+            </button>
+            <span className="w-10 text-center text-base font-bold">{item.quantity}</span>
+            <button 
+              onClick={() => updateQuantity(item.id, item.quantity + 1, item.customizationName, item.selectedOptions)}
+              className="p-1.5 hover:text-bloom-rose transition-colors"
+            >
+              <Plus size={16} />
+            </button>
+          </div>
+          
+          <button 
+            onClick={() => removeFromCart(item.id, item.customizationName, item.selectedOptions)}
+            className="p-2 text-gray-300 hover:text-red-500 transition-colors"
+          >
+            <Trash2 size={18} />
+          </button>
+        </div>
+      </div>
+    </motion.div>
+  );
+}
+
 export function Cart() {
   const { cart, removeFromCart, updateQuantity, cartTotal, cartCount } = useCart();
   const { products } = useProductContext();
@@ -49,79 +159,9 @@ export function Cart() {
         {/* Cart Items */}
         <div className="lg:col-span-2 space-y-8">
           <AnimatePresence>
-            {cart.map((item, idx) => {
-              const currentProduct = products.find(p => p.id === item.id);
-              const isItemOutofStock = currentProduct && currentProduct.inStock === false;
-
-              return (
-              <motion.div 
-                key={`${item.id}-${item.customizationName}-${JSON.stringify(item.selectedOptions)}-${idx}`}
-                layout
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: 20 }}
-                className={cn("flex items-center space-x-6 pb-8 border-b border-gray-100 group", isItemOutofStock && "opacity-60")}
-              >
-                <div className="w-24 sm:w-32 aspect-square rounded-2xl overflow-hidden bg-gray-50 flex-shrink-0">
-                  <OptimizedImage src={item.images[0].includes('unsplash.com') ? `${item.images[0]}&w=300` : item.images[0]} alt={item.name} className="w-full h-full object-cover" />
-                </div>
-                
-                <div className="flex-grow space-y-2">
-                  <div className="flex justify-between items-start">
-                    <div>
-                      <h3 className="font-bold text-lg group-hover:text-bloom-rose transition-colors">{item.name}</h3>
-                      <p className="text-xs text-gray-400 capitalize">{item.category}</p>
-                      {isItemOutofStock && (
-                         <p className="text-xs font-bold text-red-500 mt-1 flex items-center">
-                            <AlertTriangle size={12} className="mr-1" />
-                            Out of Stock
-                         </p>
-                      )}
-                    </div>
-                    <p className="font-bold text-lg">₹{item.price * item.quantity}</p>
-                  </div>
-                  
-                  <div className="flex flex-wrap gap-2">
-                    {item.customizationName && (
-                      <p className="text-[10px] text-bloom-rose bg-bloom-pink/50 inline-block px-2 py-1 rounded-md">
-                        Customised: <span className="font-bold">{item.customizationName}</span>
-                      </p>
-                    )}
-                    {item.selectedOptions && Object.entries(item.selectedOptions).map(([key, value]) => (
-                      <p key={key} className="text-[10px] text-gray-500 bg-gray-100 inline-block px-2 py-1 rounded-md">
-                        {key}: <span className="font-bold">{value}</span>
-                      </p>
-                    ))}
-                  </div>
-
-                  <div className="flex items-center justify-between pt-4">
-                    <div className="flex items-center border border-gray-100 rounded-full h-12 px-5 bg-gray-50/50">
-                      <button 
-                        onClick={() => updateQuantity(item.id, item.quantity - 1, item.customizationName, item.selectedOptions)}
-                        className="p-1.5 hover:text-bloom-rose transition-colors"
-                      >
-                        <Minus size={16} />
-                      </button>
-                      <span className="w-10 text-center text-base font-bold">{item.quantity}</span>
-                      <button 
-                        onClick={() => updateQuantity(item.id, item.quantity + 1, item.customizationName, item.selectedOptions)}
-                        className="p-1.5 hover:text-bloom-rose transition-colors"
-                      >
-                        <Plus size={16} />
-                      </button>
-                    </div>
-                    
-                    <button 
-                      onClick={() => removeFromCart(item.id, item.customizationName, item.selectedOptions)}
-                      className="p-2 text-gray-300 hover:text-red-500 transition-colors"
-                    >
-                      <Trash2 size={18} />
-                    </button>
-                  </div>
-                </div>
-              </motion.div>
-              );
-            })}
+            {cart.map((item, idx) => (
+              <CartItemComponent key={`${item.id}-${item.customizationName}-${JSON.stringify(item.selectedOptions)}-${idx}`} item={item} idx={idx} />
+            ))}
           </AnimatePresence>
           
           <Link to="/collections" className="inline-flex items-center text-sm font-bold text-gray-400 hover:text-bloom-rose transition-colors">

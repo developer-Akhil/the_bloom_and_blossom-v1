@@ -7,6 +7,7 @@ interface CartContextType {
   addToCart: (product: Product, customizationName?: string, selectedOptions?: Record<string, string>, quantity?: number) => void;
   removeFromCart: (itemId: string, customizationName?: string, selectedOptions?: Record<string, string>) => void;
   updateQuantity: (itemId: string, quantity: number, customizationName?: string, selectedOptions?: Record<string, string>) => void;
+  updateCustomizationName: (itemId: string, oldName: string | undefined, newName: string, selectedOptions?: Record<string, string>) => void;
   clearCart: () => void;
   cartTotal: number;
   cartCount: number;
@@ -63,6 +64,12 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     ));
   }, []);
 
+  const updateCustomizationName = useCallback((productId: string, oldName: string | undefined, newName: string, selectedOptions?: Record<string, string>) => {
+    setCart((prev) => prev.map((item) => 
+      isSameItem(item, productId, oldName, selectedOptions) ? { ...item, customizationName: newName } : item
+    ));
+  }, []);
+
   const clearCart = useCallback(() => setCart([]), []);
 
   // Compute total and map cart to have synced prices using dynamic data
@@ -81,10 +88,11 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     addToCart,
     removeFromCart,
     updateQuantity,
+    updateCustomizationName,
     clearCart,
     cartTotal,
     cartCount
-  }), [syncedCart, addToCart, removeFromCart, updateQuantity, clearCart, cartTotal, cartCount]);
+  }), [syncedCart, addToCart, removeFromCart, updateQuantity, updateCustomizationName, clearCart, cartTotal, cartCount]);
 
   return (
     <CartContext.Provider value={contextValue}>
