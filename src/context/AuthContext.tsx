@@ -1,38 +1,55 @@
 import React, { createContext, useContext, useState, useEffect, useMemo, useCallback } from 'react';
-import { supabase } from '../lib/supabase';
-import { User as SupabaseUser } from '@supabase/supabase-js';
+
+interface CustomUser {
+  id: string;
+  email: string;
+  phone?: string;
+  user_metadata?: {
+    full_name?: string;
+    has_used_first_discount?: boolean;
+    phone?: string;
+  }
+}
 
 interface AuthContextType {
-  user: SupabaseUser | null;
+  user: CustomUser | null;
   loading: boolean;
   isAdmin: boolean;
   signOut: () => Promise<void>;
+  loginUser: (user: CustomUser, token: string) => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [user, setUser] = useState<SupabaseUser | null>(null);
+  const [user, setUser] = useState<CustomUser | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Check active sessions and sets the user
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setUser(session?.user ?? null);
-      setLoading(false);
-    });
+    // Check local storage for user and token
+    const storedUser = localStorage.getItem('app_user');
+    const storedToken = localStorage.getItem('app_token');
+    
+    if (storedUser && storedToken) {
+      try {
+        setUser(JSON.parse(storedUser));
+      } catch (e) {
+        console.error("Failed to parse stored user", e);
+      }
+    }
+    setLoading(false);
+  }, []);
 
-    // Listen for changes on auth state (logged in, signed out, etc.)
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null);
-      setLoading(false);
-    });
-
-    return () => subscription.unsubscribe();
+  const loginUser = useCallback((newUser: CustomUser, token: string) => {
+    localStorage.setItem('app_user', JSON.stringify(newUser));
+    localStorage.setItem('app_token', token);
+    setUser(newUser);
   }, []);
 
   const signOut = useCallback(async () => {
-    await supabase.auth.signOut();
+    localStorage.removeItem('app_user');
+    localStorage.removeItem('app_token');
+    setUser(null);
   }, []);
 
   const isAdmin = useMemo(() => user?.email === 'developer.akhil04@gmail.com', [user]);
@@ -41,8 +58,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     user,
     loading,
     isAdmin,
-    signOut
-  }), [user, loading, isAdmin, signOut]);
+    signOut,
+    loginUser
+  }), [user, loading, isAdmin, signOut, loginUser]);
 
   return (
     <AuthContext.Provider value={value}>

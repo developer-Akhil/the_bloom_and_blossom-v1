@@ -104,10 +104,28 @@ CREATE TABLE IF NOT EXISTS bb_ecommerce_sc.order_items (
 -- ==============================================================================
 
 -- Crucial: Grant access to the custom schema so the API can reach it
-GRANT USAGE ON SCHEMA bb_ecommerce_sc TO anon, authenticated;
+GRANT USAGE ON SCHEMA bb_ecommerce_sc TO postgres, anon, authenticated, service_role;
 GRANT ALL ON ALL TABLES IN SCHEMA bb_ecommerce_sc TO anon, authenticated;
 GRANT ALL ON ALL SEQUENCES IN SCHEMA bb_ecommerce_sc TO anon, authenticated;
 GRANT ALL ON ALL FUNCTIONS IN SCHEMA bb_ecommerce_sc TO anon, authenticated;
+
+-- ==============================================================================
+-- App Users Table (Custom email verification flow)
+-- ==============================================================================
+CREATE TABLE IF NOT EXISTS bb_ecommerce_sc.app_users (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  email TEXT UNIQUE NOT NULL,
+  password TEXT NOT NULL,
+  "isVerified" BOOLEAN DEFAULT FALSE,
+  "verificationToken" TEXT,
+  "tokenExpiry" TIMESTAMPTZ,
+  "createdAt" TIMESTAMPTZ DEFAULT NOW(),
+  "updatedAt" TIMESTAMPTZ DEFAULT NOW()
+);
+
+GRANT ALL ON TABLE bb_ecommerce_sc.app_users TO service_role;
+ALTER TABLE bb_ecommerce_sc.app_users ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Deny all access to app_users from client" ON bb_ecommerce_sc.app_users FOR ALL TO PUBLIC USING (false);
 
 -- ==============================================================================
 -- Row Level Security (RLS) Policies

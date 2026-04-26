@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Loader2, Mail, Lock, User, ArrowRight, Github } from 'lucide-react';
+import { Loader2, Mail, Lock, User, ArrowRight, Github, Phone } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { cn } from '../lib/utils';
-import { supabase } from '../lib/supabase';
+import { useAuth } from '../context/AuthContext';
 
 export function Auth() {
   const [mode, setMode] = useState<'login' | 'signup'>('login');
@@ -11,9 +11,11 @@ export function Auth() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [fullName, setFullName] = useState('');
+  const [phone, setPhone] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const navigate = useNavigate();
+  const { loginUser } = useAuth();
 
   const handleAuth = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -24,60 +26,49 @@ export function Auth() {
     try {
       console.log(`[Auth] Attempting ${mode} for:`, email);
       if (mode === 'signup') {
-        const { data, error: signUpError } = await supabase.auth.signUp({
-          email,
-          password,
-          options: {
-            data: { 
-              full_name: fullName,
-              created_at: new Date().toISOString()
-            }
-          }
+        const phoneRegex = /^(?:\+91|91|0)?[6-9]\d{9}$/;
+        if (!phoneRegex.test(phone)) {
+          setError("Invalid Indian mobile number. Please enter a valid 10-digit number.");
+          return;
+        }
+        const response = await fetch('/api/auth/register', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password, fullName, phone })
         });
         
-        if (signUpError) {
-          console.error('[Auth] Signup Error:', signUpError);
-          // Handle rate limits natively 
-          if (signUpError.message.toLowerCase().includes('security purposes') || signUpError.message.toLowerCase().includes('rate limit')) {
-            throw new Error(`Rate limit exceeded: You've tried to sign up too many times recently. Supabase limits email sending on free tiers. Please try again later or use a different email.`);
-          }
-          throw signUpError;
+        let data: any = {};
+        try {
+          data = await response.json();
+        } catch(e) {
+          throw new Error(`The server returned an invalid response (Status: ${response.status}).`);
+        }
+        
+        if (!response.ok) {
+          throw new Error(data?.error || 'Registration failed');
         }
 
-        if (data.user) {
-          if (data.user.identities?.length === 0) {
-            setError('An account with this email already exists. Please try logging in.');
-            return;
-          }
-          
-          // Fallback: Manually create profile if trigger hasn't fired or failed
-          try {
-            await supabase.from('profiles').insert({
-              id: data.user.id,
-              full_name: fullName,
-              created_at: new Date().toISOString()
-            });
-          } catch (profileErr) {
-            console.warn('[Auth] Manual profile creation failed (might already exist via trigger):', profileErr);
-          }
-        }
-
-        setSuccessMessage('Successfully created! A verification email has been sent to your inbox. Please verify to login securely.');
+        setSuccessMessage(data.message || 'Successfully created! A verification email has been sent to your inbox. Please verify to login securely.');
         setMode('login'); // Toggle UI backwards to login mode
       } else {
-        const { error: signInError } = await supabase.auth.signInWithPassword({
-          email,
-          password
+        const response = await fetch('/api/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password })
         });
         
-        if (signInError) {
-          console.error('[Auth] Signin Error:', signInError);
-          // Make the error more descriptive for users who might not have signed up
-          if (signInError.message.includes('Invalid login credentials')) {
-             throw new Error('Invalid email or password. If you are a new user, please switch to "Sign Up" to create an account first.');
-          }
-          throw signInError;
+        let data: any = {};
+        try {
+          data = await response.json();
+        } catch(e) {
+          throw new Error(`The server returned an invalid response (Status: ${response.status}).`);
         }
+        
+        if (!response.ok) {
+          throw new Error(data?.error || 'Login failed');
+        }
+        
+        loginUser(data.user, data.token);
         navigate('/dashboard'); // Go to dashboard on successful login instead of home necessarily
       }
     } catch (err: any) {
@@ -89,17 +80,7 @@ export function Auth() {
   };
 
   const handleSocialLogin = async (provider: 'google' | 'github') => {
-    try {
-      const { error: socialError } = await supabase.auth.signInWithOAuth({
-        provider,
-        options: {
-          redirectTo: window.location.origin
-        }
-      });
-      if (socialError) throw socialError;
-    } catch (err: any) {
-      setError(err.message || `An error occurred during ${provider} login`);
-    }
+    setError(`Social login with ${provider} is disabled pending backend integration.`);
   };
 
   return (
@@ -144,17 +125,30 @@ export function Auth() {
               className="space-y-4"
             >
               {mode === 'signup' && (
-                <div className="relative">
-                  <User size={18} className="absolute left-6 top-1/2 -translate-y-1/2 text-gray-400" />
-                  <input 
-                    type="text" 
-                    placeholder="Full Name" 
-                    required 
-                    value={fullName}
-                    onChange={(e) => setFullName(e.target.value)}
-                    className="w-full pl-14 pr-6 py-4 bg-gray-50 border border-transparent rounded-2xl focus:bg-white focus:border-bloom-rose transition-all outline-none"
-                  />
-                </div>
+                <>
+                  <div className="relative">
+                    <User size={18} className="absolute left-6 top-1/2 -translate-y-1/2 text-gray-400" />
+                    <input 
+                      type="text" 
+                      placeholder="Full Name" 
+                      required 
+                      value={fullName}
+                      onChange={(e) => setFullName(e.target.value)}
+                      className="w-full pl-14 pr-6 py-4 bg-gray-50 border border-transparent rounded-2xl focus:bg-white focus:border-bloom-rose transition-all outline-none"
+                    />
+                  </div>
+                  <div className="relative">
+                    <Phone size={18} className="absolute left-6 top-1/2 -translate-y-1/2 text-gray-400" />
+                    <input 
+                      type="tel" 
+                      placeholder="Phone Number" 
+                      required 
+                      value={phone}
+                      onChange={(e) => setPhone(e.target.value)}
+                      className="w-full pl-14 pr-6 py-4 bg-gray-50 border border-transparent rounded-2xl focus:bg-white focus:border-bloom-rose transition-all outline-none"
+                    />
+                  </div>
+                </>
               )}
               
               <div className="relative">
@@ -214,7 +208,7 @@ export function Auth() {
           <button 
             type="button"
             onClick={() => handleSocialLogin('google')}
-            className="flex items-center justify-center py-4 border border-gray-100 rounded-2xl hover:bg-gray-50 transition-all space-x-3 text-sm font-medium"
+            className="flex items-center justify-center py-4 border border-gray-100 rounded-2xl hover:bg-gray-50 transition-all space-x-3 text-sm font-medium opacity-50 cursor-not-allowed"
           >
              <img src="https://www.google.com/favicon.ico" className="w-5 h-5" alt="Google" />
              <span>Google</span>
@@ -222,7 +216,7 @@ export function Auth() {
           <button 
             type="button"
             onClick={() => handleSocialLogin('github')}
-            className="flex items-center justify-center py-4 border border-gray-100 rounded-2xl hover:bg-gray-50 transition-all space-x-3 text-sm font-medium"
+            className="flex items-center justify-center py-4 border border-gray-100 rounded-2xl hover:bg-gray-50 transition-all space-x-3 text-sm font-medium opacity-50 cursor-not-allowed"
           >
              <Github size={20} />
              <span>Github</span>

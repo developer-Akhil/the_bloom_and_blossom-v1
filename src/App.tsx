@@ -11,6 +11,7 @@ import { ProductDetail } from './pages/ProductDetail';
 import { Cart } from './pages/Cart';
 import { Checkout } from './pages/Checkout';
 import { Auth } from './pages/Auth';
+import { VerifyEmail } from './pages/VerifyEmail';
 import { About } from './pages/About';
 import { Dashboard } from './pages/Dashboard';
 import { Contact } from './pages/Contact';
@@ -22,6 +23,7 @@ import { AuthProvider } from './context/AuthContext';
 import { AdminAuthProvider } from './context/AdminAuthContext';
 import { MediaProvider } from './context/MediaContext';
 import { ProductProvider } from './context/ProductContext';
+
 
 // Placeholder pages for now
 const NewArrivals = () => <div className="container py-20">New Arrivals Page Coming Soon</div>;
@@ -43,6 +45,7 @@ export default function App() {
                     <Route path="cart" element={<Cart />} />
                     <Route path="checkout" element={<Checkout />} />
                     <Route path="auth" element={<Auth />} />
+                    <Route path="verify-email" element={<VerifyEmail />} />
                     <Route path="about" element={<About />} />
                     <Route path="dashboard" element={<Dashboard />} />
                     <Route path="contact" element={<Contact />} />

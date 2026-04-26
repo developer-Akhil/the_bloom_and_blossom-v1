@@ -42,18 +42,6 @@ export function Dashboard() {
             <SidebarLink icon={<Clock size={18} />} title="Recently Viewed" active={activeTab === 'recent'} onClick={() => setActiveTab('recent')} />
             <SidebarLink icon={<Settings size={18} />} title="Settings" active={activeTab === 'settings'} onClick={() => setActiveTab('settings')} />
             
-            {isAdmin && (
-              <div className="pt-4 mt-4 border-t border-gray-100">
-                 <Link 
-                   to="/admin"
-                   className="w-full flex items-center space-x-3 px-4 py-3 text-sm font-medium text-bloom-rose hover:bg-bloom-pink/50 rounded-xl transition-all"
-                 >
-                   <ShieldCheck size={18} />
-                   <span>Admin Console</span>
-                 </Link>
-              </div>
-            )}
-
             <button 
               onClick={handleSignOut}
               className="w-full flex items-center space-x-3 px-4 py-3 text-sm font-medium text-red-400 hover:bg-red-50 rounded-xl transition-all mt-8"
@@ -88,7 +76,7 @@ export function Dashboard() {
 
           {activeTab === 'settings' && (
             <div className="bg-white rounded-[2.5rem] p-10 border border-gray-100 space-y-8">
-               <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
+               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
                  <div className="space-y-2">
                    <label className="text-[10px] font-bold uppercase tracking-widest text-gray-400">Display Name</label>
                    <input className="w-full px-6 py-4 bg-gray-50 rounded-2xl border-none outline-none focus:ring-2 focus:ring-bloom-rose/20" value={name} readOnly />
@@ -96,6 +84,10 @@ export function Dashboard() {
                  <div className="space-y-2">
                    <label className="text-[10px] font-bold uppercase tracking-widest text-gray-400">Email Address</label>
                    <input className="w-full px-6 py-4 bg-gray-50 rounded-2xl border-none outline-none focus:ring-2 focus:ring-bloom-rose/20" value={user?.email || ''} readOnly />
+                 </div>
+                 <div className="space-y-2">
+                   <label className="text-[10px] font-bold uppercase tracking-widest text-gray-400">Mobile Number</label>
+                   <input className="w-full px-6 py-4 bg-gray-50 rounded-2xl border-none outline-none focus:ring-2 focus:ring-bloom-rose/20" value={user?.phone || user?.user_metadata?.phone || ''} readOnly />
                  </div>
                </div>
                <button className="px-8 py-4 bg-bloom-rose text-white rounded-full font-bold shadow-lg shadow-bloom-rose/20">
