@@ -34,7 +34,7 @@ export function OptimizedImage({
   };
 
   return (
-    <div className={cn("relative overflow-hidden bg-gray-50", containerClassName)}>
+    <div className={cn("relative overflow-hidden bg-gray-50 w-full h-full", containerClassName)}>
       {isLoading && (
         <div className="absolute inset-0 animate-pulse bg-bloom-pink/10 flex items-center justify-center">
           <div className="w-8 h-8 rounded-full border-2 border-bloom-rose/20 border-t-bloom-rose animate-spin" />
