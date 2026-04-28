@@ -53,7 +53,7 @@ export function Header() {
             <NavLink to="/">Home</NavLink>
             <NavLink to="/collections">Collections</NavLink>
             <NavLink to="/new-arrivals">New Arrivals</NavLink>
-            <NavLink to="/about">About</NavLink>
+            <NavLink to="/about">Our Story</NavLink>
             <NavLink to="/contact">Contact</NavLink>
           </nav>
 
@@ -105,7 +105,7 @@ export function Header() {
               <MobileNavLink to="/" onClick={() => setIsMenuOpen(false)}>Home</MobileNavLink>
               <MobileNavLink to="/collections" onClick={() => setIsMenuOpen(false)}>Collections</MobileNavLink>
               <MobileNavLink to="/new-arrivals" onClick={() => setIsMenuOpen(false)}>New Arrivals</MobileNavLink>
-              <MobileNavLink to="/about" onClick={() => setIsMenuOpen(false)}>About</MobileNavLink>
+              <MobileNavLink to="/about" onClick={() => setIsMenuOpen(false)}>Our Story</MobileNavLink>
               <MobileNavLink to="/contact" onClick={() => setIsMenuOpen(false)}>Contact</MobileNavLink>
             </div>
           </motion.div>

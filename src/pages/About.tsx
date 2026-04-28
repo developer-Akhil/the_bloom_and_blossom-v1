@@ -53,13 +53,16 @@ export function About() {
       <section className="container mx-auto px-4 py-32 space-y-32">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
           <div className="space-y-8">
-            <h2 className="font-serif text-4xl md:text-5xl font-bold leading-tight">Delicate Details, <br/>Deep Intentions.</h2>
+            <h2 className="font-serif text-4xl md:text-5xl font-bold leading-tight">Our Story</h2>
             <div className="space-y-6 text-gray-500 font-light leading-relaxed">
               <p>
-                At Bloom & Blossom, we curate premium hair accessories designed for comfort, durability, and timeless sophistication. What began as a passion for elegant styling has grown into a brand that celebrates effortless beauty and refined individuality.
+                Being a mother of two, I always wanted to build something of my own—something created with love and purpose. With a big dream in my heart, I started my small hair accessories business.
               </p>
               <p>
-                Each piece is thoughtfully crafted to elevate your everyday look — from subtle classics to statement styles — bringing confidence and grace to every moment. With minimal effort and maximum impact, our collections are made to seamlessly transition you from day to night.
+                It hasn’t been easy, but with consistent hard work and passion, I am growing step by step every day. Each creation reflects my dedication and my belief that small beginnings can lead to big achievements.
+              </p>
+              <p>
+                I am on a journey to turn my dream into something truly special.
               </p>
             </div>
             <div className="pt-4">
@@ -67,23 +70,8 @@ export function About() {
               <p className="text-xs font-bold uppercase tracking-widest text-gray-400 mt-4">Founder, The Bloom & Blossom</p>
             </div>
           </div>
-          <div className="grid grid-cols-2 gap-4 h-[600px]">
-            <div className="space-y-4">
-              <div className="h-2/3 rounded-[3rem] overflow-hidden">
-                <OptimizedImage src="https://images.unsplash.com/photo-1596704017254-9b121068fb31?auto=format&fit=crop&q=60&w=400&h=600" alt="Process" className="w-full h-full object-cover" />
-              </div>
-              <div className="h-1/3 rounded-[3rem] overflow-hidden">
-                 <OptimizedImage src="https://images.unsplash.com/photo-1621236304195-06ba064f307a?auto=format&fit=crop&q=60&w=400&h=300" alt="Fabrics" className="w-full h-full object-cover" />
-              </div>
-            </div>
-            <div className="space-y-4 pt-12">
-              <div className="h-1/3 rounded-[3rem] overflow-hidden">
-                 <OptimizedImage src="https://images.unsplash.com/photo-1576013551627-0cc20b96c2a7?auto=format&fit=crop&q=60&w=400&h=300" alt="Ribbons" className="w-full h-full object-cover" />
-              </div>
-              <div className="h-2/3 rounded-[3rem] overflow-hidden">
-                 <OptimizedImage src="https://images.unsplash.com/photo-1606160732449-182746ef7446?auto=format&fit=crop&q=60&w=400&h=600" alt="Final Product" className="w-full h-full object-cover" />
-              </div>
-            </div>
+          <div className="rounded-[3rem] overflow-hidden shadow-2xl flex items-center justify-center">
+            <OptimizedImage src="/images/our_story/our_story.jpg" alt="Our Story" className="w-full h-auto object-cover" />
           </div>
         </div>
 

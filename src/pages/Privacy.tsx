@@ -12,7 +12,30 @@ export function Privacy() {
 
           <div className="prose prose-gray max-w-none text-gray-600 space-y-6 leading-relaxed">
             <p>
-              At bloomandblossom.in (managed by Priyanka Bisht Chand). we are committed to protecting your privacy and ensuring that your personal information is handled in a safe and responsible manner. This Privacy Policy outlines how we collect, use, disclose, and safeguard your information when you visit our website or make a purchase.
+              At Bloom & Blossom (managed by Priyanka Bisht Chand), we are committed to protecting your privacy and ensuring that your personal information is handled in a safe and responsible manner. This Privacy Policy outlines how we collect, use, disclose, and safeguard your information when you visit our website or make a purchase.
+            </p>
+
+            <h3 className="font-bold text-gray-900 text-xl mt-8 mb-4">Third-Party Links</h3>
+            <p>
+              Our website may contain links to external websites. We are not responsible for the privacy practices of such sites and encourage you to review their policies.
+            </p>
+
+            <h3 className="font-bold text-gray-900 text-xl mt-8 mb-4">Children's Privacy</h3>
+            <p>
+              Our services are not intended for individuals under the age of 18. We do not knowingly collect personal information from children.
+            </p>
+
+            <h3 className="font-bold text-gray-900 text-xl mt-8 mb-4">Changes to This Policy</h3>
+            <p>
+              We may update this Privacy Policy from time to time. Changes will be posted on this page with an updated effective date.
+            </p>
+
+            <h3 className="font-bold text-gray-900 text-xl mt-8 mb-4">Contact Us</h3>
+            <p>
+              If you have any questions about this Privacy Policy, you can contact us at:{' '}
+              <a href="mailto:info@bloomandblossom.in" className="text-bloom-rose hover:underline">
+                info@bloomandblossom.in
+              </a>
             </p>
           </div>
         </div>
