@@ -16,6 +16,9 @@ import { About } from './pages/About';
 import { Dashboard } from './pages/Dashboard';
 import { Contact } from './pages/Contact';
 import { Returns } from './pages/Returns';
+import { Privacy } from './pages/Privacy';
+import { Shipping } from './pages/Shipping';
+import { FAQ } from './pages/FAQ';
 import { Admin } from './pages/Admin';
 import { AdminLogin } from './pages/AdminLogin';
 import { CartProvider } from './context/CartContext';
@@ -50,6 +53,9 @@ export default function App() {
                     <Route path="dashboard" element={<Dashboard />} />
                     <Route path="contact" element={<Contact />} />
                     <Route path="returns" element={<Returns />} />
+                    <Route path="privacy" element={<Privacy />} />
+                    <Route path="shipping" element={<Shipping />} />
+                    <Route path="faq" element={<FAQ />} />
                     <Route path="admin" element={<Admin />} />
                     <Route path="admin/login" element={<AdminLogin />} />
                     <Route path="new-arrivals" element={<NewArrivals />} />

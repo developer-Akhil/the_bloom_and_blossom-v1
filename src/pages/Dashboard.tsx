@@ -60,9 +60,14 @@ export function Dashboard() {
           </div>
 
           {activeTab === 'orders' && (
-            <div className="space-y-6">
-              <OrderCard id="BB-98745" status="Delivered" date="Jan 12, 2026" total="₹1,299" />
-              <OrderCard id="BB-98746" status="In Transit" date="Apr 16, 2026" total="₹499" />
+            <div className="bg-white rounded-[2.5rem] p-10 border border-gray-100 flex flex-col items-center justify-center text-center space-y-4">
+              <div className="p-4 bg-gray-50 rounded-2xl text-gray-400">
+                <Package size={32} />
+              </div>
+              <div className="space-y-1">
+                <h3 className="font-bold text-lg">No orders yet</h3>
+                <p className="text-gray-400 text-sm">When you place an order, it will appear here.</p>
+              </div>
             </div>
           )}
 

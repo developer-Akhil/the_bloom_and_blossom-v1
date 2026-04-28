@@ -11,12 +11,17 @@ export function VerifyEmail() {
   const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading');
   const [message, setMessage] = useState('');
 
+  const hasAttempted = React.useRef(false);
+
   useEffect(() => {
     if (!token) {
       setStatus('error');
       setMessage('No verification token provided.');
       return;
     }
+
+    if (hasAttempted.current) return;
+    hasAttempted.current = true;
 
     const verifyToken = async () => {
       try {
