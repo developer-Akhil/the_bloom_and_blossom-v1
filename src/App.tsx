@@ -17,7 +17,7 @@ import { Dashboard } from './pages/Dashboard';
 import { Contact } from './pages/Contact';
 import { Returns } from './pages/Returns';
 import { Privacy } from './pages/Privacy';
-import { Shipping } from './pages/Shipping';
+import { Terms } from './pages/Terms';
 import { FAQ } from './pages/FAQ';
 import { Admin } from './pages/Admin';
 import { AdminLogin } from './pages/AdminLogin';
@@ -54,7 +54,7 @@ export default function App() {
                     <Route path="contact" element={<Contact />} />
                     <Route path="returns" element={<Returns />} />
                     <Route path="privacy" element={<Privacy />} />
-                    <Route path="shipping" element={<Shipping />} />
+                    <Route path="terms" element={<Terms />} />
                     <Route path="faq" element={<FAQ />} />
                     <Route path="admin" element={<Admin />} />
                     <Route path="admin/login" element={<AdminLogin />} />

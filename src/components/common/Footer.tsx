@@ -50,7 +50,7 @@ export function Footer() {
             <h4 className="font-serif text-lg font-bold mb-6">Support</h4>
             <ul className="space-y-4 text-sm text-gray-500">
               <li><FooterLink to="/contact">Contact Us</FooterLink></li>
-              <li><FooterLink to="/shipping">Shipping Policy</FooterLink></li>
+              <li><FooterLink to="/terms">Terms & Conditions</FooterLink></li>
               <li><FooterLink to="/returns">Returns & Refunds</FooterLink></li>
               <li><FooterLink to="/faq">FAQs</FooterLink></li>
               <li><FooterLink to="/privacy">Privacy Policy</FooterLink></li>
