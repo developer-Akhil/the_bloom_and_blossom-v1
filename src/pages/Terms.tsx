@@ -36,12 +36,11 @@ export function Terms() {
             <ul className="list-disc pl-5 space-y-2">
               <li>bloomandblossom.in reserves the right to refuse or cancel any order at its discretion.</li>
               <li>Orders may be cancelled due to pricing errors, stock issues, or suspected fraud.</li>
-              <li>Customers can request cancellation within 24 hours of placing the order.</li>
             </ul>
 
             <h3 className="font-bold text-gray-900 text-xl mt-8 mb-4">Shipping & Delivery</h3>
             <ul className="list-disc pl-5 space-y-2">
-              <li>Delivery timelines are estimates and may vary.</li>
+              <li>Delivery timelines are 5-6 days.</li>
               <li>bloomandblossom.in is not responsible for delays caused by courier partners or unforeseen circumstances.</li>
             </ul>
 
