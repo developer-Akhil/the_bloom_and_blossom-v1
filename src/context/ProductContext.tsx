@@ -23,6 +23,10 @@ export function ProductProvider({ children }: { children: React.ReactNode }) {
     const localBestSellers = localStorage.getItem('bloom_best_sellers');
     return localBestSellers ? new Set(JSON.parse(localBestSellers)) : new Set();
   });
+  const [newArrivalsSet, setNewArrivalsSet] = useState<Set<string>>(() => {
+    const localNewArrivals = localStorage.getItem('bloom_new_arrivals');
+    return localNewArrivals ? new Set(JSON.parse(localNewArrivals)) : new Set();
+  });
   const [availabilityMap, setAvailabilityMap] = useState<Record<string, boolean>>(() => {
     const localAvailability = localStorage.getItem('bloom_product_availability');
     return localAvailability ? JSON.parse(localAvailability) : {};
@@ -60,16 +64,22 @@ export function ProductProvider({ children }: { children: React.ReactNode }) {
       const localBestSellers = localStorage.getItem('bloom_best_sellers');
       if (localBestSellers) setBestSellersSet(new Set(JSON.parse(localBestSellers)));
     };
+    const handleNewArrivalsUpdate = () => {
+      const localNewArrivals = localStorage.getItem('bloom_new_arrivals');
+      if (localNewArrivals) setNewArrivalsSet(new Set(JSON.parse(localNewArrivals)));
+    };
     const handleAvailabilityUpdate = () => {
       const localAvailability = localStorage.getItem('bloom_product_availability');
       if (localAvailability) setAvailabilityMap(JSON.parse(localAvailability));
     };
     window.addEventListener('dynamic_price_updated', handleUpdate);
     window.addEventListener('best_sellers_updated', handleBestSellersUpdate);
+    window.addEventListener('new_arrivals_updated', handleNewArrivalsUpdate);
     window.addEventListener('availability_updated', handleAvailabilityUpdate);
     return () => {
        window.removeEventListener('dynamic_price_updated', handleUpdate);
        window.removeEventListener('best_sellers_updated', handleBestSellersUpdate);
+       window.removeEventListener('new_arrivals_updated', handleNewArrivalsUpdate);
        window.removeEventListener('availability_updated', handleAvailabilityUpdate);
     };
   }, [fetchSupabaseData]);
@@ -84,6 +94,11 @@ export function ProductProvider({ children }: { children: React.ReactNode }) {
       const adminBestSellersStr = localStorage.getItem('bloom_best_sellers');
       if (adminBestSellersStr) {
           updatedProduct.isBestSeller = bestSellersSet.has(product.id);
+      }
+
+      const adminNewArrivalsStr = localStorage.getItem('bloom_new_arrivals');
+      if (adminNewArrivalsStr) {
+          updatedProduct.isNewArrival = newArrivalsSet.has(product.id);
       }
 
       const adminAvailStr = localStorage.getItem('bloom_product_availability');
@@ -149,10 +164,15 @@ export function ProductProvider({ children }: { children: React.ReactNode }) {
 
         const productId = `custom_${asset.id}`;
         let isBestSeller = false;
+        let isNewArrival = false;
         let inStock = true;
         const adminBestSellersStr = localStorage.getItem('bloom_best_sellers');
         if (adminBestSellersStr) {
            isBestSeller = bestSellersSet.has(productId);
+        }
+        const adminNewArrivalsStr = localStorage.getItem('bloom_new_arrivals');
+        if (adminNewArrivalsStr) {
+           isNewArrival = newArrivalsSet.has(productId);
         }
         const adminAvailStr = localStorage.getItem('bloom_product_availability');
         if (adminAvailStr) {
@@ -170,12 +190,13 @@ export function ProductProvider({ children }: { children: React.ReactNode }) {
            inStock,
            isCustomizable: false,
            isBestSeller,
+           isNewArrival,
            rating: 5.0
         });
     });
 
     return [...updatedProducts, ...newlyConstructedProducts];
-  }, [baseProducts, assets, allAssets, folders, priceOverrides, bestSellersSet, availabilityMap]);
+  }, [baseProducts, assets, allAssets, folders, priceOverrides, bestSellersSet, newArrivalsSet, availabilityMap]);
 
   const mergedCategories = useMemo(() => {
     const adminFolders = folders

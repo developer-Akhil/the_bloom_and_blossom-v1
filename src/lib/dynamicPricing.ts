@@ -46,6 +46,11 @@ export const updateBestSellers = async (bestSellerIds: string[]) => {
   window.dispatchEvent(new Event('best_sellers_updated'));
 };
 
+export const updateNewArrivals = async (newArrivalIds: string[]) => {
+  localStorage.setItem('bloom_new_arrivals', JSON.stringify(newArrivalIds));
+  window.dispatchEvent(new Event('new_arrivals_updated'));
+};
+
 export const updateAvailabilityBatch = async (updates: Record<string, boolean>) => {
   if (Object.keys(updates).length === 0) return;
 

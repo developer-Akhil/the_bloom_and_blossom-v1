@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Instagram, Youtube, Facebook, Twitter, MapPin, Phone, Mail } from 'lucide-react';
 import { OptimizedImage } from './OptimizedImage';
+import { siteConfig } from '../../config/site';
 
 export function Footer() {
   return (
@@ -14,22 +15,22 @@ export function Footer() {
               <div className="w-10 h-10 rounded-full overflow-hidden border border-bloom-rose/20 group-hover:border-bloom-rose transition-all">
                 <OptimizedImage 
                   src="/images/logo/logo.jpeg" 
-                  alt="The Bloom and Blossom Logo" 
+                  alt={`${siteConfig.name} Logo`} 
                   className="w-full h-full object-cover" 
                 />
               </div>
               <span className="font-serif text-2xl font-bold text-bloom-rose">
-                The Bloom & Blossom
+                {siteConfig.name}
               </span>
             </Link>
             <p className="text-gray-500 text-sm leading-relaxed max-w-xs">
-              Hand-crafted hair accessories designed to bring out the blooming beauty in every person. Delicate, elegant, and uniquely yours.
+              {siteConfig.description}
             </p>
             <div className="flex space-x-4">
-              <SocialIcon href="https://www.instagram.com/bows_scrunchies.love/" icon={<Instagram size={20} />} />
-              <SocialIcon href="https://www.youtube.com/@thebloomandblossom" icon={<Youtube size={20} />} />
-              <SocialIcon href="https://www.facebook.com/share/1GMNfXQki9/" icon={<Facebook size={20} />} />
-              <SocialIcon href="https://wa.me/message/6IMAWM55WUTII1" icon={<Phone size={20} />} />
+              <SocialIcon href={siteConfig.social.instagram} icon={<Instagram size={20} />} />
+              <SocialIcon href={siteConfig.social.youtube} icon={<Youtube size={20} />} />
+              <SocialIcon href={siteConfig.social.facebook} icon={<Facebook size={20} />} />
+              <SocialIcon href={siteConfig.social.whatsapp} icon={<Phone size={20} />} />
             </div>
           </div>
 
@@ -63,22 +64,22 @@ export function Footer() {
             <div className="space-y-4">
               <div className="flex items-start space-x-3 text-sm text-gray-500">
                 <MapPin size={18} className="text-bloom-rose shrink-0" />
-                <span>Shivlok Colony Haridwar<br/>Uttarakhand 249403</span>
+                <span>{siteConfig.contact.address.line1}<br/>{siteConfig.contact.address.line2}</span>
               </div>
               <div className="flex items-center space-x-3 text-sm text-gray-500">
                 <Phone size={18} className="text-bloom-rose shrink-0" />
-                <span>+91 8076323737</span>
+                <span>{siteConfig.contact.phoneDisplay}</span>
               </div>
               <div className="flex items-center space-x-3 text-sm text-gray-500">
                 <Mail size={18} className="text-bloom-rose shrink-0" />
-                <span>info@bloomandblossom.in</span>
+                <span>{siteConfig.contact.email}</span>
               </div>
             </div>
           </div>
         </div>
 
         <div className="mt-16 pt-8 border-t text-center text-xs text-gray-400">
-          <p>© {new Date().getFullYear()} The Bloom & Blossom. All rights reserved.</p>
+          <p>© {new Date().getFullYear()} {siteConfig.name}. All rights reserved.</p>
         </div>
       </div>
     </footer>

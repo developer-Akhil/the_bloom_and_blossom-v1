@@ -1,4 +1,5 @@
 import React from 'react';
+import { siteConfig } from '../config/site';
 
 export function Privacy() {
   return (
@@ -12,7 +13,7 @@ export function Privacy() {
 
           <div className="prose prose-gray max-w-none text-gray-600 space-y-6 leading-relaxed">
             <p>
-              At Bloom & Blossom (managed by Priyanka Bisht Chand), we are committed to protecting your privacy and ensuring that your personal information is handled in a safe and responsible manner. This Privacy Policy outlines how we collect, use, disclose, and safeguard your information when you visit our website or make a purchase.
+              At {siteConfig.name} (managed by Priyanka Bisht Chand), we are committed to protecting your privacy and ensuring that your personal information is handled in a safe and responsible manner. This Privacy Policy outlines how we collect, use, disclose, and safeguard your information when you visit our website or make a purchase.
             </p>
 
             <h3 className="font-bold text-gray-900 text-xl mt-8 mb-4">Third-Party Links</h3>
@@ -33,8 +34,8 @@ export function Privacy() {
             <h3 className="font-bold text-gray-900 text-xl mt-8 mb-4">Contact Us</h3>
             <p>
               If you have any questions about this Privacy Policy, you can contact us at:{' '}
-              <a href="mailto:info@bloomandblossom.in" className="text-bloom-rose hover:underline">
-                info@bloomandblossom.in
+              <a href={`mailto:${siteConfig.contact.email}`} className="text-bloom-rose hover:underline">
+                {siteConfig.contact.email}
               </a>
             </p>
           </div>

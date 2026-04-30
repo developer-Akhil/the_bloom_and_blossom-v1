@@ -30,6 +30,7 @@ export interface Product {
   inStock?: boolean;
   isCustomizable: boolean;
   isBestSeller?: boolean;
+  isNewArrival?: boolean;
   rating?: number;
   reviews?: Review[];
   options?: ProductOption[];

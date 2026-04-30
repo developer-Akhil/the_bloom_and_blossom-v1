@@ -1,4 +1,5 @@
 import React from 'react';
+import { siteConfig } from '../config/site';
 
 export function Terms() {
   return (
@@ -28,7 +29,7 @@ export function Terms() {
             <h3 className="font-bold text-gray-900 text-xl mt-8 mb-4">Pricing and Payments</h3>
             <ul className="list-disc pl-5 space-y-2">
               <li>All prices are listed in INR (₹) unless stated otherwise.</li>
-              <li>The Bloom and Blossom reserves the right to change pricing at any time without prior notice.</li>
+              <li>{siteConfig.name} reserves the right to change pricing at any time without prior notice.</li>
               <li>Payments must be completed before order processing.</li>
             </ul>
 
@@ -57,12 +58,12 @@ export function Terms() {
 
             <h3 className="font-bold text-gray-900 text-xl mt-8 mb-4">Limitation of Liability</h3>
             <p>
-              The Bloom and Blossom is not liable for any indirect, incidental, or consequential damages arising from the use of the website or products.
+              {siteConfig.name} is not liable for any indirect, incidental, or consequential damages arising from the use of the website or products.
             </p>
 
             <h3 className="font-bold text-gray-900 text-xl mt-8 mb-4">Third-Party Links</h3>
             <p>
-              The website may contain links to third-party websites. The Bloom and Blossom is not responsible for their content or policies.
+              The website may contain links to third-party websites. {siteConfig.name} is not responsible for their content or policies.
             </p>
 
             <h3 className="font-bold text-gray-900 text-xl mt-8 mb-4">Privacy</h3>
@@ -72,7 +73,7 @@ export function Terms() {
 
             <h3 className="font-bold text-gray-900 text-xl mt-8 mb-4">Changes to Terms</h3>
             <p>
-              The Bloom and Blossom reserves the right to update these Terms at any time. Continued use of the website constitutes acceptance of the updated Terms.
+              {siteConfig.name} reserves the right to update these Terms at any time. Continued use of the website constitutes acceptance of the updated Terms.
             </p>
 
             <h3 className="font-bold text-gray-900 text-xl mt-8 mb-4">Governing Law</h3>
@@ -83,8 +84,8 @@ export function Terms() {
             <h3 className="font-bold text-gray-900 text-xl mt-8 mb-4">Contact Us</h3>
             <p>
               If you have any questions, please contact us at:<br/>
-              Email: <a href="mailto:info@bloomandblossom.in" className="text-bloom-rose hover:underline">info@bloomandblossom.in</a><br/>
-              Number: +918076323737
+              Email: <a href={`mailto:${siteConfig.contact.email}`} className="text-bloom-rose hover:underline">{siteConfig.contact.email}</a><br/>
+              Number: {siteConfig.contact.phone}
             </p>
           </div>
         </div>

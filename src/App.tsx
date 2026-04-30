@@ -10,6 +10,7 @@ import { Collections } from './pages/Collections';
 import { ProductDetail } from './pages/ProductDetail';
 import { Cart } from './pages/Cart';
 import { Checkout } from './pages/Checkout';
+import { CheckoutSuccess } from './pages/CheckoutSuccess';
 import { Auth } from './pages/Auth';
 import { VerifyEmail } from './pages/VerifyEmail';
 import { About } from './pages/About';
@@ -21,6 +22,7 @@ import { Terms } from './pages/Terms';
 import { FAQ } from './pages/FAQ';
 import { Admin } from './pages/Admin';
 import { AdminLogin } from './pages/AdminLogin';
+import { NewArrivals } from './pages/NewArrivals';
 import { CartProvider } from './context/CartContext';
 import { AuthProvider } from './context/AuthContext';
 import { AdminAuthProvider } from './context/AdminAuthContext';
@@ -29,7 +31,6 @@ import { ProductProvider } from './context/ProductContext';
 
 
 // Placeholder pages for now
-const NewArrivals = () => <div className="container py-20">New Arrivals Page Coming Soon</div>;
 const Wishlist = () => <div className="container py-20">Wishlist Page Coming Soon</div>;
 
 export default function App() {
@@ -47,6 +48,7 @@ export default function App() {
                     <Route path="products/:id" element={<ProductDetail />} />
                     <Route path="cart" element={<Cart />} />
                     <Route path="checkout" element={<Checkout />} />
+                    <Route path="checkout/success" element={<CheckoutSuccess />} />
                     <Route path="auth" element={<Auth />} />
                     <Route path="verify-email" element={<VerifyEmail />} />
                     <Route path="about" element={<About />} />

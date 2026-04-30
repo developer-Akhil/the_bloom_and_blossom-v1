@@ -1,9 +1,8 @@
 import React, { useState } from 'react';
 import { Navigate, Link } from 'react-router-dom';
 import { products as baseProducts } from '../data/products';
-import { updateDynamicPrice, updateDynamicPricesBatch, useDynamicProducts, updateBestSellers, updateAvailabilityBatch } from '../lib/dynamicPricing';
-import { Settings, Save, CheckCircle2, ShieldAlert, Image as ImageIcon, IndianRupee, LogOut, Star, Package, PackageX } from 'lucide-react';
-import { AdminImageManager } from '../components/admin/AdminImageManager';
+import { updateDynamicPrice, updateDynamicPricesBatch, useDynamicProducts, updateBestSellers, updateNewArrivals, updateAvailabilityBatch } from '../lib/dynamicPricing';
+import { Settings, Save, CheckCircle2, ShieldAlert, IndianRupee, LogOut, Star, Sparkles, Package, PackageX } from 'lucide-react';
 import { useAdminAuth } from '../context/AdminAuthContext';
 
 export function Admin() {
@@ -11,10 +10,10 @@ export function Admin() {
   const dynamicProducts = useDynamicProducts(baseProducts);
   const [edits, setEdits] = useState<Record<string, number>>({});
   const [bestSellerEdits, setBestSellerEdits] = useState<Record<string, boolean>>({});
+  const [newArrivalEdits, setNewArrivalEdits] = useState<Record<string, boolean>>({});
   const [availabilityEdits, setAvailabilityEdits] = useState<Record<string, boolean>>({});
   const [showSaved, setShowSaved] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
-  const [activeTab, setActiveTab] = useState<'media' | 'pricing'>('media');
 
   // Check for admin privileges. Redirect to login if not authenticated.
   if (!isAdminAuthenticated) {
@@ -37,6 +36,11 @@ export function Admin() {
     setBestSellerEdits({ ...bestSellerEdits, [id]: !isCurrentlyBestSeller });
   };
 
+  const handleNewArrivalToggle = (id: string, currentStatus: boolean) => {
+    const isCurrentlyNewArrival = newArrivalEdits[id] !== undefined ? newArrivalEdits[id] : currentStatus;
+    setNewArrivalEdits({ ...newArrivalEdits, [id]: !isCurrentlyNewArrival });
+  };
+
   const handleAvailabilityToggle = (id: string, currentStatus: boolean) => {
     const isCurrentlyInStock = availabilityEdits[id] !== undefined ? availabilityEdits[id] : currentStatus;
     setAvailabilityEdits({ ...availabilityEdits, [id]: !isCurrentlyInStock });
@@ -56,6 +60,13 @@ export function Admin() {
               .map(p => p.id);
           await updateBestSellers(finalBestSellers);
       }
+
+      if (Object.keys(newArrivalEdits).length > 0) {
+          const finalNewArrivals = dynamicProducts
+              .filter(p => newArrivalEdits[p.id] !== undefined ? newArrivalEdits[p.id] : p.isNewArrival)
+              .map(p => p.id);
+          await updateNewArrivals(finalNewArrivals);
+      }
       
       if (Object.keys(availabilityEdits).length > 0) {
           await updateAvailabilityBatch(availabilityEdits);
@@ -63,6 +74,7 @@ export function Admin() {
       
       setEdits({});
       setBestSellerEdits({});
+      setNewArrivalEdits({});
       setAvailabilityEdits({});
       setShowSaved(true);
       setTimeout(() => setShowSaved(false), 3000);
@@ -72,6 +84,8 @@ export function Admin() {
       setIsSaving(false);
     }
   };
+
+  const hasUnsavedChanges = Object.keys(edits).length > 0 || Object.keys(bestSellerEdits).length > 0 || Object.keys(newArrivalEdits).length > 0 || Object.keys(availabilityEdits).length > 0;
 
   return (
     <div className="container mx-auto px-4 md:px-6 py-12">
@@ -95,111 +109,101 @@ export function Admin() {
               <span>Secure Logout</span>
             </button>
           </div>
-          
-          <div className="flex bg-gray-50 p-1.5 rounded-2xl w-full md:w-auto">
-             <button
-                onClick={() => setActiveTab('media')}
-                className={`flex-1 md:flex-none flex items-center space-x-2 px-6 py-2.5 rounded-xl font-medium text-sm transition-all ${activeTab === 'media' ? 'bg-white shadow-sm text-bloom-rose' : 'text-gray-500 hover:text-gray-900'}`}
-             >
-                <ImageIcon size={16} />
-                <span>Media Manager</span>
-             </button>
-             <button
-                onClick={() => setActiveTab('pricing')}
-                className={`flex-1 md:flex-none flex items-center space-x-2 px-6 py-2.5 rounded-xl font-medium text-sm transition-all ${activeTab === 'pricing' ? 'bg-white shadow-sm text-bloom-rose' : 'text-gray-500 hover:text-gray-900'}`}
-             >
-                <IndianRupee size={16} />
-                <span>Product Settings</span>
-             </button>
-          </div>
         </div>
 
-        {activeTab === 'media' && (
-          <AdminImageManager />
-        )}
-
-        {activeTab === 'pricing' && (
-          <div className="space-y-6">
-            <div className="flex justify-end">
-              <button 
-                onClick={handleSave}
-                disabled={(Object.keys(edits).length === 0 && Object.keys(bestSellerEdits).length === 0 && Object.keys(availabilityEdits).length === 0) || isSaving}
-                className={`mt-4 md:mt-0 flex items-center space-x-2 px-6 py-3 rounded-full font-bold transition-all shadow-lg ${
-                  (Object.keys(edits).length > 0 || Object.keys(bestSellerEdits).length > 0 || Object.keys(availabilityEdits).length > 0) && !isSaving
-                    ? 'bg-bloom-rose text-white hover:scale-105 shadow-bloom-rose/20' 
-                    : 'bg-gray-100 text-gray-400 cursor-not-allowed shadow-none'
-                }`}
-              >
-                {showSaved ? <CheckCircle2 size={18} /> : <Save size={18} />}
-                <span>{isSaving ? 'Saving...' : showSaved ? 'Saved Successfully' : 'Apply Settings'}</span>
-              </button>
-            </div>
-
-            <div className="bg-white border rounded-3xl shadow-sm overflow-hidden">
-              <table className="w-full text-left border-collapse">
-                <thead>
-                  <tr className="bg-gray-50 text-gray-500 text-xs uppercase tracking-wider">
-                    <th className="p-4 font-bold border-b">Product</th>
-                    <th className="p-4 font-bold border-b">Category</th>
-                    <th className="p-4 font-bold border-b text-center w-32">Best Seller</th>
-                    <th className="p-4 font-bold border-b text-center w-32">Status</th>
-                    <th className="p-4 font-bold border-b w-48">Dynamic Price (₹)</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y">
-                  {dynamicProducts.map((product) => {
-                    const isBestSeller = bestSellerEdits[product.id] !== undefined ? bestSellerEdits[product.id] : !!product.isBestSeller;
-                    const inStock = availabilityEdits[product.id] !== undefined ? availabilityEdits[product.id] : product.inStock;
-                    return (
-                    <tr key={product.id} className="hover:bg-gray-50/50 transition-colors">
-                      <td className="p-4">
-                        <div className="flex items-center space-x-3">
-                          <img src={product.images[0]} alt={product.name} className="w-12 h-12 object-cover rounded-xl" />
-                          <span className="font-bold text-gray-900">{product.name}</span>
-                        </div>
-                      </td>
-                      <td className="p-4 text-sm text-gray-500">{product.category}</td>
-                      <td className="p-4 text-center">
-                         <button
-                           onClick={() => handleBestSellerToggle(product.id, !!product.isBestSeller)}
-                           className={`p-2 rounded-full transition-colors ${isBestSeller ? 'bg-bloom-pink/30 text-bloom-rose' : 'bg-gray-100 text-gray-400 hover:bg-gray-200'}`}
-                         >
-                           <Star size={18} className={isBestSeller ? 'fill-bloom-rose' : ''} />
-                         </button>
-                      </td>
-                      <td className="p-4 text-center">
-                         <button
-                           onClick={() => handleAvailabilityToggle(product.id, !!product.inStock)}
-                           title={inStock ? "Mark Out of Stock" : "Mark In Stock"}
-                           className={`px-3 py-1.5 rounded-full text-xs font-bold transition-colors flex items-center space-x-1 mx-auto ${inStock ? 'bg-green-100 text-green-700 hover:bg-green-200' : 'bg-red-100 text-red-700 hover:bg-red-200'}`}
-                         >
-                           {inStock ? <Package size={14}/> : <PackageX size={14}/>}
-                           <span>{inStock ? 'In Stock' : 'Out of Stock'}</span>
-                         </button>
-                      </td>
-                      <td className="p-4">
-                        <div className="relative">
-                          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 font-medium">₹</span>
-                          <input 
-                            type="number"
-                            value={edits[product.id] !== undefined ? edits[product.id] : product.price}
-                            onChange={(e) => handlePriceChange(product.id, e.target.value)}
-                            className={`w-full pl-8 pr-4 py-2 border rounded-xl font-bold ${
-                              edits[product.id] !== undefined 
-                                ? 'bg-bloom-pink/20 border-bloom-rose/50 text-bloom-rose' 
-                                : 'bg-white border-gray-200 focus:border-bloom-rose focus:ring-1 focus:ring-bloom-rose outline-none text-gray-900'
-                            }`}
-                          />
-                        </div>
-                      </td>
-                    </tr>
-                  )})}
-                </tbody>
-              </table>
-            </div>
+        <div className="space-y-6">
+          <div className="flex justify-end">
+            <button 
+              onClick={handleSave}
+              disabled={!hasUnsavedChanges || isSaving}
+              className={`mt-4 md:mt-0 flex items-center space-x-2 px-6 py-3 rounded-full font-bold transition-all shadow-lg ${
+                hasUnsavedChanges && !isSaving
+                  ? 'bg-bloom-rose text-white hover:scale-105 shadow-bloom-rose/20' 
+                  : 'bg-gray-100 text-gray-400 cursor-not-allowed shadow-none'
+              }`}
+            >
+              {showSaved ? <CheckCircle2 size={18} /> : <Save size={18} />}
+              <span>{isSaving ? 'Saving...' : showSaved ? 'Saved Successfully' : 'Apply Settings'}</span>
+            </button>
           </div>
-        )}
+
+          <div className="bg-white border rounded-3xl shadow-sm overflow-x-auto">
+            <table className="w-full text-left border-collapse min-w-[800px]">
+              <thead>
+                <tr className="bg-gray-50 text-gray-500 text-xs uppercase tracking-wider">
+                  <th className="p-4 font-bold border-b">Product</th>
+                  <th className="p-4 font-bold border-b">Category</th>
+                  <th className="p-4 font-bold border-b text-center w-24">Best Seller</th>
+                  <th className="p-4 font-bold border-b text-center w-24">New Arrival</th>
+                  <th className="p-4 font-bold border-b text-center w-32">Status</th>
+                  <th className="p-4 font-bold border-b w-48">Dynamic Price (₹)</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y">
+                {dynamicProducts.map((product) => {
+                  const isBestSeller = bestSellerEdits[product.id] !== undefined ? bestSellerEdits[product.id] : !!product.isBestSeller;
+                  const isNewArrival = newArrivalEdits[product.id] !== undefined ? newArrivalEdits[product.id] : !!product.isNewArrival;
+                  const inStock = availabilityEdits[product.id] !== undefined ? availabilityEdits[product.id] : product.inStock;
+                  return (
+                  <tr key={product.id} className="hover:bg-gray-50/50 transition-colors">
+                    <td className="p-4">
+                      <div className="flex items-center space-x-3">
+                        <img src={product.images[0]} alt={product.name} className="w-12 h-12 object-cover rounded-xl shrink-0" />
+                        <span className="font-bold text-gray-900 line-clamp-2">{product.name}</span>
+                      </div>
+                    </td>
+                    <td className="p-4 text-sm text-gray-500">{product.category}</td>
+                    <td className="p-4 text-center">
+                       <button
+                         onClick={() => handleBestSellerToggle(product.id, !!product.isBestSeller)}
+                         title={isBestSeller ? "Remove from Best Sellers" : "Mark as Best Seller"}
+                         className={`p-2 rounded-full transition-colors ${isBestSeller ? 'bg-orange-100 text-orange-500' : 'bg-gray-100 text-gray-400 hover:bg-gray-200'}`}
+                       >
+                         <Star size={18} className={isBestSeller ? 'fill-orange-500' : ''} />
+                       </button>
+                    </td>
+                    <td className="p-4 text-center">
+                       <button
+                         onClick={() => handleNewArrivalToggle(product.id, !!product.isNewArrival)}
+                         title={isNewArrival ? "Remove from New Arrivals" : "Mark as New Arrival"}
+                         className={`p-2 rounded-full transition-colors ${isNewArrival ? 'bg-bloom-pink/30 text-bloom-rose' : 'bg-gray-100 text-gray-400 hover:bg-gray-200'}`}
+                       >
+                         <Sparkles size={18} className={isNewArrival ? 'fill-bloom-rose' : ''} />
+                       </button>
+                    </td>
+                    <td className="p-4 text-center">
+                       <button
+                         onClick={() => handleAvailabilityToggle(product.id, !!product.inStock)}
+                         title={inStock ? "Mark Out of Stock" : "Mark In Stock"}
+                         className={`px-3 py-1.5 rounded-full text-xs font-bold transition-colors flex items-center space-x-1 mx-auto whitespace-nowrap ${inStock ? 'bg-green-100 text-green-700 hover:bg-green-200' : 'bg-red-100 text-red-700 hover:bg-red-200'}`}
+                       >
+                         {inStock ? <Package size={14}/> : <PackageX size={14}/>}
+                         <span>{inStock ? 'In Stock' : 'Out of Stock'}</span>
+                       </button>
+                    </td>
+                    <td className="p-4">
+                      <div className="relative">
+                        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 font-medium">₹</span>
+                        <input 
+                          type="number"
+                          value={edits[product.id] !== undefined ? edits[product.id] : product.price}
+                          onChange={(e) => handlePriceChange(product.id, e.target.value)}
+                          className={`w-full pl-8 pr-4 py-2 border rounded-xl font-bold ${
+                            edits[product.id] !== undefined 
+                              ? 'bg-bloom-pink/20 border-bloom-rose/50 text-bloom-rose' 
+                              : 'bg-white border-gray-200 focus:border-bloom-rose focus:ring-1 focus:ring-bloom-rose outline-none text-gray-900'
+                          }`}
+                        />
+                      </div>
+                    </td>
+                  </tr>
+                )})}
+              </tbody>
+            </table>
+          </div>
+        </div>
       </div>
     </div>
   );
 }
+

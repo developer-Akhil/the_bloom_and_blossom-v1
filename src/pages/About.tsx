@@ -2,6 +2,7 @@ import React from 'react';
 import { motion } from 'motion/react';
 import { Heart, Sparkles, Scissors, Leaf } from 'lucide-react';
 import { OptimizedImage } from '../components/common/OptimizedImage';
+import { siteConfig } from '../config/site';
 
 export function About() {
   return (
@@ -67,7 +68,7 @@ export function About() {
             </div>
             <div className="pt-4">
               <OptimizedImage src="https://images.unsplash.com/photo-1513519245088-0e12902e5a38?auto=format&fit=crop&q=60&w=200&h=80" alt="Founder Signature" className="opacity-40 grayscale" />
-              <p className="text-xs font-bold uppercase tracking-widest text-gray-400 mt-4">Founder, The Bloom & Blossom</p>
+              <p className="text-xs font-bold uppercase tracking-widest text-gray-400 mt-4">Founder, {siteConfig.name}</p>
             </div>
           </div>
           <div className="rounded-[3rem] overflow-hidden shadow-2xl flex items-center justify-center">
@@ -82,12 +83,12 @@ export function About() {
             We love sharing our process, new drops, and styling inspiration on Instagram. Join our community of over 50k blossom lovers.
           </p>
           <a 
-            href="https://www.instagram.com/bows_scrunchies.love/" 
+            href={siteConfig.social.instagram} 
             target="_blank" 
             rel="noopener noreferrer"
             className="inline-flex items-center space-x-2 text-bloom-rose font-bold text-xl hover:scale-105 transition-all"
           >
-            <span>@bloomandblossom.official</span>
+            <span>{siteConfig.social.instagramHandle}</span>
           </a>
         </div>
       </section>

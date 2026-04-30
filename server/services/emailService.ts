@@ -51,3 +51,40 @@ export const sendVerificationEmail = async (email: string, token: string, fronte
     // throw new Error("Failed to send verification email");
   }
 };
+
+export const sendContactEmail = async (name: string, senderEmail: string, subject: string, message: string) => {
+  const mailOptions = {
+    from: `"Bloom & Blossom Contact" <${config.smtp.user}>`,
+    to: "info@bloomandblossom.in",
+    replyTo: senderEmail,
+    subject: `New Contact Form Submission: ${subject}`,
+    text: `Name: ${name}\nEmail: ${senderEmail}\nSubject: ${subject}\n\nMessage:\n${message}`,
+    html: `
+      <h2>New Contact Form Submission</h2>
+      <p><strong>Name:</strong> ${name}</p>
+      <p><strong>Email:</strong> ${senderEmail}</p>
+      <p><strong>Subject:</strong> ${subject}</p>
+      <hr/>
+      <p><strong>Message:</strong></p>
+      <p style="white-space: pre-wrap;">${message}</p>
+    `,
+  };
+
+  if (!config.smtp.pass) {
+    console.log("--------------------------------------------------------------------------------");
+    console.log("SMTP Password not set! In a real environment, an email would be sent.");
+    console.log(`[TESTING] CONTACT FORM SUBMISSION FROM ${senderEmail}:`);
+    console.log(`[TESTING] SUBJECT: ${subject}`);
+    console.log(`[TESTING] MESSAGE: ${message}`);
+    console.log("--------------------------------------------------------------------------------");
+    return;
+  }
+
+  try {
+    await transporter.sendMail(mailOptions);
+    console.log(`Contact email sent from ${senderEmail}`);
+  } catch (error) {
+    console.error(`Failed to send contact email from ${senderEmail}:`, error);
+    throw new Error("Failed to send contact email");
+  }
+};
