@@ -130,6 +130,9 @@ export function Checkout() {
       try {
         data = JSON.parse(responseText);
       } catch (parseError) {
+        if (responseText.includes('<!doctype html>')) {
+           throw new Error('Server returned an HTML file instead of API data. If you deployed this to Hostinger or a static host, note that the Node.js backend is REQUIRED for Phonepe payments, and static hosting does not support it.');
+        }
         console.error('Failed to parse JSON, received this instead:', responseText.substring(0, 500));
         throw new Error('Received invalid JSON from server: ' + responseText.substring(0, 100));
       }

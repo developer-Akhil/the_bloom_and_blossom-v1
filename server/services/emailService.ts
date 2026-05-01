@@ -55,7 +55,7 @@ export const sendVerificationEmail = async (email: string, token: string, fronte
 export const sendContactEmail = async (name: string, senderEmail: string, subject: string, message: string) => {
   const mailOptions = {
     from: `"Bloom & Blossom Contact" <${config.smtp.user}>`,
-    to: "info@bloomandblossom.in",
+    to: config.smtp.user,
     replyTo: senderEmail,
     subject: `New Contact Form Submission: ${subject}`,
     text: `Name: ${name}\nEmail: ${senderEmail}\nSubject: ${subject}\n\nMessage:\n${message}`,
