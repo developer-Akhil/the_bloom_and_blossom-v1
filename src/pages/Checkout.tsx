@@ -112,10 +112,27 @@ export function Checkout() {
       });
       
       if (!res.ok) {
-        throw new Error('Failed to initiate payment');
+        let errText = 'Failed to initiate payment';
+        try {
+          const contentType = res.headers.get('content-type');
+          if (contentType && contentType.includes('application/json')) {
+            const errJson = await res.json();
+            errText = errJson.details || errJson.error || errText;
+          } else {
+            errText = await res.text();
+          }
+        } catch(e) {}
+        throw new Error(errText);
       }
       
-      const data = await res.json();
+      const responseText = await res.text();
+      let data;
+      try {
+        data = JSON.parse(responseText);
+      } catch (parseError) {
+        console.error('Failed to parse JSON, received this instead:', responseText.substring(0, 500));
+        throw new Error('Received invalid JSON from server: ' + responseText.substring(0, 100));
+      }
       
       // Store checkout context locally to retrieve after callback
       sessionStorage.setItem('currentOrderId', data.merchantOrderId || data.orderId);
