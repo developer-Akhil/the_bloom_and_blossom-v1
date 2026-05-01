@@ -117,7 +117,16 @@ export function Checkout() {
           const contentType = res.headers.get('content-type');
           if (contentType && contentType.includes('application/json')) {
             const errJson = await res.json();
-            errText = errJson.details || errJson.error || errText;
+            
+            let descriptiveError = errJson.error || errText;
+            if (errJson.details) {
+               if (typeof errJson.details === 'object') {
+                  descriptiveError += '\n' + JSON.stringify(errJson.details);
+               } else {
+                  descriptiveError += '\n' + errJson.details;
+               }
+            }
+            errText = descriptiveError;
           } else {
             errText = await res.text();
           }
@@ -151,10 +160,10 @@ export function Checkout() {
       } else {
         throw new Error('No redirect URL received');
       }
-    } catch (e) {
+    } catch (e: any) {
       console.error('Payment initiation error', e);
       setIsProcessing(false);
-      alert('Failed to initiate payment. Please try again.');
+      alert(e.message || 'Failed to initiate payment. Please try again.');
     }
   };
 
@@ -390,7 +399,7 @@ export function Checkout() {
                       </div>
                       
                       <a 
-                        href={`https://wa.me/918076323737?text=${encodeURIComponent(`Hello, I've made the payment of Rs ${finalTotal} for my order using Manual UPI. I am sharing the payment screenshot below.`)}`}
+                        href={`https://wa.me/${siteConfig.contact.phone.replace(/\D/g, '')}?text=${encodeURIComponent(`Hello, I've made the payment of Rs ${finalTotal} for my order using Manual UPI. I am sharing the payment screenshot below.`)}`}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="w-full h-16 bg-[#25D366] text-white rounded-full font-bold text-lg hover:bg-[#128C7E] transition-all flex items-center justify-center space-x-3 shadow-xl shadow-green-600/20"

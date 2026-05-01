@@ -4,10 +4,10 @@ import { siteConfig } from '../../src/config/site.js';
 
 const router = express.Router();
 
-let envClientId = process.env.PHONEPE_CLIENT_ID || 'SU2604291521118069515094';
-let envClientSecret = process.env.PHONEPE_CLIENT_SECRET || '1b0a1511-d56d-4fea-a426-74676c9350bf';
+let envClientId = process.env.PHONEPE_MERCHANT_ID || process.env.PHONEPE_CLIENT_ID;
+let envClientSecret = process.env.PHONEPE_CLIENT_SECRET || process.env.PHONEPE_SALT_KEY;
 
-if (envClientId.includes('-') && envClientSecret.startsWith('SU')) {
+if (envClientId && envClientSecret && envClientId.includes('-') && envClientSecret.startsWith('SU')) {
   const temp = envClientId;
   envClientId = envClientSecret;
   envClientSecret = temp;
@@ -15,10 +15,10 @@ if (envClientId.includes('-') && envClientSecret.startsWith('SU')) {
 
 const MERCHANT_ID = envClientId;
 const SALT_KEY = envClientSecret;
-const SALT_INDEX = process.env.PHONEPE_CLIENT_VERSION || '1';
+const SALT_INDEX = process.env.PHONEPE_SALT_INDEX || process.env.PHONEPE_SALT_VERSION || process.env.PHONEPE_CLIENT_VERSION || '1';
 
 const normalizedEnv = (process.env.PHONEPE_ENV || 'PROD').toUpperCase();
-const PHONEPE_ENV = normalizedEnv === 'PRODUCTION' ? 'PROD' : normalizedEnv;
+const PHONEPE_ENV = normalizedEnv === 'PRODUCTION' || normalizedEnv === 'PROD' ? 'PROD' : 'SANDBOX';
 
 const PHONEPE_HOST = PHONEPE_ENV === 'PROD' 
   ? siteConfig.api.phonepe.prodUrl 
@@ -30,6 +30,20 @@ router.post('/pay', async (req, res) => {
     
     if (!amount) {
       return res.status(400).json({ error: 'Amount is required' });
+    }
+
+    if (!MERCHANT_ID) {
+       return res.status(400).json({ 
+         error: 'Gateway Not Configured', 
+         details: 'PhonePe Merchant ID is missing. Please set PHONEPE_MERCHANT_ID in Settings -> Secrets.' 
+       });
+    }
+
+    if (!SALT_KEY) {
+       return res.status(400).json({ 
+         error: 'Gateway Not Configured', 
+         details: 'PhonePe Salt Key is missing. Please set PHONEPE_CLIENT_SECRET or PHONEPE_SALT_KEY in Settings -> Secrets.' 
+       });
     }
 
     const merchantTransactionId = 'TX' + Date.now() + Math.random().toString(36).substring(2, 7);
@@ -80,13 +94,28 @@ router.post('/pay', async (req, res) => {
       body: JSON.stringify({ request: base64Payload })
     });
 
-    if (!paymentResponse.ok) {
-      const errText = await paymentResponse.text();
-      console.error('PhonePe /pay issue:', errText);
-      return res.status(500).json({ error: 'Failed to initiate payment', details: errText });
+    let data;
+    try {
+      const textResponse = await paymentResponse.text();
+      data = JSON.parse(textResponse);
+    } catch (e) {
+      console.error('PhonePe /pay non-JSON response');
+      return res.status(500).json({ error: 'Failed to initiate payment', details: 'Non-JSON response from PhonePe' });
     }
 
-    const data = await paymentResponse.json();
+    if (!paymentResponse.ok || !data.success) {
+      console.error('PhonePe /pay issue:', data);
+      
+      if (data.code === '404' || data.code === 'KEY_NOT_CONFIGURED') {
+         return res.status(400).json({ 
+           error: 'Payment gateway configuration issue', 
+           details: `PhonePe returned ${data.code}. This occurs if your Merchant ID (${MERCHANT_ID}) is not recognized OR if your PHONEPE_CLIENT_SECRET / SALT_INDEX is incorrect for the ${PHONEPE_ENV} environment. Please verify your credentials.` 
+         });
+      }
+
+      return res.status(400).json({ error: 'Failed to initiate payment', details: data });
+    }
+
     if (data.success && data.data?.instrumentResponse?.redirectInfo?.url) {
       return res.json({
          merchantOrderId: merchantTransactionId,
