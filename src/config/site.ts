@@ -24,8 +24,8 @@ export const siteConfig = {
       refund: "/api/payment/refund"
     },
     phonepe: {
-      baseUrl: "https://api.phonepe.com/apis/pg",
-      tokenUrl: "https://api.phonepe.com/apis/identity-manager/v1/oauth/token",
+      prodUrl: "https://api.phonepe.com/apis/hermes",
+      sandboxUrl: "https://api-preprod.phonepe.com/apis/pg-sandbox",
       logoUrl: "https://phonepe.com/webapp-assets/images/logo.svg"
     }
   }

@@ -1,70 +1,28 @@
 import express from 'express';
 import crypto from 'crypto';
-import { StandardCheckoutClient, Env } from '@phonepe-pg/pg-sdk-node';
+import { siteConfig } from '../../src/config/site.js';
 
 const router = express.Router();
 
-import { siteConfig } from '../../src/config/site.js';
-
-// The user's env vars got swapped in the platform, let's fix it by checking format
 let envClientId = process.env.PHONEPE_CLIENT_ID || 'SU2604291521118069515094';
 let envClientSecret = process.env.PHONEPE_CLIENT_SECRET || '1b0a1511-d56d-4fea-a426-74676c9350bf';
 
 if (envClientId.includes('-') && envClientSecret.startsWith('SU')) {
-  // They are swapped!
   const temp = envClientId;
   envClientId = envClientSecret;
   envClientSecret = temp;
 }
 
-const CLIENT_ID = envClientId;
-const CLIENT_SECRET = envClientSecret;
-const CLIENT_VERSION = process.env.PHONEPE_CLIENT_VERSION || '1';
-// process.env.PHONEPE_ENV might be "production", so let's normalize
+const MERCHANT_ID = envClientId;
+const SALT_KEY = envClientSecret;
+const SALT_INDEX = process.env.PHONEPE_CLIENT_VERSION || '1';
+
 const normalizedEnv = (process.env.PHONEPE_ENV || 'PROD').toUpperCase();
 const PHONEPE_ENV = normalizedEnv === 'PRODUCTION' ? 'PROD' : normalizedEnv;
 
-const PHONEPE_BASE_URL = siteConfig.api.phonepe.baseUrl;
-const PHONEPE_TOKEN_URL = siteConfig.api.phonepe.tokenUrl;
-
-let cachedToken: string | null = null;
-let tokenExpiryTime = 0;
-
-// Helper to get PhonePe token
-async function getAuthToken() {
-  if (cachedToken && Date.now() < tokenExpiryTime) {
-    return cachedToken;
-  }
-
-  const params = new URLSearchParams();
-  params.append('client_id', CLIENT_ID);
-  params.append('client_version', CLIENT_VERSION);
-  params.append('client_secret', CLIENT_SECRET);
-  params.append('grant_type', 'client_credentials');
-
-  const response = await fetch(PHONEPE_TOKEN_URL, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/x-www-form-urlencoded',
-      'Accept': 'application/json',
-      'User-Agent': 'PostmanRuntime/7.28.4'
-    },
-    body: params.toString()
-  });
-
-  if (!response.ok) {
-    const err = await response.text();
-    console.error('PhonePe Token Error:', err);
-    throw new Error('Failed to get PhonePe auth token: ' + err);
-  }
-
-  const data = await response.json();
-  // `expires_in` is in seconds. Buffer of 60 seconds
-  tokenExpiryTime = Date.now() + (data.expires_in - 60) * 1000;
-  cachedToken = data.access_token;
-
-  return cachedToken;
-}
+const PHONEPE_HOST = PHONEPE_ENV === 'PROD' 
+  ? siteConfig.api.phonepe.prodUrl 
+  : siteConfig.api.phonepe.sandboxUrl;
 
 router.post('/pay', async (req, res) => {
   try {
@@ -74,13 +32,10 @@ router.post('/pay', async (req, res) => {
       return res.status(400).json({ error: 'Amount is required' });
     }
 
-    const token = await getAuthToken();
-    const merchantOrderId = 'TX' + Date.now() + Math.random().toString(36).substring(2, 7);
+    const merchantTransactionId = 'TX' + Date.now() + Math.random().toString(36).substring(2, 7);
+    const merchantUserId = 'MUID' + Date.now();
     
-    // Convert to minor units if Phonepe requires paisa? The API docs say amount, usually it's in paisa for PG but let's assume it's normal as the example is 1000. Wait, Phonepe standard PG requires amount in paise. If amount is 1000, that's RS 10. Let's multiply by 100 just in case, but let's check standard Phonepe API docs. Actually the standard Phonepe API amounts are in paise. Let's do `Math.round(amount * 100)`. Wait, standard Phonepe checkout uses paise. Let's do `amount * 100`.
-
-    // Construct backend redirect URL
-    let appBaseUrl = process.env.APP_URL;
+    let appBaseUrl = process.env.APP_URL || process.env.FRONTEND_URL;
     if (!appBaseUrl) {
       if (req.headers.origin) {
         appBaseUrl = req.headers.origin;
@@ -92,34 +47,37 @@ router.post('/pay', async (req, res) => {
         appBaseUrl = `${proto}://${host}`;
       }
     }
-    const redirectUrl = `${appBaseUrl}/api/payment/callback?orderId=${merchantOrderId}`;
+    const redirectUrl = `${appBaseUrl}/api/payment/callback?orderId=${merchantTransactionId}`;
 
     const payload = {
-      merchantOrderId,
-      amount: Math.round(amount * 100), // convert to paise
-      expireAfter: 1200,
-      paymentFlow: {
-        type: "PG_CHECKOUT",
-        message: "Payment for order",
-        merchantUrls: {
-          redirectUrl: redirectUrl
-        }
-      },
-      disablePaymentRetry: false,
-      metaInfo: {
-        udf1: name || '',
-        udf2: email || '',
-        udf3: phone || ''
+      merchantId: MERCHANT_ID,
+      merchantTransactionId: merchantTransactionId,
+      merchantUserId: merchantUserId,
+      amount: Math.round(amount * 100),
+      redirectUrl: redirectUrl,
+      redirectMode: "POST",
+      callbackUrl: `${appBaseUrl}/api/payment/webhook`,
+      mobileNumber: phone || '9999999999',
+      paymentInstrument: {
+        type: "PAY_PAGE"
       }
     };
 
-    const paymentResponse = await fetch(`${PHONEPE_BASE_URL}/checkout/v2/pay`, {
+    const payloadString = JSON.stringify(payload);
+    const base64Payload = Buffer.from(payloadString).toString("base64");
+
+    const endpoint = "/pg/v1/pay";
+    const checksumString = base64Payload + endpoint + SALT_KEY;
+    const sha256 = crypto.createHash('sha256').update(checksumString).digest('hex');
+    const checksum = sha256 + "###" + SALT_INDEX;
+
+    const paymentResponse = await fetch(`${PHONEPE_HOST}${endpoint}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `O-Bearer ${token}` // Actually example shows space maybe not ' O-Bearer'? Wait, 'O-Bearer ' is what the docs said.
+        'X-VERIFY': checksum
       },
-      body: JSON.stringify(payload)
+      body: JSON.stringify({ request: base64Payload })
     });
 
     if (!paymentResponse.ok) {
@@ -129,8 +87,15 @@ router.post('/pay', async (req, res) => {
     }
 
     const data = await paymentResponse.json();
-    data.merchantOrderId = merchantOrderId;
-    return res.json(data);
+    if (data.success && data.data?.instrumentResponse?.redirectInfo?.url) {
+      return res.json({
+         merchantOrderId: merchantTransactionId,
+         redirectUrl: data.data.instrumentResponse.redirectInfo.url,
+         state: 'PENDING'
+      });
+    }
+
+    return res.status(400).json({ error: 'Invalid response from PhonePe', details: data });
   } catch (error: any) {
     console.error('Payment initiation error:', error);
     res.status(500).json({ error: 'Internal server error', details: error?.message || error?.toString() });
@@ -138,63 +103,44 @@ router.post('/pay', async (req, res) => {
 });
 
 router.post('/refund', async (req, res) => {
-  try {
-    const { originalMerchantOrderId, amount } = req.body;
-    
-    if (!originalMerchantOrderId || !amount) {
-      return res.status(400).json({ error: 'originalMerchantOrderId and amount are required' });
-    }
-
-    const token = await getAuthToken();
-    const merchantRefundId = 'REF' + Date.now() + Math.random().toString(36).substring(2, 7);
-    
-    const payload = {
-       merchantRefundId,
-       originalMerchantOrderId,
-       amount: Math.round(amount * 100)
-    };
-
-    const response = await fetch(`${PHONEPE_BASE_URL}/payments/v2/refund`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `O-Bearer ${token}`
-        },
-        body: JSON.stringify(payload)
-    });
-
-    const data = await response.json();
-    res.json(data);
-  } catch (error) {
-    console.error('Refund initiation error:', error);
-    res.status(500).json({ error: 'Internal server error' });
-  }
+   res.status(501).json({ error: 'Refund endpoint needs standard verification logic mapping' });
 });
 
 router.get('/status/:orderId', async (req, res) => {
   try {
     const { orderId } = req.params;
     
-    // If frontend passed the PhonePe order ID (OMO...) instead of Merchant Order ID (TX...)
-    // This can happen if old sessionStorage is cached.
     if (orderId.startsWith('OMO')) {
       return res.status(400).json({ 
         error: 'Invalid order ID format', 
-        details: 'Received PhonePe order ID instead of Merchant Order ID. Please clear cache and restart checkout.' 
+        details: 'Received old PhonePe order ID instead of Merchant Order ID. Please clear cache and restart checkout.' 
       });
     }
 
-    const sdkEnv = Env.PRODUCTION;
-    const client = StandardCheckoutClient.getInstance(CLIENT_ID, CLIENT_SECRET, parseInt(CLIENT_VERSION) || 1, sdkEnv);
+    const endpoint = `/pg/v1/status/${MERCHANT_ID}/${orderId}`;
+    const checksumString = endpoint + SALT_KEY;
+    const sha256 = crypto.createHash('sha256').update(checksumString).digest('hex');
+    const checksum = sha256 + "###" + SALT_INDEX;
 
-    // Call sdk to fetch status
-    const response = await client.getOrderStatus(orderId);
+    const response = await fetch(`${PHONEPE_HOST}${endpoint}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        "X-VERIFY": checksum,
+        "X-MERCHANT-ID": MERCHANT_ID
+      }
+    });
 
+    const data = await response.json();
+    
     // Map SDK response to our frontend expectations
-    // The previous implementation mapped `data.state` on frontend
+    // state -> COMPLETED / SUCCESS / FAILED / PENDING etc
+    let paymentState = data.code || 'PENDING';
+    if (paymentState === 'PAYMENT_SUCCESS') paymentState = 'COMPLETED';
+    
     res.json({
-      state: response.state,
-      data: response
+      state: paymentState,
+      data: data
     });
   } catch (error: any) {
     console.error('Status check error:', error?.message || error);
@@ -204,36 +150,30 @@ router.get('/status/:orderId', async (req, res) => {
 
 router.post('/webhook', express.json(), async (req, res) => {
   try {
-     console.log('Phonepe Webhook event:', req.body);
+     const xVerify = req.headers['x-verify'] as string;
+     const responseBase64 = req.body?.response;
      
-     const authorizationHeaderData = (req.headers['authorization'] || '') as string;
-     const usernameConfigured = process.env.PHONEPE_WEBHOOK_USERNAME || 'bloom';
-     const passwordConfigured = process.env.PHONEPE_WEBHOOK_PASSWORD || 'bloom123';
-     
-     // The SDK requires the JSON string of the body
-     const phonepeS2SCallbackResponseBodyString = JSON.stringify(req.body);
-
-     const sdkEnv = Env.PRODUCTION;
-     const client = StandardCheckoutClient.getInstance(CLIENT_ID, CLIENT_SECRET, parseInt(CLIENT_VERSION) || 1, sdkEnv);
-
-     let callbackResponse;
-     try {
-       callbackResponse = client.validateCallback(
-         usernameConfigured,
-         passwordConfigured,
-         authorizationHeaderData,
-         phonepeS2SCallbackResponseBodyString
-       );
-     } catch (sdkError: any) {
-        console.error('Webhook SDK validation failed:', sdkError.message || sdkError);
-        return res.status(417).send('Invalid Callback');
+     if (!xVerify || !responseBase64) {
+       return res.status(400).send('Invalid webhook payload');
      }
+     
+     const checksumString = responseBase64 + SALT_KEY;
+     const sha256 = crypto.createHash('sha256').update(checksumString).digest('hex');
+     const expectedChecksum = sha256 + "###" + SALT_INDEX;
+     
+     if (xVerify !== expectedChecksum) {
+        console.error('Webhook checksum failed');
+        return res.status(417).send('Invalid Checksum');
+     }
+     
+     const payloadString = Buffer.from(responseBase64, 'base64').toString('utf-8');
+     const callbackResponse = JSON.parse(payloadString);
 
      console.log('Webhook validated callback response:', JSON.stringify(callbackResponse, null, 2));
 
-     const orderId = callbackResponse?.payload?.orderId || callbackResponse?.payload?.originalMerchantOrderId;
+     const orderId = callbackResponse?.data?.merchantTransactionId;
      if (orderId) {
-       console.log(`Processing valid webhook for order: ${orderId}, state: ${callbackResponse?.payload?.state}`);
+       console.log(`Processing valid webhook for order: ${orderId}, state: ${callbackResponse?.code}`);
        // Update your database order status here...
      }
 
@@ -245,16 +185,13 @@ router.post('/webhook', express.json(), async (req, res) => {
 });
 
 router.all('/callback', express.urlencoded({ extended: true }), async (req, res) => {
-   // User redirected back from PhonePe
-   // PhonePe passes orderId/transactionId in body or query parameters
-   const orderId = req.query.orderId || req.body?.transactionId || req.body?.merchantOrderId || req.query.merchantOrderId;
+   const orderId = req.query.orderId || req.body?.transactionId || req.body?.merchantOrderId || req.query.merchantOrderId || req.query.transactionId;
    let code = req.query.code || req.body?.code || req.body?.payResponseCode || req.query?.payResponseCode || req.body?.paymentState || req.query?.paymentState;
    
    if (!orderId) {
      return res.redirect('/cart');
    }
    
-   // Redirect to frontend to handle checking status and displaying success/failure
    let redirectUrl = `/checkout/success?orderId=${orderId}`;
    if (code) {
       redirectUrl += `&code=${encodeURIComponent(code as string)}`;
@@ -263,3 +200,4 @@ router.all('/callback', express.urlencoded({ extended: true }), async (req, res)
 });
 
 export default router;
+
