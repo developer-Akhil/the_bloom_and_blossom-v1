@@ -103,7 +103,7 @@ export function Checkout() {
         name: shippingData.name
       };
 
-      const res = await fetch('/api/payment/pay', {
+      const res = await fetch(siteConfig.api.payment.pay, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -167,7 +167,7 @@ export function Checkout() {
 
     const interval = setInterval(async () => {
       try {
-        const res = await fetch(`/api/payment/status/${currentOrderId}`);
+        const res = await fetch(siteConfig.api.payment.status(currentOrderId));
         if (res.status === 400) {
            clearInterval(interval);
            sessionStorage.removeItem('currentOrderId');
@@ -320,7 +320,7 @@ export function Checkout() {
                           rel="noopener noreferrer"
                           className="w-full h-16 bg-[#5e2c9d] text-white rounded-full font-bold text-lg hover:bg-purple-800 transition-all flex items-center justify-center space-x-3 shadow-xl shadow-purple-600/20"
                         >
-                          <img src="https://phonepe.com/webapp-assets/images/logo.svg" className="h-6 w-auto mr-2 filter brightness-0 invert" alt="PhonePe" />
+                          <img src={siteConfig.api.phonepe.logoUrl} className="h-6 w-auto mr-2 filter brightness-0 invert" alt="PhonePe" />
                           <span>Proceed to PhonePe</span>
                         </a>
                         <div className="flex items-center justify-center space-x-2 text-sm text-gray-500 bg-gray-50 p-4 rounded-xl border border-gray-100">

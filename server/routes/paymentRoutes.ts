@@ -4,6 +4,8 @@ import { StandardCheckoutClient, Env } from '@phonepe-pg/pg-sdk-node';
 
 const router = express.Router();
 
+import { siteConfig } from '../../src/config/site.js';
+
 // The user's env vars got swapped in the platform, let's fix it by checking format
 let envClientId = process.env.PHONEPE_CLIENT_ID || 'SU2604291521118069515094';
 let envClientSecret = process.env.PHONEPE_CLIENT_SECRET || '1b0a1511-d56d-4fea-a426-74676c9350bf';
@@ -22,8 +24,8 @@ const CLIENT_VERSION = process.env.PHONEPE_CLIENT_VERSION || '1';
 const normalizedEnv = (process.env.PHONEPE_ENV || 'PROD').toUpperCase();
 const PHONEPE_ENV = normalizedEnv === 'PRODUCTION' ? 'PROD' : normalizedEnv;
 
-const PHONEPE_BASE_URL = 'https://api.phonepe.com/apis/pg';
-const PHONEPE_TOKEN_URL = 'https://api.phonepe.com/apis/identity-manager/v1/oauth/token';
+const PHONEPE_BASE_URL = siteConfig.api.phonepe.baseUrl;
+const PHONEPE_TOKEN_URL = siteConfig.api.phonepe.tokenUrl;
 
 let cachedToken: string | null = null;
 let tokenExpiryTime = 0;

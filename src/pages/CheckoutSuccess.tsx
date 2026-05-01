@@ -6,6 +6,8 @@ import { supabase } from '../lib/supabase';
 import { CheckCircle2, Loader2, XCircle } from 'lucide-react';
 import { motion } from 'motion/react';
 
+import { siteConfig } from '../config/site';
+
 export function CheckoutSuccess() {
   const [searchParams] = useSearchParams();
   const orderId = searchParams.get('orderId');
@@ -33,7 +35,7 @@ export function CheckoutSuccess() {
       }
 
       try {
-        const res = await fetch(`/api/payment/status/${orderId}`);
+        const res = await fetch(siteConfig.api.payment.status(orderId));
         if (!res.ok) {
            throw new Error('Failed to verify payment status');
         }
