@@ -129,6 +129,9 @@ export function ProductDetail() {
               <span className="px-3 py-1 bg-bloom-pink text-bloom-rose text-[10px] font-bold uppercase rounded-full tracking-widest">
                 {product.category}
               </span>
+              {product.isOnSale && (
+                <span className="px-3 py-1 bg-orange-500 text-white text-[10px] shadow-sm font-bold uppercase rounded-full">Sale</span>
+              )}
               <div className="flex items-center text-amber-500 text-sm font-bold ml-auto">
                 <Star size={16} className="fill-current mr-1" />
                 <span>{product.rating}</span>
@@ -136,7 +139,17 @@ export function ProductDetail() {
               </div>
             </div>
             <h1 className="font-serif text-4xl md:text-5xl font-bold leading-tight">{product.name}</h1>
-            <p className="text-3xl font-bold text-bloom-rose">₹{product.price}</p>
+            <div className="flex items-center space-x-3">
+               <p className="text-3xl font-bold text-bloom-rose">₹{product.price}</p>
+               {product.isOnSale && product.originalPrice && product.originalPrice > product.price && (
+                 <>
+                   <p className="text-xl text-gray-400 line-through font-medium">₹{product.originalPrice}</p>
+                   <p className="text-lg text-orange-500 font-bold">
+                     ({Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)}% OFF)
+                   </p>
+                 </>
+               )}
+            </div>
           </div>
 
           <p className="text-gray-500 leading-relaxed font-light">

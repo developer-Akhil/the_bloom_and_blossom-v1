@@ -17,7 +17,7 @@ const MERCHANT_ID = envClientId;
 const SALT_KEY = envClientSecret;
 const SALT_INDEX = process.env.PHONEPE_SALT_INDEX || process.env.PHONEPE_SALT_VERSION || process.env.PHONEPE_CLIENT_VERSION || '1';
 
-const normalizedEnv = (process.env.PHONEPE_ENV || 'PROD').toUpperCase();
+const normalizedEnv = (process.env.PHONEPE_ENV || 'SANDBOX').toUpperCase();
 const PHONEPE_ENV = normalizedEnv === 'PRODUCTION' || normalizedEnv === 'PROD' ? 'PROD' : 'SANDBOX';
 
 const PHONEPE_HOST = PHONEPE_ENV === 'PROD' 

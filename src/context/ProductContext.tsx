@@ -31,6 +31,14 @@ export function ProductProvider({ children }: { children: React.ReactNode }) {
     const localAvailability = localStorage.getItem('bloom_product_availability');
     return localAvailability ? JSON.parse(localAvailability) : {};
   });
+  const [onSaleSet, setOnSaleSet] = useState<Set<string>>(() => {
+    const localOnSale = localStorage.getItem('bloom_on_sale');
+    return localOnSale ? new Set(JSON.parse(localOnSale)) : new Set();
+  });
+  const [originalPriceOverrides, setOriginalPriceOverrides] = useState<Record<string, number>>(() => {
+    const localPrices = localStorage.getItem('bloom_original_prices');
+    return localPrices ? JSON.parse(localPrices) : {};
+  });
 
   const fetchSupabaseData = useCallback(async () => {
     try {
@@ -72,15 +80,28 @@ export function ProductProvider({ children }: { children: React.ReactNode }) {
       const localAvailability = localStorage.getItem('bloom_product_availability');
       if (localAvailability) setAvailabilityMap(JSON.parse(localAvailability));
     };
+    const handleOnSaleUpdate = () => {
+      const localOnSale = localStorage.getItem('bloom_on_sale');
+      if (localOnSale) setOnSaleSet(new Set(JSON.parse(localOnSale)));
+    };
+    const handleOriginalPricesUpdate = () => {
+      const localPrices = localStorage.getItem('bloom_original_prices');
+      if (localPrices) setOriginalPriceOverrides(JSON.parse(localPrices));
+    };
+
     window.addEventListener('dynamic_price_updated', handleUpdate);
     window.addEventListener('best_sellers_updated', handleBestSellersUpdate);
     window.addEventListener('new_arrivals_updated', handleNewArrivalsUpdate);
     window.addEventListener('availability_updated', handleAvailabilityUpdate);
+    window.addEventListener('on_sale_updated', handleOnSaleUpdate);
+    window.addEventListener('original_price_updated', handleOriginalPricesUpdate);
     return () => {
        window.removeEventListener('dynamic_price_updated', handleUpdate);
        window.removeEventListener('best_sellers_updated', handleBestSellersUpdate);
        window.removeEventListener('new_arrivals_updated', handleNewArrivalsUpdate);
        window.removeEventListener('availability_updated', handleAvailabilityUpdate);
+       window.removeEventListener('on_sale_updated', handleOnSaleUpdate);
+       window.removeEventListener('original_price_updated', handleOriginalPricesUpdate);
     };
   }, [fetchSupabaseData]);
 
@@ -99,6 +120,15 @@ export function ProductProvider({ children }: { children: React.ReactNode }) {
       const adminNewArrivalsStr = localStorage.getItem('bloom_new_arrivals');
       if (adminNewArrivalsStr) {
           updatedProduct.isNewArrival = newArrivalsSet.has(product.id);
+      }
+
+      const adminOnSaleStr = localStorage.getItem('bloom_on_sale');
+      if (adminOnSaleStr) {
+          updatedProduct.isOnSale = onSaleSet.has(product.id);
+      }
+
+      if (originalPriceOverrides[product.id]) {
+          updatedProduct.originalPrice = originalPriceOverrides[product.id];
       }
 
       const adminAvailStr = localStorage.getItem('bloom_product_availability');

@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { Navigate, Link } from 'react-router-dom';
 import { products as baseProducts } from '../data/products';
-import { updateDynamicPrice, updateDynamicPricesBatch, useDynamicProducts, updateBestSellers, updateNewArrivals, updateAvailabilityBatch } from '../lib/dynamicPricing';
-import { Settings, Save, CheckCircle2, ShieldAlert, IndianRupee, LogOut, Star, Sparkles, Package, PackageX } from 'lucide-react';
+import { updateDynamicPrice, updateDynamicPricesBatch, useDynamicProducts, updateBestSellers, updateNewArrivals, updateAvailabilityBatch, updateOnSale, updateOriginalPricesBatch } from '../lib/dynamicPricing';
+import { Settings, Save, CheckCircle2, ShieldAlert, IndianRupee, LogOut, Star, Sparkles, Package, PackageX, Tag } from 'lucide-react';
 import { useAdminAuth } from '../context/AdminAuthContext';
 
 export function Admin() {
@@ -12,6 +12,8 @@ export function Admin() {
   const [bestSellerEdits, setBestSellerEdits] = useState<Record<string, boolean>>({});
   const [newArrivalEdits, setNewArrivalEdits] = useState<Record<string, boolean>>({});
   const [availabilityEdits, setAvailabilityEdits] = useState<Record<string, boolean>>({});
+  const [onSaleEdits, setOnSaleEdits] = useState<Record<string, boolean>>({});
+  const [originalPriceEdits, setOriginalPriceEdits] = useState<Record<string, number>>({});
   const [showSaved, setShowSaved] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
 
@@ -22,12 +24,23 @@ export function Admin() {
 
   const handlePriceChange = (id: string, value: string) => {
     if (value === '') {
-      setEdits({ ...edits, [id]: 0 }); // Or handle empty state appropriately
+      setEdits({ ...edits, [id]: 0 }); 
       return;
     }
     const num = Number(value);
     if (!isNaN(num)) {
       setEdits({ ...edits, [id]: num });
+    }
+  };
+
+  const handleOriginalPriceChange = (id: string, value: string) => {
+    if (value === '') {
+      setOriginalPriceEdits({ ...originalPriceEdits, [id]: 0 }); 
+      return;
+    }
+    const num = Number(value);
+    if (!isNaN(num)) {
+      setOriginalPriceEdits({ ...originalPriceEdits, [id]: num });
     }
   };
 
@@ -44,6 +57,11 @@ export function Admin() {
   const handleAvailabilityToggle = (id: string, currentStatus: boolean) => {
     const isCurrentlyInStock = availabilityEdits[id] !== undefined ? availabilityEdits[id] : currentStatus;
     setAvailabilityEdits({ ...availabilityEdits, [id]: !isCurrentlyInStock });
+  };
+
+  const handleOnSaleToggle = (id: string, currentStatus: boolean) => {
+    const isCurrentlyOnSale = onSaleEdits[id] !== undefined ? onSaleEdits[id] : currentStatus;
+    setOnSaleEdits({ ...onSaleEdits, [id]: !isCurrentlyOnSale });
   };
 
   const handleSave = async () => {
@@ -72,10 +90,23 @@ export function Admin() {
           await updateAvailabilityBatch(availabilityEdits);
       }
       
+      if (Object.keys(onSaleEdits).length > 0) {
+          const finalOnSale = dynamicProducts
+              .filter(p => onSaleEdits[p.id] !== undefined ? onSaleEdits[p.id] : p.isOnSale)
+              .map(p => p.id);
+          await updateOnSale(finalOnSale);
+      }
+
+      if (Object.keys(originalPriceEdits).length > 0) {
+          await updateOriginalPricesBatch(originalPriceEdits);
+      }
+      
       setEdits({});
       setBestSellerEdits({});
       setNewArrivalEdits({});
       setAvailabilityEdits({});
+      setOnSaleEdits({});
+      setOriginalPriceEdits({});
       setShowSaved(true);
       setTimeout(() => setShowSaved(false), 3000);
     } catch (err) {
@@ -85,7 +116,7 @@ export function Admin() {
     }
   };
 
-  const hasUnsavedChanges = Object.keys(edits).length > 0 || Object.keys(bestSellerEdits).length > 0 || Object.keys(newArrivalEdits).length > 0 || Object.keys(availabilityEdits).length > 0;
+  const hasUnsavedChanges = Object.keys(edits).length > 0 || Object.keys(bestSellerEdits).length > 0 || Object.keys(newArrivalEdits).length > 0 || Object.keys(availabilityEdits).length > 0 || Object.keys(onSaleEdits).length > 0 || Object.keys(originalPriceEdits).length > 0;
 
   return (
     <div className="container mx-auto px-4 md:px-6 py-12">
@@ -135,8 +166,10 @@ export function Admin() {
                   <th className="p-4 font-bold border-b">Category</th>
                   <th className="p-4 font-bold border-b text-center w-24">Best Seller</th>
                   <th className="p-4 font-bold border-b text-center w-24">New Arrival</th>
+                  <th className="p-4 font-bold border-b text-center w-24">On Sale</th>
                   <th className="p-4 font-bold border-b text-center w-32">Status</th>
-                  <th className="p-4 font-bold border-b w-48">Dynamic Price (₹)</th>
+                  <th className="p-4 font-bold border-b w-40">Original Price (₹)</th>
+                  <th className="p-4 font-bold border-b w-40">Sale Price (₹)</th>
                 </tr>
               </thead>
               <tbody className="divide-y">
@@ -144,6 +177,7 @@ export function Admin() {
                   const isBestSeller = bestSellerEdits[product.id] !== undefined ? bestSellerEdits[product.id] : !!product.isBestSeller;
                   const isNewArrival = newArrivalEdits[product.id] !== undefined ? newArrivalEdits[product.id] : !!product.isNewArrival;
                   const inStock = availabilityEdits[product.id] !== undefined ? availabilityEdits[product.id] : product.inStock;
+                  const isOnSale = onSaleEdits[product.id] !== undefined ? onSaleEdits[product.id] : !!product.isOnSale;
                   return (
                   <tr key={product.id} className="hover:bg-gray-50/50 transition-colors">
                     <td className="p-4">
@@ -173,6 +207,15 @@ export function Admin() {
                     </td>
                     <td className="p-4 text-center">
                        <button
+                         onClick={() => handleOnSaleToggle(product.id, !!product.isOnSale)}
+                         title={isOnSale ? "Remove from Sale" : "Mark as On Sale"}
+                         className={`p-2 rounded-full transition-colors ${isOnSale ? 'bg-red-100 text-red-600' : 'bg-gray-100 text-gray-400 hover:bg-gray-200'}`}
+                       >
+                         <Tag size={18} className={isOnSale ? 'fill-red-500' : ''} />
+                       </button>
+                    </td>
+                    <td className="p-4 text-center">
+                       <button
                          onClick={() => handleAvailabilityToggle(product.id, !!product.inStock)}
                          title={inStock ? "Mark Out of Stock" : "Mark In Stock"}
                          className={`px-3 py-1.5 rounded-full text-xs font-bold transition-colors flex items-center space-x-1 mx-auto whitespace-nowrap ${inStock ? 'bg-green-100 text-green-700 hover:bg-green-200' : 'bg-red-100 text-red-700 hover:bg-red-200'}`}
@@ -186,9 +229,25 @@ export function Admin() {
                         <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 font-medium">₹</span>
                         <input 
                           type="number"
+                          value={originalPriceEdits[product.id] !== undefined ? originalPriceEdits[product.id] : (product.originalPrice || '')}
+                          onChange={(e) => handleOriginalPriceChange(product.id, e.target.value)}
+                          placeholder="Org."
+                          className={`w-full pl-8 pr-2 py-2 border rounded-xl font-bold ${
+                            originalPriceEdits[product.id] !== undefined 
+                              ? 'bg-blue-50 border-blue-200 text-blue-600' 
+                              : 'bg-white border-gray-200 focus:border-blue-300 focus:ring-1 focus:ring-blue-300 outline-none text-gray-900'
+                          }`}
+                        />
+                      </div>
+                    </td>
+                    <td className="p-4">
+                      <div className="relative">
+                        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 font-medium">₹</span>
+                        <input 
+                          type="number"
                           value={edits[product.id] !== undefined ? edits[product.id] : product.price}
                           onChange={(e) => handlePriceChange(product.id, e.target.value)}
-                          className={`w-full pl-8 pr-4 py-2 border rounded-xl font-bold ${
+                          className={`w-full pl-8 pr-2 py-2 border rounded-xl font-bold ${
                             edits[product.id] !== undefined 
                               ? 'bg-bloom-pink/20 border-bloom-rose/50 text-bloom-rose' 
                               : 'bg-white border-gray-200 focus:border-bloom-rose focus:ring-1 focus:ring-bloom-rose outline-none text-gray-900'

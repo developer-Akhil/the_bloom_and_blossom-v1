@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
 import { motion } from 'motion/react';
-import { Lock, User, ArrowRight, ShieldCheck, AlertCircle } from 'lucide-react';
+import { Lock, User, ArrowRight, ShieldCheck, AlertCircle, Eye, EyeOff } from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAdminAuth } from '../context/AdminAuthContext';
 
 export function AdminLogin() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const { login } = useAdminAuth();
@@ -64,15 +65,22 @@ export function AdminLogin() {
               <div className="relative">
                 <Lock size={18} className="absolute left-6 top-1/2 -translate-y-1/2 text-gray-400" />
                 <input
-                  type="password"
+                  type={showPassword ? 'text' : 'password'}
                   placeholder="Master Password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className={`w-full pl-14 pr-6 py-4 bg-gray-50 border rounded-2xl focus:bg-white outline-none transition-all ${
+                  className={`w-full pl-14 pr-14 py-4 bg-gray-50 border rounded-2xl focus:bg-white outline-none transition-all ${
                     error ? 'border-red-300 ring-4 ring-red-50' : 'border-transparent focus:border-bloom-rose'
                   }`}
                   required
                 />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute inset-y-0 right-4 flex items-center justify-center p-2 text-gray-400 hover:text-gray-600 transition-colors focus:outline-none"
+                >
+                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                </button>
               </div>
               
               {error && (

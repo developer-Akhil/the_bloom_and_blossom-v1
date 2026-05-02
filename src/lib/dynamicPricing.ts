@@ -81,3 +81,22 @@ export const updateAvailabilityBatch = async (updates: Record<string, boolean>) 
   }
 };
 
+export const updateOnSale = async (onSaleIds: string[]) => {
+  localStorage.setItem('bloom_on_sale', JSON.stringify(onSaleIds));
+  window.dispatchEvent(new Event('on_sale_updated'));
+};
+
+export const updateOriginalPricesBatch = async (updates: Record<string, number>) => {
+  if (Object.keys(updates).length === 0) return;
+
+  const originalPrices = JSON.parse(localStorage.getItem('bloom_original_prices') || '{}');
+  Object.entries(updates).forEach(([id, price]) => {
+    originalPrices[id] = price;
+  });
+  localStorage.setItem('bloom_original_prices', JSON.stringify(originalPrices));
+  window.dispatchEvent(new Event('original_price_updated'));
+  
+  // Note: For full persistence, we should create a 'product_original_prices' table in Supabase, 
+  // but for now we follow the same pattern as new arrivals for localStorage persistence.
+};
+

@@ -310,12 +310,15 @@ export function ProductCard({ product, redirectToCategory = false }: { product: 
         />
         
         {/* Badges */}
-        <div className="absolute top-4 left-4 flex flex-col space-y-2">
+        <div className="absolute top-4 left-4 flex flex-col items-start space-y-2">
           {!product.inStock ? (
             <span className="px-3 py-1 bg-red-500 text-white text-[10px] shadow-sm font-bold uppercase rounded-full">Out of Stock</span>
           ) : product.isCustomizable ? (
             <span className="px-3 py-1 bg-bloom-rose text-white text-[10px] font-bold uppercase rounded-full shadow-sm">Customizable</span>
           ) : null}
+          {product.isOnSale && product.inStock && (
+            <span className="px-3 py-1 bg-orange-500 text-white text-[10px] shadow-sm font-bold uppercase rounded-full">Sale</span>
+          )}
         </div>
 
         {/* Hover Actions (Desktop) / Action Bar (Mobile) */}
@@ -375,7 +378,17 @@ export function ProductCard({ product, redirectToCategory = false }: { product: 
             {product.name}
           </h3>
         </Link>
-        <p className="text-bloom-rose font-bold">₹{product.price}</p>
+        <p className="text-bloom-rose font-bold flex items-center space-x-2">
+          <span>₹{product.price}</span>
+          {product.isOnSale && product.originalPrice && product.originalPrice > product.price && (
+            <>
+              <span className="text-gray-400 line-through text-sm font-medium">₹{product.originalPrice}</span>
+              <span className="text-orange-500 text-xs font-bold">
+                ({Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)}% OFF)
+              </span>
+            </>
+          )}
+        </p>
       </div>
     </div>
   );
