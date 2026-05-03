@@ -32,6 +32,15 @@ function CartItemComponent({ item, idx }: { item: any, idx: number }) {
     updateCustomizationName(item.id, item.customizationName, editName, item.selectedOptions);
   };
 
+  const getDisplayImage = () => {
+    if (item.variants && item.selectedOptions && item.selectedOptions['Color']) {
+        const variant = item.variants.find(v => v.color === item.selectedOptions!['Color']);
+        if (variant?.image) return variant.image;
+    }
+    const img = item.images?.[0] || '';
+    return img.includes('unsplash.com') ? `${img}&w=300` : img;
+  };
+
   return (
     <motion.div 
       layout
@@ -41,7 +50,7 @@ function CartItemComponent({ item, idx }: { item: any, idx: number }) {
       className={cn("flex items-center space-x-6 pb-8 border-b border-gray-100 group", isItemOutofStock && "opacity-60")}
     >
       <div className="w-24 sm:w-32 aspect-square rounded-2xl overflow-hidden bg-gray-50 flex-shrink-0">
-        <OptimizedImage src={item.images[0].includes('unsplash.com') ? `${item.images[0]}&w=300` : item.images[0]} alt={item.name} className="w-full h-full object-cover" />
+        <OptimizedImage src={getDisplayImage()} alt={item.name} className="w-full h-full object-cover" />
       </div>
       
       <div className="flex-grow space-y-2">

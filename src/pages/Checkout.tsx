@@ -417,12 +417,22 @@ export function Checkout() {
           <div className="bg-gray-50 rounded-[3rem] p-10 h-fit space-y-8 border border-white">
             <h3 className="font-serif text-2xl font-bold">Your Order</h3>
             <div className="space-y-6 max-h-[400px] overflow-auto pr-2">
-              {cart.map((item, idx) => (
-                <div key={`${item.id}-${idx}`} className="flex items-center space-x-4">
-                  <div className="w-16 h-16 rounded-xl overflow-hidden bg-white shrink-0">
-                    <OptimizedImage src={item.images[0].includes('unsplash.com') ? `${item.images[0]}&w=200` : item.images[0]} alt={item.name} className="w-full h-full object-cover" />
-                  </div>
-                  <div className="flex-grow min-w-0">
+              {cart.map((item, idx) => {
+                let displayImage = item.images?.[0] || '';
+                displayImage = displayImage.includes('unsplash.com') ? `${displayImage}&w=200` : displayImage;
+                if (item.variants && item.selectedOptions && item.selectedOptions['Color']) {
+                  const variant = item.variants.find(v => v.color === item.selectedOptions!['Color']);
+                  if (variant?.image) {
+                     displayImage = variant.image;
+                  }
+                }
+                
+                return (
+                  <div key={`${item.id}-${idx}`} className="flex items-center space-x-4">
+                    <div className="w-16 h-16 rounded-xl overflow-hidden bg-white shrink-0">
+                      <OptimizedImage src={displayImage} alt={item.name} className="w-full h-full object-cover" />
+                    </div>
+                    <div className="flex-grow min-w-0">
                     <h4 className="font-bold text-sm line-clamp-1">{item.name}</h4>
                     <div className="flex flex-wrap gap-1 mt-1">
                       {item.customizationName && (
@@ -440,7 +450,8 @@ export function Checkout() {
                   </div>
                   <div className="font-bold text-sm text-bloom-rose">₹{item.price * item.quantity}</div>
                 </div>
-              ))}
+              );
+            })}
             </div>
             
             <div className="h-px bg-gray-200" />

@@ -23,8 +23,28 @@ export function ProductDetail() {
 
   const product = useMemo(() => products.find(p => p.id === id), [id, products]);
 
+  // Synchronize activeImage changes with selected color variants
+  useEffect(() => {
+    if (product?.variants && product.variants.length > 0) {
+      const currentImageUrl = product.images[activeImage];
+      if (currentImageUrl) {
+        const matchingVariant = product.variants.find(v => v.image === currentImageUrl);
+        if (matchingVariant) {
+          setSelectedOptions(prev => {
+            if (prev['Color'] !== matchingVariant.color) {
+              setIsAdded(false);
+              return { ...prev, 'Color': matchingVariant.color || '' };
+            }
+            return prev;
+          });
+        }
+      }
+    }
+  }, [activeImage, product]);
+
   const handleCustomNameChange = (val: string) => {
     setCustomName(val);
+    setIsAdded(false);
     if (!val.trim()) {
       setCustomNameError('Custom name is required');
     } else if (val.length < 2) {
@@ -41,11 +61,16 @@ export function ProductDetail() {
   const isFormValid = product?.isCustomizable ? (customName.trim().length > 0 && customNameError === '') : true;
 
   useEffect(() => {
-    if (product?.options) {
+    if (product) {
       const initial: Record<string, string> = {};
-      product.options.forEach(opt => {
-        initial[opt.name] = opt.values[0];
-      });
+      if (product.options) {
+        product.options.forEach(opt => {
+          initial[opt.name] = opt.values[0];
+        });
+      }
+      if (product.variants && product.variants.length > 0) {
+        initial['Color'] = product.variants[0].color || '';
+      }
       
       // Multi-layer stability guard: only trigger state update if options actually change
       setSelectedOptions(prev => {
@@ -166,7 +191,10 @@ export function ProductDetail() {
                   return (
                     <button
                       key={value}
-                      onClick={() => setSelectedOptions(prev => ({ ...prev, [option.name]: value }))}
+                      onClick={() => {
+                        setSelectedOptions(prev => ({ ...prev, [option.name]: value }));
+                        setIsAdded(false);
+                      }}
                       className={cn(
                         "transition-all",
                         isColor 
@@ -189,6 +217,41 @@ export function ProductDetail() {
               </div>
             </div>
           ))}
+
+          {/* Variant Selection */}
+          {product.variants && product.variants.length > 0 && (
+            <div className="space-y-4">
+              <label className="block text-xs font-bold uppercase tracking-widest text-gray-500">
+                Color: <span className="text-gray-900">{selectedOptions['Color']}</span>
+              </label>
+              <div className="flex flex-wrap gap-3">
+                {product.variants.map((variant, idx) => (
+                  <button
+                    key={variant.color || idx}
+                    onClick={() => {
+                      setSelectedOptions(prev => ({ ...prev, 'Color': variant.color || '' }));
+                      setIsAdded(false);
+                      if (variant.image) {
+                        const imgIdx = product.images.findIndex(img => img === variant.image);
+                        if (imgIdx !== -1) setActiveImage(imgIdx);
+                      }
+                    }}
+                    className={cn(
+                      "transition-all w-11 h-11 rounded-full border-2 overflow-hidden",
+                      selectedOptions['Color'] === variant.color ? "border-bloom-rose scale-110 shadow-md" : "border-gray-100 hover:border-gray-200"
+                    )}
+                    title={variant.color}
+                  >
+                    {variant.image ? (
+                        <OptimizedImage src={variant.image} alt={variant.color || 'Color'} className="w-full h-full object-cover" />
+                    ) : (
+                        <div className="w-full h-full" style={{ backgroundColor: variant.color?.toLowerCase() }} />
+                    )}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
 
           {!product.inStock ? (
             <div className="bg-red-50 border border-red-100 rounded-2xl p-6 flex items-center space-x-4">
@@ -248,14 +311,14 @@ export function ProductDetail() {
               <div className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
                 <div className="flex items-center border border-gray-200 rounded-full h-16 w-full sm:w-auto px-6">
                   <button 
-                    onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                    onClick={() => { setQuantity(Math.max(1, quantity - 1)); setIsAdded(false); }}
                     className="p-1 hover:text-bloom-rose transition-colors"
                   >
                     <Minus size={20} />
                   </button>
                   <span className="w-12 text-center font-bold text-lg">{quantity}</span>
                   <button 
-                    onClick={() => setQuantity(quantity + 1)}
+                    onClick={() => { setQuantity(quantity + 1); setIsAdded(false); }}
                     className="p-1 hover:text-bloom-rose transition-colors"
                   >
                     <Plus size={20} />
