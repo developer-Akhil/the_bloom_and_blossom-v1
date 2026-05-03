@@ -39,6 +39,10 @@ export function ProductProvider({ children }: { children: React.ReactNode }) {
     const localPrices = localStorage.getItem('bloom_original_prices');
     return localPrices ? JSON.parse(localPrices) : {};
   });
+  const [descriptionOverrides, setDescriptionOverrides] = useState<Record<string, string>>(() => {
+    const localDesc = localStorage.getItem('bloom_descriptions');
+    return localDesc ? JSON.parse(localDesc) : {};
+  });
 
   const fetchSupabaseData = useCallback(async () => {
     try {
@@ -88,6 +92,10 @@ export function ProductProvider({ children }: { children: React.ReactNode }) {
       const localPrices = localStorage.getItem('bloom_original_prices');
       if (localPrices) setOriginalPriceOverrides(JSON.parse(localPrices));
     };
+    const handleDescriptionsUpdate = () => {
+      const localDesc = localStorage.getItem('bloom_descriptions');
+      if (localDesc) setDescriptionOverrides(JSON.parse(localDesc));
+    };
 
     window.addEventListener('dynamic_price_updated', handleUpdate);
     window.addEventListener('best_sellers_updated', handleBestSellersUpdate);
@@ -95,6 +103,7 @@ export function ProductProvider({ children }: { children: React.ReactNode }) {
     window.addEventListener('availability_updated', handleAvailabilityUpdate);
     window.addEventListener('on_sale_updated', handleOnSaleUpdate);
     window.addEventListener('original_price_updated', handleOriginalPricesUpdate);
+    window.addEventListener('descriptions_updated', handleDescriptionsUpdate);
     return () => {
        window.removeEventListener('dynamic_price_updated', handleUpdate);
        window.removeEventListener('best_sellers_updated', handleBestSellersUpdate);
@@ -102,6 +111,7 @@ export function ProductProvider({ children }: { children: React.ReactNode }) {
        window.removeEventListener('availability_updated', handleAvailabilityUpdate);
        window.removeEventListener('on_sale_updated', handleOnSaleUpdate);
        window.removeEventListener('original_price_updated', handleOriginalPricesUpdate);
+       window.removeEventListener('descriptions_updated', handleDescriptionsUpdate);
     };
   }, [fetchSupabaseData]);
 
@@ -129,6 +139,9 @@ export function ProductProvider({ children }: { children: React.ReactNode }) {
 
       if (originalPriceOverrides[product.id]) {
           updatedProduct.originalPrice = originalPriceOverrides[product.id];
+      }
+      if (descriptionOverrides[product.id]) {
+          updatedProduct.description = descriptionOverrides[product.id];
       }
 
       const adminAvailStr = localStorage.getItem('bloom_product_availability');
@@ -214,7 +227,7 @@ export function ProductProvider({ children }: { children: React.ReactNode }) {
            name: productName, 
            category: categoryTitle,
            price: priceOverrides[productId] || 149,
-           description: `Beautifully handcrafted ${categoryTitle}.`,
+           description: descriptionOverrides[productId] || `Beautifully handcrafted ${categoryTitle}.`,
            images: [asset.file_url],
            stock: 10,
            inStock,
@@ -226,7 +239,7 @@ export function ProductProvider({ children }: { children: React.ReactNode }) {
     });
 
     return [...updatedProducts, ...newlyConstructedProducts];
-  }, [baseProducts, assets, allAssets, folders, priceOverrides, bestSellersSet, newArrivalsSet, availabilityMap]);
+  }, [baseProducts, assets, allAssets, folders, priceOverrides, originalPriceOverrides, descriptionOverrides, bestSellersSet, newArrivalsSet, availabilityMap, onSaleSet]);
 
   const mergedCategories = useMemo(() => {
     const adminFolders = folders

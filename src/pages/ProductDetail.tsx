@@ -320,7 +320,7 @@ export function ProductDetail() {
           {/* Trust Badges */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 pt-8 border-t">
             <TrustBadge icon={<Truck size={20} />} title="Free Delivery" desc="On orders above ₹2000" />
-            <TrustBadge icon={<ShieldCheck size={20} />} title="Secure Payment" desc="Upi via KnitPay" />
+            <TrustBadge icon={<ShieldCheck size={20} />} title="Secure Payment" desc="Upi via PhonePe" />
           </div>
         </div>
       </div>

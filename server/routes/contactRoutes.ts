@@ -11,7 +11,10 @@ router.post("/", async (req, res) => {
       return res.status(400).json({ error: "Name, email, subject, and message are required" });
     }
 
-    await sendContactEmail(name, email, subject, message);
+    // Send email asynchronously so we don't block the HTTP response if SMTP is slow/hanging
+    sendContactEmail(name, email, subject, message).catch(err => {
+      console.error("Async contact email error:", err);
+    });
 
     res.status(200).json({ message: "Contact form submitted successfully" });
   } catch (error: any) {

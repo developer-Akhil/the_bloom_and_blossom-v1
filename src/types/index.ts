@@ -19,6 +19,15 @@ export interface ProductOption {
   values: string[];
 }
 
+export interface ProductVariant {
+  color?: string;
+  size?: string;
+  image?: string;
+  stock?: number;
+  rating?: number;
+  price?: number;
+}
+
 export interface Product {
   id: string;
   name: string;
@@ -36,6 +45,7 @@ export interface Product {
   rating?: number;
   reviews?: Review[];
   options?: ProductOption[];
+  variants?: ProductVariant[];
 }
 
 export interface Review {

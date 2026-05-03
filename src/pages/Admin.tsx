@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Navigate, Link } from 'react-router-dom';
 import { products as baseProducts } from '../data/products';
-import { updateDynamicPrice, updateDynamicPricesBatch, useDynamicProducts, updateBestSellers, updateNewArrivals, updateAvailabilityBatch, updateOnSale, updateOriginalPricesBatch } from '../lib/dynamicPricing';
+import { updateDynamicPrice, updateDynamicPricesBatch, useDynamicProducts, updateBestSellers, updateNewArrivals, updateAvailabilityBatch, updateOnSale, updateOriginalPricesBatch, updateDescriptionsBatch } from '../lib/dynamicPricing';
 import { Settings, Save, CheckCircle2, ShieldAlert, IndianRupee, LogOut, Star, Sparkles, Package, PackageX, Tag } from 'lucide-react';
 import { useAdminAuth } from '../context/AdminAuthContext';
 
@@ -14,6 +14,7 @@ export function Admin() {
   const [availabilityEdits, setAvailabilityEdits] = useState<Record<string, boolean>>({});
   const [onSaleEdits, setOnSaleEdits] = useState<Record<string, boolean>>({});
   const [originalPriceEdits, setOriginalPriceEdits] = useState<Record<string, number>>({});
+  const [descriptionEdits, setDescriptionEdits] = useState<Record<string, string>>({});
   const [showSaved, setShowSaved] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
 
@@ -42,6 +43,10 @@ export function Admin() {
     if (!isNaN(num)) {
       setOriginalPriceEdits({ ...originalPriceEdits, [id]: num });
     }
+  };
+
+  const handleDescriptionChange = (id: string, value: string) => {
+    setDescriptionEdits({ ...descriptionEdits, [id]: value });
   };
 
   const handleBestSellerToggle = (id: string, currentStatus: boolean) => {
@@ -101,12 +106,17 @@ export function Admin() {
           await updateOriginalPricesBatch(originalPriceEdits);
       }
       
+      if (Object.keys(descriptionEdits).length > 0) {
+          await updateDescriptionsBatch(descriptionEdits);
+      }
+      
       setEdits({});
       setBestSellerEdits({});
       setNewArrivalEdits({});
       setAvailabilityEdits({});
       setOnSaleEdits({});
       setOriginalPriceEdits({});
+      setDescriptionEdits({});
       setShowSaved(true);
       setTimeout(() => setShowSaved(false), 3000);
     } catch (err) {
@@ -116,7 +126,7 @@ export function Admin() {
     }
   };
 
-  const hasUnsavedChanges = Object.keys(edits).length > 0 || Object.keys(bestSellerEdits).length > 0 || Object.keys(newArrivalEdits).length > 0 || Object.keys(availabilityEdits).length > 0 || Object.keys(onSaleEdits).length > 0 || Object.keys(originalPriceEdits).length > 0;
+  const hasUnsavedChanges = Object.keys(edits).length > 0 || Object.keys(bestSellerEdits).length > 0 || Object.keys(newArrivalEdits).length > 0 || Object.keys(availabilityEdits).length > 0 || Object.keys(onSaleEdits).length > 0 || Object.keys(originalPriceEdits).length > 0 || Object.keys(descriptionEdits).length > 0;
 
   return (
     <div className="container mx-auto px-4 md:px-6 py-12">
@@ -164,6 +174,7 @@ export function Admin() {
                 <tr className="bg-gray-50 text-gray-500 text-xs uppercase tracking-wider">
                   <th className="p-4 font-bold border-b">Product</th>
                   <th className="p-4 font-bold border-b">Category</th>
+                  <th className="p-4 font-bold border-b w-64">Description</th>
                   <th className="p-4 font-bold border-b text-center w-24">Best Seller</th>
                   <th className="p-4 font-bold border-b text-center w-24">New Arrival</th>
                   <th className="p-4 font-bold border-b text-center w-24">On Sale</th>
@@ -187,6 +198,18 @@ export function Admin() {
                       </div>
                     </td>
                     <td className="p-4 text-sm text-gray-500">{product.category}</td>
+                    <td className="p-4">
+                      <textarea
+                        value={descriptionEdits[product.id] !== undefined ? descriptionEdits[product.id] : product.description}
+                        onChange={(e) => handleDescriptionChange(product.id, e.target.value)}
+                        className={`w-full p-2 border rounded-xl text-sm ${
+                          descriptionEdits[product.id] !== undefined 
+                            ? 'bg-blue-50 border-blue-200 text-blue-800' 
+                            : 'bg-white border-gray-200 focus:border-blue-300 focus:ring-1 focus:ring-blue-300 outline-none text-gray-900'
+                        }`}
+                        rows={2}
+                      />
+                    </td>
                     <td className="p-4 text-center">
                        <button
                          onClick={() => handleBestSellerToggle(product.id, !!product.isBestSeller)}
@@ -209,9 +232,9 @@ export function Admin() {
                        <button
                          onClick={() => handleOnSaleToggle(product.id, !!product.isOnSale)}
                          title={isOnSale ? "Remove from Sale" : "Mark as On Sale"}
-                         className={`p-2 rounded-full transition-colors ${isOnSale ? 'bg-red-100 text-red-600' : 'bg-gray-100 text-gray-400 hover:bg-gray-200'}`}
+                         className={`p-2 rounded-full transition-colors ${isOnSale ? 'bg-orange-100 text-orange-500' : 'bg-gray-100 text-gray-400 hover:bg-gray-200'}`}
                        >
-                         <Tag size={18} className={isOnSale ? 'fill-red-500' : ''} />
+                         <Tag size={18} className={isOnSale ? 'fill-orange-500 text-orange-500' : ''} />
                        </button>
                     </td>
                     <td className="p-4 text-center">

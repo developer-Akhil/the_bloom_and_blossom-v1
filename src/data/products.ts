@@ -1,6 +1,6 @@
 import { type Product } from '../types';
 
-export const products: Product[] = [
+const hardcodedProducts: Product[] = [
   {
     id: '1',
     name: 'Golden Glitter Bow',
@@ -11,13 +11,7 @@ export const products: Product[] = [
     stock: 9,
     isCustomizable: true,
     isBestSeller: true,
-    rating: 4.8,
-    options: [
-      {
-        name: 'Color',
-        values: ['Black', 'Blue', 'Pink', 'Red', 'Green', 'Yellow', 'Purple']
-      }
-    ]
+    rating: 4.8
   },
   {
     id: '2',
@@ -62,6 +56,17 @@ export const products: Product[] = [
     rating: 5.0
   },
   {
+    id: '4_1',
+    name: 'Valentine Bow Clip',
+    category: 'Alligator Clips',
+    price: 100,
+    description: 'A beautiful valentine themed bow clip to celebrate the season of love.',
+    images: ['/images/collections/alligator_clips/valentine_bow.jpg'],
+    stock: 25,
+    isCustomizable: false,
+    rating: 4.8
+  },
+  {
     id: '5',
     name: 'Daisy Name Bow',
     category: 'Customised Name Bows',
@@ -96,47 +101,95 @@ export const products: Product[] = [
   },
   {
     id: '8',
-    name: 'Red Scrunchie',
+    name: 'Scrunchie',
     category: 'Scrunchies',
     price: 40,
-    description: 'Elevate your everyday style with this soft satin scrunchie, designed to be gentle on hair and reduce breakage Smooth, stylish, and comfortable, it’s perfect for daily wear or adding a chic touch to any outfit.',
-    images: ['/images/collections/scrunchies/red.jpg'],
-    stock: 50,
+    description: 'Elevate your everyday style with this soft satin scrunchie, designed to be gentle on hair and reduce breakage. Smooth, stylish, and comfortable, it’s perfect for daily wear or adding a chic touch to any outfit.',
+    images: ['/images/collections/scrunchies/red.jpg', '/images/collections/scrunchies/black.jpg', '/images/collections/scrunchies/purple.jpg', '/images/collections/scrunchies/white.jpg'],
+    stock: 210,
+    rating: 4.8,
+    isCustomizable: false,
+    variants: [
+      {
+        color: 'Red',
+        image: '/images/collections/scrunchies/red.jpg',
+        stock: 50,
+        rating: 4.8
+      },
+      {
+        color: 'Black',
+        image: '/images/collections/scrunchies/black.jpg',
+        stock: 60,
+        rating: 4.9
+      },
+      {
+        color: 'Purple',
+        image: '/images/collections/scrunchies/purple.jpg',
+        stock: 45,
+        rating: 4.7
+      },
+      {
+        color: 'White',
+        image: '/images/collections/scrunchies/white.jpg',
+        stock: 55,
+        rating: 4.8
+      }
+    ]
+  },
+  {
+    id: '11_1',
+    name: 'Rainbow Scrunchie',
+    category: 'Scrunchies',
+    price: 40,
+    description: 'Brighten up your day with this vibrant rainbow scrunchie.',
+    images: ['/images/collections/scrunchies/rainbow.jpg'],
+    stock: 30,
     isCustomizable: false,
     rating: 4.8
   },
   {
-    id: '9',
-    name: 'Black Scrunchie',
+    id: '11_2',
+    name: 'Rang Birangi Scrunchie',
     category: 'Scrunchies',
     price: 40,
-    description: 'Elevate your everyday style with this soft satin scrunchie, designed to be gentle on hair and reduce breakage.Smooth, stylish, and comfortable, it’s perfect for daily wear or adding a chic touch to any outfit.',
-    images: ['/images/collections/scrunchies/black.jpg'],
-    stock: 60,
-    isCustomizable: false,
-    rating: 4.9
-  },
-  {
-    id: '10',
-    name: 'Purple Scrunchie',
-    category: 'Scrunchies',
-    price: 40,
-    description: 'Classic Purple Scrunchie.',
-    images: ['/images/collections/scrunchies/purple.jpg'],
-    stock: 45,
+    description: 'Add a pop of color with this lovely rang birangi scrunchie.',
+    images: ['/images/collections/scrunchies/rang_birangi.jpg'],
+    stock: 25,
     isCustomizable: false,
     rating: 4.7
   },
   {
-    id: '11',
-    name: 'White Scrunchie',
+    id: '11_3',
+    name: 'Skyblue Check Scrunchie',
     category: 'Scrunchies',
     price: 40,
-    description: 'Elevate your everyday style with this soft satin scrunchie, designed to be gentle on hair and reduce breakage.Smooth, stylish, and comfortable, it’s perfect for daily wear or adding a chic touch to any outfit.',
-    images: ['/images/collections/scrunchies/white.jpg'],
-    stock: 55,
+    description: 'Chic skyblue check pattern scrunchie for a stylish look.',
+    images: ['/images/collections/scrunchies/skyblue_check.jpg'],
+    stock: 40,
+    isCustomizable: false,
+    rating: 4.9
+  },
+  {
+    id: '11_4',
+    name: 'Flamingo Scrunchie',
+    category: 'Scrunchies',
+    price: 40,
+    description: 'Beautiful flamingo print scrunchie for a fun and playful style.',
+    images: ['/images/collections/scrunchies/flamingo.jpg'],
+    stock: 35,
     isCustomizable: false,
     rating: 4.8
+  },
+  {
+    id: '11_5',
+    name: 'Pinky Scrunchie',
+    category: 'Scrunchies',
+    price: 40,
+    description: 'Sweet pinky scrunchie, perfect for matching with pastel outfits.',
+    images: ['/images/collections/scrunchies/pinky.jpg'],
+    stock: 50,
+    isCustomizable: false,
+    rating: 4.7
   },
   {
     id: '12',
@@ -170,6 +223,17 @@ export const products: Product[] = [
     stock: 8,
     isCustomizable: false,
     rating: 5.0
+  },
+  {
+    id: '14_1',
+    name: 'Golden Jewelled Bow',
+    category: 'Jewelled Bows',
+    price: 320,
+    description: 'Add a touch of luxury with our premium handmade golden jewelled bow, beautifully crafted with sparkling embellishments and fine detailing.',
+    images: ['/images/collections/jewelled_bows/golden.jpg'],
+    stock: 10,
+    isCustomizable: false,
+    rating: 4.9
   },
   {
     id: '15',
@@ -289,6 +353,39 @@ export const categories = [
 
 // Dynamically seed physical collections from disk into the store:
 const diskImages = (import.meta as any).glob('/public/images/collections/**/*.{jpg,jpeg,png,webp}', { eager: true });
+const diskImagePaths = new Set(Object.keys(diskImages).map(p => p.replace('/public', '')));
+
+// Filter out hardcoded products if their images are no longer present on disk
+export const products: Product[] = hardcodedProducts.map(p => {
+    if (!p.images) {
+        // @ts-ignore
+        p.images = p.variants ? p.variants.map(v => v.image).filter(Boolean) : [];
+    }
+    return p;
+}).filter(product => {
+    // Keep it if it has no images matching the collections folder pattern, or if it does, the image still exists.
+    let isValid = true;
+    if (product.images) {
+        isValid = product.images.every(img => {
+            if (img.startsWith('/images/collections/')) {
+                return diskImagePaths.has(img);
+            }
+            return true;
+        });
+    }
+    
+    if (isValid && product.variants) {
+         isValid = product.variants.every(variant => {
+             if (variant.image && variant.image.startsWith('/images/collections/')) {
+                 return diskImagePaths.has(variant.image);
+             }
+             return true;
+         });
+    }
+
+    return isValid;
+});
+
 let autoId = 1000;
 
 Object.keys(diskImages).forEach(path => {

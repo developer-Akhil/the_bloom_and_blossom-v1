@@ -100,3 +100,14 @@ export const updateOriginalPricesBatch = async (updates: Record<string, number>)
   // but for now we follow the same pattern as new arrivals for localStorage persistence.
 };
 
+export const updateDescriptionsBatch = async (updates: Record<string, string>) => {
+  if (Object.keys(updates).length === 0) return;
+
+  const descriptions = JSON.parse(localStorage.getItem('bloom_descriptions') || '{}');
+  Object.entries(updates).forEach(([id, desc]) => {
+    descriptions[id] = desc;
+  });
+  localStorage.setItem('bloom_descriptions', JSON.stringify(descriptions));
+  window.dispatchEvent(new Event('descriptions_updated'));
+};
+

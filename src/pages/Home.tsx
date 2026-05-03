@@ -289,6 +289,7 @@ function CategoryCard({ title, index }: { title: string; index: number }) {
 export function ProductCard({ product, redirectToCategory = false }: { product: Product, redirectToCategory?: boolean }) {
   const { addToCart } = useCart();
   const targetUrl = redirectToCategory ? `/collections?cat=${encodeURIComponent(product.category)}` : `/products/${product.id}`;
+  const [activeImage, setActiveImage] = React.useState(0);
 
   const handleQuickAdd = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -297,14 +298,26 @@ export function ProductCard({ product, redirectToCategory = false }: { product: 
     product.options?.forEach(opt => {
       defaultOptions[opt.name] = opt.values[0];
     });
+    // Add variant support for quick add if needed
+    if (product.variants && product.variants.length > 0) {
+        defaultOptions['Color'] = product.variants[activeImage].color || '';
+    }
     addToCart(product, undefined, defaultOptions);
+  };
+
+  const getDisplayImage = () => {
+    if (product.variants && product.variants.length > 0 && product.variants[activeImage]?.image) {
+      return product.variants[activeImage].image as string;
+    }
+    const img = product.images?.[activeImage] || product.images?.[0] || 'https://images.unsplash.com/photo-1596704017254-9b121068fb31?auto=format&fit=crop&q=60&w=600';
+    return img.includes('unsplash.com') ? `${img}&w=600` : img;
   };
 
   return (
     <div className="group space-y-4">
       <div className="relative aspect-square overflow-hidden rounded-3xl bg-gray-50 shadow-sm border border-gray-50">
         <OptimizedImage 
-          src={product.images[0].includes('unsplash.com') ? `${product.images[0]}&w=600` : product.images[0]} 
+          src={getDisplayImage()} 
           alt={product.name} 
           className={cn("w-full h-full object-cover transition-transform duration-700 group-hover:scale-110", !product.inStock && "opacity-60")}
         />
@@ -374,9 +387,11 @@ export function ProductCard({ product, redirectToCategory = false }: { product: 
           </div>
         </div>
         <Link to={targetUrl}>
-          <h3 className="font-serif text-lg font-bold text-gray-900 group-hover:text-bloom-rose transition-colors line-clamp-1">
-            {product.name}
-          </h3>
+           <div className="flex justify-between items-center pr-2">
+              <h3 className="font-serif text-lg font-bold text-gray-900 group-hover:text-bloom-rose transition-colors line-clamp-1 flex-grow">
+                {product.name}
+              </h3>
+           </div>
         </Link>
         <p className="text-bloom-rose font-bold flex items-center space-x-2">
           <span>₹{product.price}</span>
@@ -389,6 +404,29 @@ export function ProductCard({ product, redirectToCategory = false }: { product: 
             </>
           )}
         </p>
+
+        {/* Variant Swatches */}
+        {product.variants && product.variants.length > 0 && (
+            <div className="flex flex-wrap gap-2 pt-2">
+                {product.variants.map((v, idx) => {
+                    // map common color names to CSS colors for swatch dots if preferred, or just a small circle.
+                    // For now we can use a mini thumbnail:
+                    return (
+                        <button
+                            key={idx}
+                            onClick={(e) => { e.preventDefault(); setActiveImage(idx); }}
+                            className={cn(
+                                "w-6 h-6 rounded-full border-2 overflow-hidden transition-all",
+                                activeImage === idx ? "border-bloom-rose scale-110 shadow-md" : "border-gray-200 hover:border-gray-400"
+                            )}
+                            title={v.color}
+                        >
+                           <img src={v.image} alt={v.color} className="w-full h-full object-cover" />
+                        </button>
+                    )
+                })}
+            </div>
+        )}
       </div>
     </div>
   );
