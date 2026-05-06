@@ -19,14 +19,9 @@ export const siteConfig = {
   },
   api: {
     payment: {
-      pay: "/api/payment/pay",
-      status: (orderId: string) => `/api/payment/status/${orderId}`,
+      createOrder: "/api/payment/create-order",
+      verifyPayment: "/api/payment/verify-payment",
       refund: "/api/payment/refund"
-    },
-    phonepe: {
-      prodUrl: "https://api.phonepe.com/apis/hermes",
-      sandboxUrl: "https://api-preprod.phonepe.com/apis/pg-sandbox",
-      logoUrl: "https://phonepe.com/webapp-assets/images/logo.svg"
     }
   }
 };

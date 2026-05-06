@@ -224,7 +224,7 @@ export function Cart() {
                <ShieldCheck size={20} />
              </div>
              <p className="text-[10px] text-gray-400 font-medium uppercase tracking-widest">
-                Secure checkout via PhonePe UPI
+                Secure checkout via Razorpay
              </p>
           </div>
 

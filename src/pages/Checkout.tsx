@@ -30,7 +30,7 @@ export function Checkout() {
     return <Navigate to="/cart" replace />;
   }
   const [isProcessing, setIsProcessing] = useState(false);
-  const [paymentMethod, setPaymentMethod] = useState<'phonepe' | 'upi_qr'>('phonepe');
+  const [paymentMethod, setPaymentMethod] = useState<'razorpay' | 'upi_qr'>('razorpay');
   const [shippingData, setShippingData] = useState({
     name: user?.user_metadata?.full_name || '',
     email: user?.email || '',
@@ -103,7 +103,7 @@ export function Checkout() {
         name: shippingData.name
       };
 
-      const res = await fetch(siteConfig.api.payment.pay, {
+      const res = await fetch(siteConfig.api.payment.createOrder, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -134,74 +134,71 @@ export function Checkout() {
         throw new Error(errText);
       }
       
-      const responseText = await res.text();
-      let data;
-      try {
-        data = JSON.parse(responseText);
-      } catch (parseError) {
-        if (responseText.includes('<!doctype html>')) {
-           throw new Error('Server returned an HTML file instead of API data. If you deployed this to Hostinger or a static host, note that the Node.js backend is REQUIRED for Phonepe payments, and static hosting does not support it.');
+      const data = await res.json();
+      
+      const options = {
+        key: import.meta.env.VITE_RAZORPAY_KEY_ID, 
+        amount: data.amount,
+        currency: data.currency,
+        name: siteConfig.name,
+        description: "Order Checkout",
+        order_id: data.order_id,
+        handler: async function (response: any) {
+          try {
+            const verifyRes = await fetch(siteConfig.api.payment.verifyPayment, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                razorpay_payment_id: response.razorpay_payment_id,
+                razorpay_order_id: response.razorpay_order_id,
+                razorpay_signature: response.razorpay_signature
+              })
+            });
+            const verifyData = await verifyRes.json();
+            if (verifyData.success) {
+               sessionStorage.setItem('checkoutSession', JSON.stringify({
+                 shippingData,
+                 cart,
+                 isFirstOrderEligible
+               }));
+               window.location.href = `/checkout/success?orderId=${data.order_id}&code=SUCCESS`;
+            } else {
+               alert('Payment verification failed');
+               setIsProcessing(false);
+            }
+          } catch(err) {
+            alert('Payment verification error');
+            setIsProcessing(false);
+          }
+        },
+        prefill: {
+          name: shippingData.name,
+          email: email,
+          contact: phone
+        },
+        theme: {
+          color: "#ec4899"
+        },
+        modal: {
+          ondismiss: function() {
+            setIsProcessing(false);
+          }
         }
-        console.error('Failed to parse JSON, received this instead:', responseText.substring(0, 500));
-        throw new Error('Received invalid JSON from server: ' + responseText.substring(0, 100));
-      }
+      };
       
-      // Store checkout context locally to retrieve after callback
-      sessionStorage.setItem('currentOrderId', data.merchantOrderId || data.orderId);
-      sessionStorage.setItem('checkoutSession', JSON.stringify({
-        shippingData,
-        cart,
-        isFirstOrderEligible
-      }));
-      
-      if (data.redirectUrl) {
-        setPaymentUrl(data.redirectUrl);
-        window.open(data.redirectUrl, '_blank');
-      } else {
-        throw new Error('No redirect URL received');
-      }
+      const rzp1 = new (window as any).Razorpay(options);
+      rzp1.on('payment.failed', function (response: any){
+         setIsProcessing(false);
+         alert(response.error?.description || 'Payment failed. Please try again.');
+      });
+      rzp1.open();
+
     } catch (e: any) {
       console.error('Payment initiation error', e);
       setIsProcessing(false);
       alert(e.message || 'Failed to initiate payment. Please try again.');
     }
   };
-
-  // Poll for payment status if paymentUrl is set
-  useEffect(() => {
-    if (!paymentUrl) return;
-    
-    const currentOrderId = sessionStorage.getItem('currentOrderId');
-    if (!currentOrderId) return;
-
-    const interval = setInterval(async () => {
-      try {
-        const res = await fetch(siteConfig.api.payment.status(currentOrderId));
-        if (res.status === 400) {
-           clearInterval(interval);
-           sessionStorage.removeItem('currentOrderId');
-           window.location.href = `/cart`;
-           return;
-        }
-        if (res.ok) {
-          const data = await res.json();
-          const paymentState = data.state || data.data?.state || data.code;
-          if (paymentState === 'COMPLETED' || paymentState === 'SUCCESS' || paymentState === 'PAYMENT_SUCCESS') {
-            clearInterval(interval);
-            // Verify payment and redirect to success
-            window.location.href = `/checkout/success?orderId=${currentOrderId}&code=${paymentState}`;
-          } else if (paymentState === 'FAILED' || paymentState === 'PAYMENT_ERROR' || paymentState === 'PAYMENT_DECLINED' || paymentState === 'CANCELLED' || paymentState === 'PAYMENT_CANCELLED') {
-             clearInterval(interval);
-             window.location.href = `/checkout/success?orderId=${currentOrderId}&code=${paymentState}`;
-          }
-        }
-      } catch (err) {
-        // ignore polling errors
-      }
-    }, 3000);
-
-    return () => clearInterval(interval);
-  }, [paymentUrl]);
 
   if (step === 'success') {
     return (
@@ -278,11 +275,11 @@ export function Checkout() {
               <div className="space-y-8">
                 <div className="flex bg-gray-50 p-1.5 rounded-2xl w-full mb-8">
                   <button
-                    onClick={() => setPaymentMethod('phonepe')}
-                    className={`flex-1 flex items-center justify-center space-x-2 px-4 py-3 rounded-xl font-bold text-sm transition-all ${paymentMethod === 'phonepe' ? 'bg-white shadow-sm text-bloom-rose' : 'text-gray-500 hover:text-gray-900'}`}
+                    onClick={() => setPaymentMethod('razorpay')}
+                    className={`flex-1 flex items-center justify-center space-x-2 px-4 py-3 rounded-xl font-bold text-sm transition-all ${paymentMethod === 'razorpay' ? 'bg-white shadow-sm text-bloom-rose' : 'text-gray-500 hover:text-gray-900'}`}
                   >
                     <CreditCard size={18} />
-                    <span>PhonePe Gateway</span>
+                    <span>Pay with Card/UPI/Netbanking</span>
                   </button>
                   <button
                     onClick={() => setPaymentMethod('upi_qr')}
@@ -293,13 +290,12 @@ export function Checkout() {
                   </button>
                 </div>
 
-                {paymentMethod === 'phonepe' ? (
+                {paymentMethod === 'razorpay' ? (
                   <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4">
                     <div className="p-8 bg-pink-50 rounded-[2.5rem] border-2 border-dashed border-bloom-rose/30 flex flex-col items-center text-center space-y-6">
                       <div className="space-y-2">
-                        <h3 className="font-bold text-lg">Pay securely using PhonePe</h3>
-                        <p className="text-sm text-gray-500">You will be redirected to the PhonePe payment gateway to complete your transaction.</p>
-                        <p className="text-xs text-bloom-rose/80 font-medium pt-2">Note: During test mode, PhonePe simulates the payment page instead of showing a real QR code.</p>
+                        <h3 className="font-bold text-lg">Pay securely using Razorpay</h3>
+                        <p className="text-sm text-gray-500">You can pay with all major credit cards, debit cards, UPI, and Netbanking options.</p>
                       </div>
                     </div>
 
@@ -308,54 +304,36 @@ export function Checkout() {
                       <ul className="space-y-3 text-sm text-gray-600">
                         <li className="flex items-center space-x-3">
                           <div className="w-6 h-6 rounded-full bg-bloom-rose text-white flex items-center justify-center text-[10px] font-bold">1</div>
-                          <span>Click 'Proceed to PhonePe' below.</span>
+                          <span>Click 'Proceed to Payment' below.</span>
                         </li>
                         <li className="flex items-center space-x-3">
                           <div className="w-6 h-6 rounded-full bg-bloom-rose text-white flex items-center justify-center text-[10px] font-bold">2</div>
-                          <span>Complete the payment of ₹{finalTotal} on the secure payment gateway.</span>
+                          <span>Complete the payment of ₹{finalTotal} on the secure payment pop-up.</span>
                         </li>
                         <li className="flex items-center space-x-3">
                           <div className="w-6 h-6 rounded-full bg-bloom-rose text-white flex items-center justify-center text-[10px] font-bold">3</div>
-                          <span>You will be redirected back here upon completion to view your order.</span>
+                          <span>Wait while we verify the payment. You will automatically be redirected.</span>
                         </li>
                       </ul>
                     </div>
 
-                    {paymentUrl ? (
-                      <div className="space-y-4">
-                        <a 
-                          href={paymentUrl}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="w-full h-16 bg-[#5e2c9d] text-white rounded-full font-bold text-lg hover:bg-purple-800 transition-all flex items-center justify-center space-x-3 shadow-xl shadow-purple-600/20"
-                        >
-                          <img src={siteConfig.api.phonepe.logoUrl} className="h-6 w-auto mr-2 filter brightness-0 invert" alt="PhonePe" />
-                          <span>Proceed to PhonePe</span>
-                        </a>
-                        <div className="flex items-center justify-center space-x-2 text-sm text-gray-500 bg-gray-50 p-4 rounded-xl border border-gray-100">
-                          <div className="w-4 h-4 rounded-full border-2 border-bloom-rose border-t-transparent animate-spin"></div>
-                          <span>Waiting for payment confirmation... Do not close this tab.</span>
-                        </div>
-                      </div>
-                    ) : (
-                      <button 
-                        onClick={initiatePayment}
-                        disabled={isProcessing}
-                        className="w-full h-16 bg-bloom-rose text-white rounded-full font-bold text-lg hover:bg-bloom-rose/90 transition-all flex items-center justify-center space-x-3 shadow-xl shadow-bloom-rose/20 disabled:opacity-50"
-                      >
-                        {isProcessing ? (
-                          <>
-                            <Loader2 size={24} className="animate-spin" />
-                            <span>Redirecting to PhonePe...</span>
-                          </>
-                        ) : (
-                          <>
-                            <CreditCard size={24} />
-                            <span>Proceed to PhonePe</span>
-                          </>
-                        )}
-                      </button>
-                    )}
+                    <button 
+                      onClick={initiatePayment}
+                      disabled={isProcessing}
+                      className="w-full h-16 bg-bloom-rose text-white rounded-full font-bold text-lg hover:bg-bloom-rose/90 transition-all flex items-center justify-center space-x-3 shadow-xl shadow-bloom-rose/20 disabled:opacity-50"
+                    >
+                      {isProcessing ? (
+                        <>
+                          <Loader2 size={24} className="animate-spin" />
+                          <span>Initiating Payment...</span>
+                        </>
+                      ) : (
+                        <>
+                          <CreditCard size={24} />
+                          <span>Proceed to Payment</span>
+                        </>
+                      )}
+                    </button>
                   </div>
                 ) : (
                   <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4">
@@ -367,7 +345,7 @@ export function Checkout() {
                       
                       <div className="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 mb-2">
                         <QRCode
-                          value={`upi://pay?pa=8076323737@ybl&pn=${siteConfig.name}&am=${finalTotal}&cu=INR`}
+                          value={`upi://pay?pa=rajputpriyanka70@okhdfcbank&pn=MyLittleCorner&am=${finalTotal}&cu=INR`}
                           size={180}
                           level="M"
                         />

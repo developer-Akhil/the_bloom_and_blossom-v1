@@ -27,78 +27,48 @@ export function CheckoutSuccess() {
       }
       
       const queryCode = searchParams.get('code');
-      // If payment was cancelled by user on Phonepe, do not treat as a backend error right away
+      // If payment was cancelled by user
       if (queryCode === 'PAYMENT_CANCELLED' || queryCode === 'CANCELLED') {
         setStatus('failed');
         setMessage('Payment was cancelled. Please try again.');
         return;
       }
 
-      try {
-        const res = await fetch(siteConfig.api.payment.status(orderId));
-        if (!res.ok) {
-           throw new Error('Failed to verify payment status');
-        }
-        
-        const data = await res.json();
-        const paymentState = data.state || data.data?.state || data.code || queryCode; // Support both flat and nested PhonePe responses
+      if (queryCode === 'COMPLETED' || queryCode === 'SUCCESS' || queryCode === 'PAYMENT_SUCCESS') {
+        setStatus('success');
+        clearCart();
 
-        if (paymentState === 'COMPLETED' || paymentState === 'SUCCESS' || paymentState === 'PAYMENT_SUCCESS') {
-          setStatus('success');
-          clearCart();
+        // Process the local mock DB update
+        const sessionStr = sessionStorage.getItem('checkoutSession');
+        if (sessionStr) {
+          const session = JSON.parse(sessionStr);
+          const { shippingData, isFirstOrderEligible } = session;
 
-          // Process the local mock DB update
-          const sessionStr = sessionStorage.getItem('checkoutSession');
-          if (sessionStr) {
-            const session = JSON.parse(sessionStr);
-            const { shippingData, isFirstOrderEligible } = session;
+          const email = shippingData?.email?.trim().toLowerCase();
+          const phone = shippingData?.phone?.trim();
 
-            const email = shippingData?.email?.trim().toLowerCase();
-            const phone = shippingData?.phone?.trim();
+          const mockOrdersDB = JSON.parse(localStorage.getItem('bloom_db_orders') || '[]');
+          mockOrdersDB.push({ orderId, email, phone, timestamp: new Date().toISOString() });
+          localStorage.setItem('bloom_db_orders', JSON.stringify(mockOrdersDB));
 
-            const mockOrdersDB = JSON.parse(localStorage.getItem('bloom_db_orders') || '[]');
-            mockOrdersDB.push({ orderId, email, phone, timestamp: new Date().toISOString() });
-            localStorage.setItem('bloom_db_orders', JSON.stringify(mockOrdersDB));
-
-            if (isFirstOrderEligible && user) {
-              await supabase.auth.updateUser({ 
-                data: { has_used_first_discount: true } 
-              });
-            }
-            sessionStorage.removeItem('checkoutSession');
+          if (isFirstOrderEligible && user) {
+            supabase.auth.updateUser({ 
+              data: { has_used_first_discount: true } 
+            });
           }
-        } else if (paymentState === 'FAILED' || paymentState === 'PAYMENT_ERROR') {
-          setStatus('failed');
-          setMessage('Payment failed. Please try again.');
-        } else if (paymentState === 'PAYMENT_DECLINED' || paymentState === 'CANCELLED' || paymentState === 'PAYMENT_CANCELLED') {
-          setStatus('failed');
-          setMessage('Payment was cancelled. Please try again.');
-        } else if (paymentState === 'PENDING') {
-          setStatus('failed');
-          setMessage('Payment is currently pending. Please check back later. Do not retry if the amount was deducted.');
-        } else {
-          setStatus('failed');
-          setMessage(`Payment status is ${paymentState}. Please contact support if amount was deducted.`);
+          sessionStorage.removeItem('checkoutSession');
         }
-
-      } catch (err) {
-        console.error('Error verifying payment:', err);
-        const fallbackCode = searchParams.get('code');
-        if (fallbackCode === 'PAYMENT_ERROR' || fallbackCode === 'PAYMENT_DECLINED' || fallbackCode === 'PAYMENT_FAILED' || fallbackCode === 'FAILED') {
-           setStatus('failed');
-           setMessage('Payment failed. Please try again.');
-        } else if (fallbackCode === 'PAYMENT_CANCELLED' || fallbackCode === 'CANCELLED') {
-           setStatus('failed');
-           setMessage('Payment was cancelled. Please try again.');
-        } else {
-           setStatus('failed');
-           setMessage('Could not verify payment status. Please check your dashboard or contact support.');
-        }
+      } else if (queryCode === 'FAILED' || queryCode === 'PAYMENT_ERROR') {
+        setStatus('failed');
+        setMessage('Payment failed. Please try again.');
+      } else {
+         setStatus('failed');
+         setMessage('Payment could not be verified. Please contact support.');
       }
     }
     
     verifyPayment();
-  }, [orderId, clearCart, user]);
+  }, [orderId, clearCart, user, searchParams]);
 
   return (
     <div className="container min-h-screen pt-32 pb-20 flex flex-col items-center justify-center space-y-8 text-center px-4">
