@@ -40,6 +40,8 @@ export function Checkout() {
     zip: ''
   });
 
+  const [phoneError, setPhoneError] = useState('');
+  const [zipError, setZipError] = useState('');
   const [isExistingCustomer, setIsExistingCustomer] = useState(false);
 
   useEffect(() => {
@@ -85,8 +87,33 @@ export function Checkout() {
   const shippingCost = cartTotal > 2000 ? 0 : 80;
   const finalTotal = cartTotal - discountAmount + shippingCost;
 
+  const validateIndianPhone = (phone: string) => {
+    const indianPhoneRegex = /^(?:(?:\+|0{0,2})91[\s-]?)?(?:0[\s-]?)?[6789]\d{9}$/;
+    return indianPhoneRegex.test(phone.trim());
+  };
+
+  const validateIndianPin = (pin: string) => {
+    const indianPinRegex = /^[1-9][0-9]{5}$/;
+    return indianPinRegex.test(pin.trim());
+  };
+
   const handleDetailsSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    let hasError = false;
+    if (!validateIndianPhone(shippingData.phone)) {
+      setPhoneError('Please enter a valid 10-digit Indian mobile number');
+      hasError = true;
+    } else {
+      setPhoneError('');
+    }
+    if (!validateIndianPin(shippingData.zip)) {
+      setZipError('Please enter a valid 6-digit Indian PIN code (cannot start with 0)');
+      hasError = true;
+    } else {
+      setZipError('');
+    }
+
+    if (hasError) return;
     setStep('payment');
   };
 
@@ -132,6 +159,15 @@ export function Checkout() {
           }
         } catch(e) {}
         throw new Error(errText);
+      }
+      
+      const contentType = res.headers.get('content-type');
+      if (contentType && !contentType.includes('application/json')) {
+        const text = await res.text();
+        if (text.includes('<!doctype html>')) {
+           throw new Error('Server returned an HTML file instead of API data. The Node.js backend might not be responding, or you have deployed to a static host which requires a Node.js server for payments.');
+        }
+        throw new Error('Server returned an invalid response (not JSON).');
       }
       
       const data = await res.json();
@@ -258,11 +294,11 @@ export function Checkout() {
                   <Input label="Full Name" value={shippingData.name} required onChange={v => setShippingData({...shippingData, name: v})} />
                   <Input label="Email Address" type="email" value={shippingData.email} required onChange={v => setShippingData({...shippingData, email: v})} />
                 </div>
-                <Input label="Phone Number" value={shippingData.phone} required onChange={v => setShippingData({...shippingData, phone: v})} />
+                <Input label="Phone Number" value={shippingData.phone} required error={phoneError} onChange={v => { setShippingData({...shippingData, phone: v}); setPhoneError(''); }} />
                 <Input label="Apartment, Street Address" value={shippingData.address} required onChange={v => setShippingData({...shippingData, address: v})} />
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                   <Input label="City" value={shippingData.city} required onChange={v => setShippingData({...shippingData, city: v})} />
-                  <Input label="Zip Code" value={shippingData.zip} required onChange={v => setShippingData({...shippingData, zip: v})} />
+                  <Input label="Zip Code" value={shippingData.zip} required error={zipError} onChange={v => { setShippingData({...shippingData, zip: v}); setZipError(''); }} />
                 </div>
                 <button 
                   type="submit"
@@ -475,7 +511,7 @@ export function Checkout() {
   );
 }
 
-function Input({ label, value, type="text", required=false, onChange }: { label: string, value: string, type?: string, required?: boolean, onChange: (v: string) => void }) {
+function Input({ label, value, type="text", required=false, error, onChange }: { label: string, value: string, type?: string, required?: boolean, error?: string, onChange: (v: string) => void }) {
   return (
     <div className="space-y-2">
       <label className="block text-xs font-bold uppercase tracking-widest text-gray-500">{label}</label>
@@ -484,8 +520,9 @@ function Input({ label, value, type="text", required=false, onChange }: { label:
         value={value}
         onChange={(e) => onChange(e.target.value)}
         required={required}
-        className="w-full px-6 py-4 bg-white border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-bloom-rose/20 focus:border-bloom-rose transition-all"
+        className={`w-full px-6 py-4 bg-white border ${error ? 'border-red-500 focus:ring-red-500/20 focus:border-red-500' : 'border-gray-200 focus:ring-bloom-rose/20 focus:border-bloom-rose'} rounded-2xl focus:outline-none focus:ring-2 transition-all`}
       />
+      {error && <p className="text-red-500 text-xs font-medium pl-2">{error}</p>}
     </div>
   );
 }
