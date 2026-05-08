@@ -166,11 +166,8 @@ export function Checkout() {
       const contentType = res.headers.get('content-type');
       if (contentType && !contentType.includes('application/json')) {
         const text = await res.text();
-        if (text.includes('502 Bad Gateway') || text.includes('503 Service Unavailable')) {
-           throw new Error('The server is currently restarting or unavailable. Please wait a few seconds and try again.');
-        }
         if (text.includes('<!doctype html>') || text.includes('<html')) {
-           throw new Error('Server returned an HTML file instead of API data. The Node.js backend might not be responding, or you have deployed to a static host which requires a Node.js server for payments.');
+           throw new Error('Received an HTML error page. The backend server might be restarting after an environment variable update or is temporarily unavailable. Please wait a moment and try again.');
         }
         throw new Error('Server returned an invalid response (not JSON).');
       }
