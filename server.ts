@@ -4,6 +4,11 @@ import { createServer as createViteServer } from "vite";
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
+import helmet from "helmet";
+import compression from "compression";
+import cors from "cors";
+import morgan from "morgan";
+import rateLimit from "express-rate-limit";
 import authRoutes from "./server/routes/authRoutes.js";
 import paymentRoutes from "./server/routes/paymentRoutes.js";
 import contactRoutes from "./server/routes/contactRoutes.js";
@@ -15,7 +20,26 @@ async function startServer() {
   const app = express();
   const PORT = 3000;
 
+  // Security Middleware
+  app.use(helmet({
+    contentSecurityPolicy: false, // Too restrictive by default for React/Vite
+    crossOriginEmbedderPolicy: false,
+  }));
+  
+  // CORS
+  app.use(cors({
+    origin: process.env.FRONTEND_URL || "*", 
+    credentials: true
+  }));
+
+  // Compression
+  app.use(compression());
+
+  // Request Logging
+  app.use(morgan(process.env.NODE_ENV === "production" ? "combined" : "dev"));
+
   app.use(express.json({ limit: '50mb' }));
+  app.use(express.urlencoded({ extended: true }));
 
   // API router
   app.use("/api/auth", authRoutes);
