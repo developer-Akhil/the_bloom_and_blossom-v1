@@ -1,4 +1,4 @@
-fetch("http://127.0.0.0:3000/api/payment/create-order", {
+fetch("http://localhost:3000/api/payment/create-order", {
   method: 'POST',
   headers: {
     'Content-Type': 'application/json'
@@ -13,5 +13,5 @@ fetch("http://127.0.0.0:3000/api/payment/create-order", {
   console.log("STATUS:", res.status);
   console.log("CONTENT-TYPE:", res.headers.get("content-type"));
   const text = await res.text();
-  console.log("BODY:", text.substring(0, 100));
+  console.log("BODY:", text.substring(0, 500));
 }).catch(console.error);
