@@ -42,6 +42,7 @@ export function Checkout() {
 
   const [phoneError, setPhoneError] = useState('');
   const [zipError, setZipError] = useState('');
+  const [paymentError, setPaymentError] = useState('');
   const [isExistingCustomer, setIsExistingCustomer] = useState(false);
 
   useEffect(() => {
@@ -119,6 +120,7 @@ export function Checkout() {
 
   const initiatePayment = async () => {
     setIsProcessing(true);
+    setPaymentError('');
     try {
       const email = shippingData.email.trim().toLowerCase();
       const phone = shippingData.phone.trim();
@@ -164,7 +166,10 @@ export function Checkout() {
       const contentType = res.headers.get('content-type');
       if (contentType && !contentType.includes('application/json')) {
         const text = await res.text();
-        if (text.includes('<!doctype html>')) {
+        if (text.includes('502 Bad Gateway') || text.includes('503 Service Unavailable')) {
+           throw new Error('The server is currently restarting or unavailable. Please wait a few seconds and try again.');
+        }
+        if (text.includes('<!doctype html>') || text.includes('<html')) {
            throw new Error('Server returned an HTML file instead of API data. The Node.js backend might not be responding, or you have deployed to a static host which requires a Node.js server for payments.');
         }
         throw new Error('Server returned an invalid response (not JSON).');
@@ -225,14 +230,19 @@ export function Checkout() {
       const rzp1 = new (window as any).Razorpay(options);
       rzp1.on('payment.failed', function (response: any){
          setIsProcessing(false);
-         alert(response.error?.description || 'Payment failed. Please try again.');
+         const errorDesc = response.error?.description || '';
+         if (errorDesc.toLowerCase().includes('3dsecure')) {
+           setPaymentError('Your card does not support 3D Secure or it is not enabled. Please use a different card or UPI/Netbanking.');
+         } else {
+           setPaymentError(errorDesc || 'Payment failed. Please try again.');
+         }
       });
       rzp1.open();
 
     } catch (e: any) {
       console.error('Payment initiation error', e);
       setIsProcessing(false);
-      alert(e.message || 'Failed to initiate payment. Please try again.');
+      setPaymentError(e?.message || 'Failed to initiate payment. Please try again.');
     }
   };
 
@@ -328,6 +338,12 @@ export function Checkout() {
 
                 {paymentMethod === 'razorpay' ? (
                   <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4">
+                    {paymentError && (
+                      <div className="p-4 bg-red-50 text-red-600 rounded-xl border border-red-100 text-sm font-medium flex items-start gap-3 text-left">
+                        <svg className="w-5 h-5 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                        <p>{paymentError}</p>
+                      </div>
+                    )}
                     <div className="p-8 bg-pink-50 rounded-[2.5rem] border-2 border-dashed border-bloom-rose/30 flex flex-col items-center text-center space-y-6">
                       <div className="space-y-2">
                         <h3 className="font-bold text-lg">Pay securely using Razorpay</h3>
