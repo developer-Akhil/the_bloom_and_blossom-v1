@@ -89,6 +89,46 @@ router.post('/verify-payment', async (req, res) => {
   }
 });
 
+router.post('/webhook', async (req, res) => {
+  try {
+    const webhookSecret = process.env.RAZORPAY_WEBHOOK_SECRET;
+    if (!webhookSecret) {
+      console.warn("Webhook secret not configured, skipping verification.");
+      return res.status(200).send('OK');
+    }
+
+    const signature = req.headers['x-razorpay-signature'];
+    if (!signature) {
+      return res.status(400).send('Missing signature');
+    }
+
+    const payload = (req as any).rawBody || JSON.stringify(req.body);
+    const expectedSignature = crypto
+      .createHmac('sha256', webhookSecret)
+      .update(payload)
+      .digest('hex');
+
+    if (expectedSignature !== signature) {
+      return res.status(400).send('Invalid signature');
+    }
+
+    const event = req.body.event;
+    console.log('Webhook Event Received:', event, req.body);
+    
+    // In a real application, you would persist this via your database model:
+    // INSERT INTO bb_ecommerce_sc.payment_webhooks ...
+
+    if (event === 'payment.captured') {
+      // payment captured logic
+    }
+
+    res.status(200).json({ status: 'ok' });
+  } catch (error) {
+    console.error('Webhook processing error:', error);
+    res.status(500).send('Webhook Processing Error');
+  }
+});
+
 router.post('/refund', async (req, res) => {
    res.status(501).json({ error: 'Refund endpoint needs standard verification logic mapping' });
 });

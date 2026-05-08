@@ -49,7 +49,12 @@ async function startServer() {
 
   app.use("/api", apiLimiter);
 
-  app.use(express.json({ limit: '50mb' }));
+  app.use(express.json({ 
+    limit: '50mb',
+    verify: (req: any, res, buf) => {
+      req.rawBody = buf;
+    }
+  }));
   app.use(express.urlencoded({ extended: true }));
 
   // API router
