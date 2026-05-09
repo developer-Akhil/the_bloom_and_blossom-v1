@@ -144,9 +144,16 @@ async function startServer() {
     res.status(500).json({ error: err.message || 'Internal Server Error' });
   });
 
-  app.listen(PORT, "0.0.0.0", () => {
-    console.log(`Server running on http://localhost:${PORT}`);
-  });
+  if (typeof PORT === 'string' && PORT.startsWith('/')) {
+    app.listen(PORT, () => {
+      console.log(`Server running on socket ${PORT}`);
+    });
+  } else {
+    const portNum = typeof PORT === 'string' ? parseInt(PORT, 10) : PORT;
+    app.listen(portNum, "0.0.0.0", () => {
+      console.log(`Server running on port ${PORT}`);
+    });
+  }
 }
 
 startServer();
