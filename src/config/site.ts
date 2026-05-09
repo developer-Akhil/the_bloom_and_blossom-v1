@@ -1,6 +1,10 @@
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
+const APP_URL = import.meta.env.VITE_APP_URL || "https://bloomandblossom.in";
+
 export const siteConfig = {
   name: "The Bloom & Blossom",
   description: "Hand-crafted hair accessories designed to bring out the blooming beauty in every person. Delicate, elegant, and uniquely yours.",
+  url: APP_URL,
   contact: {
     email: "info@bloomandblossom.in",
     phone: "+91 8076323737",
@@ -19,9 +23,10 @@ export const siteConfig = {
   },
   api: {
     payment: {
-      createOrder: "/api/payment/create-order",
-      verifyPayment: "/api/payment/verify-payment",
-      refund: "/api/payment/refund"
+      createOrder: `${API_BASE_URL}/api/payment/create-order`,
+      verifyPayment: `${API_BASE_URL}/api/payment/verify-payment`,
+      refund: `${API_BASE_URL}/api/payment/refund`,
+      webhook: `${API_BASE_URL}/api/payment/webhook`
     }
   }
 };
