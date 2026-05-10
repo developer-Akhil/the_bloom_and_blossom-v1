@@ -196,17 +196,8 @@ async function startServer() {
     });
     app.use(vite.middlewares);
   } else {
-    const publicHtmlDir = path.join(process.cwd(), 'public_html');
     const defaultDist = path.join(process.cwd(), 'dist');
-    
-    let distPath = process.cwd();
-    if (fs.existsSync(publicHtmlDir)) {
-      distPath = publicHtmlDir;
-    } else if (fs.existsSync(defaultDist)) {
-      distPath = defaultDist;
-    }
-    
-    console.log(`[Server] Serving static files from: ${distPath}`);
+    const distPath = fs.existsSync(defaultDist) ? defaultDist : process.cwd();
     app.use(express.static(distPath));
     app.get('*', (req, res) => {
       const indexPath = path.join(distPath, 'index.html');
