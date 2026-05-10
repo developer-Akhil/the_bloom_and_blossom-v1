@@ -1,4 +1,5 @@
-import "dotenv/config";
+import * as dotenv from "dotenv";
+dotenv.config();
 import express from "express";
 import fs from "fs";
 import path from "path";
@@ -114,6 +115,18 @@ async function startServer() {
   app.use("/api/auth", authRoutes);
   app.use("/api/payment", paymentRoutes);
   app.use("/api/contact", contactRoutes);
+
+  // Temporary route to test ENV variables (diagnostics)
+  app.get("/api/env-test", (req, res) => {
+    res.json({
+      nodeEnv: process.env.NODE_ENV,
+      port: process.env.PORT,
+      hasRazorpayId: !!process.env.RAZORPAY_KEY_ID,
+      hasRazorpaySecret: !!process.env.RAZORPAY_KEY_SECRET,
+      razorpayIdSegment: process.env.RAZORPAY_KEY_ID ? `${process.env.RAZORPAY_KEY_ID.substring(0, 4)}...` : null,
+      keys: Object.keys(process.env).length
+    });
+  });
 
   // Fallback for unmatched API routes
   app.all("/api/*", (req, res) => {
