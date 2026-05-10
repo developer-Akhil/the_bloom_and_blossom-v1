@@ -205,9 +205,31 @@ async function startServer() {
       console.log(`Server running on socket ${PORT}`);
     });
   } else {
-    const portNum = typeof PORT === 'string' ? parseInt(PORT, 10) : PORT;
-    app.listen(portNum, "0.0.0.0", () => {
-      console.log(`Server running on port ${PORT}`);
+  const portNum = typeof PORT === 'string' ? parseInt(PORT, 10) : PORT;
+    
+    const server = app.listen(portNum, "0.0.0.0", () => {
+      const address = server.address();
+      const bind = typeof address === 'string' ? 'pipe ' + address : 'port ' + address?.port;
+      console.log(`[Server] Production Node.js server started and listening on ${bind}`);
+      console.log(`[Server] Environment: ${process.env.NODE_ENV}`);
+      console.log(`[Server] PID: ${process.pid}`);
+    });
+
+    server.on('error', (error: any) => {
+      console.error('[Server Error] Failed to start server:', error);
+      if (error.syscall !== 'listen') throw error;
+      switch (error.code) {
+        case 'EACCES':
+          console.error(`[Server Error] Port ${portNum} requires elevated privileges`);
+          process.exit(1);
+          break;
+        case 'EADDRINUSE':
+          console.error(`[Server Error] Port ${portNum} is already in use`);
+          process.exit(1);
+          break;
+        default:
+          throw error;
+      }
     });
   }
 }
