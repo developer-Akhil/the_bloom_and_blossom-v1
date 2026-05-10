@@ -20,6 +20,12 @@ async function startServer() {
   const app = express();
   const PORT = process.env.PORT || 3000;
 
+  // Comprehensive request logging
+  app.use((req, res, next) => {
+    console.log(`[Incoming Request] ${req.method} ${req.url}`);
+    next();
+  });
+
   // Security Middleware
   app.use(helmet({
     contentSecurityPolicy: false, // Too restrictive by default for React/Vite
@@ -49,6 +55,12 @@ async function startServer() {
 
   app.use("/api", apiLimiter);
 
+  // Request logging for debugging routing issues in production
+  app.use("/api", (req, res, next) => {
+    console.log(`[API Request] ${req.method} ${req.url}`);
+    next();
+  });
+
   app.use(express.json({ 
     limit: '50mb',
     verify: (req: any, res, buf) => {
@@ -57,10 +69,39 @@ async function startServer() {
   }));
   app.use(express.urlencoded({ extended: true }));
 
+  // Root health check as suggested by Hostinger
+  app.get("/health", (req, res) => {
+    res.json({ status: "ok", message: "Server is healthy", timestamp: new Date().toISOString() });
+  });
+
+  // Health check endpoint
+  app.get("/api/health", (req, res) => {
+    const razorpayKeysSet = !!(process.env.RAZORPAY_KEY_ID && process.env.RAZORPAY_KEY_SECRET);
+    res.json({ 
+      status: "ok", 
+      timestamp: new Date().toISOString(), 
+      env: process.env.NODE_ENV,
+      config: {
+        razorpay: razorpayKeysSet ? "configured" : "missing",
+        port: PORT
+      }
+    });
+  });
+
   // API router
   app.use("/api/auth", authRoutes);
   app.use("/api/payment", paymentRoutes);
   app.use("/api/contact", contactRoutes);
+
+  // Fallback for unmatched API routes
+  app.all("/api/*", (req, res) => {
+    console.warn(`[Unmatched API Route] ${req.method} ${req.url}`);
+    res.status(404).json({ 
+      error: "API route not found", 
+      method: req.method, 
+      path: req.url 
+    });
+  });
 
   app.post("/api/upload-image", (req, res) => {
     const { folderId, fileName, base64Data } = req.body;
