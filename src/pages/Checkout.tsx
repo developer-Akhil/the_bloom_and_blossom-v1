@@ -132,6 +132,7 @@ export function Checkout() {
         name: shippingData.name
       };
 
+      console.log(`Initiating payment fetch to: ${siteConfig.api.payment.createOrder}`);
       const res = await fetch(siteConfig.api.payment.createOrder, {
         method: 'POST',
         headers: {

@@ -35,16 +35,24 @@ async function startServer() {
     next();
   });
 
+/*
   // Security Middleware
   app.use(helmet({
     contentSecurityPolicy: false, // Too restrictive by default for React/Vite
     crossOriginEmbedderPolicy: false,
   }));
-  
-  // CORS
+*/
+
+  // CORS - very permissive for debugging
   app.use(cors({
-    origin: process.env.FRONTEND_URL || "*", 
-    credentials: true
+    origin: function (origin, callback) {
+      console.log(`[CORS Request] Origin: ${origin}`);
+      // Allow all origins in development and potentially production for debugging
+      callback(null, true);
+    },
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'X-Razorpay-Signature']
   }));
 
   // Compression
@@ -54,6 +62,7 @@ async function startServer() {
   app.use(morgan(process.env.NODE_ENV === "production" ? "combined" : "dev"));
 
   // Rate Limiting
+  /*
   const apiLimiter = rateLimit({
     windowMs: 15 * 60 * 1000, // 15 minutes
     max: 100, // Limit each IP to 100 requests per `window` (here, per 15 minutes)
@@ -63,6 +72,7 @@ async function startServer() {
   });
 
   app.use("/api", apiLimiter);
+  */
 
   // Request logging for debugging routing issues in production
   app.use("/api", (req, res, next) => {
@@ -81,6 +91,10 @@ async function startServer() {
   // Root health check as suggested by Hostinger
   app.get("/health", (req, res) => {
     res.json({ status: "ok", message: "Server is healthy", timestamp: new Date().toISOString() });
+  });
+
+  app.get("/ping", (req, res) => {
+    res.send("pong");
   });
 
   // Health check endpoint
