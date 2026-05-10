@@ -188,14 +188,23 @@ async function startServer() {
   });
 
   // Vite middleware for development
-  if (process.env.NODE_ENV !== "production") {
-    const { createServer: createViteServer } = await import("vite");
-    const vite = await createViteServer({
-      server: { middlewareMode: true },
-      appType: "spa",
-    });
-    app.use(vite.middlewares);
-  } else {
+  let isDev = process.env.NODE_ENV !== "production";
+  
+  if (isDev) {
+    try {
+      const { createServer: createViteServer } = await import("vite");
+      const vite = await createViteServer({
+        server: { middlewareMode: true },
+        appType: "spa",
+      });
+      app.use(vite.middlewares);
+    } catch (error) {
+      console.warn("[Server] Vite not found, falling back to static production serving.");
+      isDev = false;
+    }
+  }
+
+  if (!isDev) {
     const defaultDist = path.join(process.cwd(), 'dist');
     const distPath = fs.existsSync(defaultDist) ? defaultDist : process.cwd();
     app.use(express.static(distPath));
