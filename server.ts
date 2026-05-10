@@ -20,9 +20,18 @@ async function startServer() {
   const app = express();
   const PORT = process.env.PORT || 3000;
 
+  // Trust the first proxy (Hostinger/Nginx/Apache)
+  // This resolves the rate limit warnings about X-Forwarded-For
+  app.set('trust proxy', 1);
+
   // Comprehensive request logging
   app.use((req, res, next) => {
     console.log(`[Incoming Request] ${req.method} ${req.url}`);
+    console.log(`[Headers] ${JSON.stringify({
+      ip: req.ip,
+      'x-forwarded-for': req.headers['x-forwarded-for'],
+      'forwarded': req.headers['forwarded']
+    })}`);
     next();
   });
 
