@@ -118,6 +118,39 @@ export function Checkout() {
     setStep('payment');
   };
 
+  const insertOrderToSupabase = async (paymentId: string | null = null, pStatus: string = 'pending') => {
+    try {
+      const { data: orderData, error: orderError } = await supabase.from('orders').insert({
+        guest_email: shippingData.email,
+        guest_phone: shippingData.phone,
+        total_amount: cartTotal,
+        discount_applied: discountAmount,
+        final_amount: finalTotal,
+        shipping_address: shippingData,
+        payment_status: pStatus,
+        payment_id: paymentId,
+        user_id: user?.id || null,
+        order_status: 'processing'
+      }).select('id').single();
+
+      if (!orderError && orderData) {
+        const orderItems = cart.map(item => ({
+          order_id: orderData.id,
+          product_id: item.id,
+          product_name: item.name,
+          quantity: item.quantity,
+          price: item.price,
+          customization_name: item.customization || null
+        }));
+        await supabase.from('order_items').insert(orderItems);
+      }
+      return orderData?.id || null;
+    } catch (e) {
+      console.error("Failed to save order to Supabase", e);
+      return null;
+    }
+  };
+
   const initiatePayment = async () => {
     setIsProcessing(true);
     setPaymentError('');
@@ -195,6 +228,8 @@ export function Checkout() {
             });
             const verifyData = await verifyRes.json();
             if (verifyData.success) {
+               await insertOrderToSupabase(response.razorpay_payment_id, 'paid');
+               
                sessionStorage.setItem('checkoutSession', JSON.stringify({
                  shippingData,
                  cart,
@@ -426,14 +461,24 @@ export function Checkout() {
                         </ul>
                       </div>
                       
-                      <a 
-                        href={`https://wa.me/${siteConfig.contact.phone.replace(/\D/g, '')}?text=${encodeURIComponent(`Hello, I've made the payment of Rs ${finalTotal} for my order using Manual UPI. I am sharing the payment screenshot below.`)}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
+                      <button 
+                        onClick={async () => {
+                          const internalOrderId = await insertOrderToSupabase(null, 'pending');
+                          const waText = encodeURIComponent(`Hello, I've made the payment of Rs ${finalTotal} for my order using Manual UPI. Order ID: ${internalOrderId || 'Pending'}. I am sharing the payment screenshot below.`);
+                          
+                          sessionStorage.setItem('checkoutSession', JSON.stringify({
+                            shippingData,
+                            cart,
+                            isFirstOrderEligible
+                          }));
+                          
+                          window.open(`https://wa.me/${siteConfig.contact.phone.replace(/\D/g, '')}?text=${waText}`, '_blank');
+                          window.location.href = `/checkout/success?orderId=${internalOrderId || 'MANUAL'}&code=UPI_MANUAL`;
+                        }}
                         className="w-full h-16 bg-[#25D366] text-white rounded-full font-bold text-lg hover:bg-[#128C7E] transition-all flex items-center justify-center space-x-3 shadow-xl shadow-green-600/20"
                       >
                         <span>Confirm via WhatsApp</span>
-                      </a>
+                      </button>
                     </div>
                   </div>
                 )}
