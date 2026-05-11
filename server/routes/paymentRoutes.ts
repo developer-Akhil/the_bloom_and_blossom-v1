@@ -6,8 +6,8 @@ import { siteConfig } from '../../src/config/site.js';
 const router = express.Router();
 
 const getRazorpayClient = () => {
-  const key_id = process.env.RAZORPAY_KEY_ID;
-  const key_secret = process.env.RAZORPAY_KEY_SECRET;
+  const key_id = process.env.RAZORPAY_KEY_ID?.trim();
+  const key_secret = process.env.RAZORPAY_KEY_SECRET?.trim();
   if (!key_id || !key_secret) {
     throw new Error('Razorpay keys not configured');
   }
