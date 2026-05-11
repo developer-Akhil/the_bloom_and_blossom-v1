@@ -1,5 +1,5 @@
 import * as dotenv from "dotenv";
-dotenv.config();
+dotenv.config({ override: true });
 import express from "express";
 import fs from "fs";
 import path from "path";

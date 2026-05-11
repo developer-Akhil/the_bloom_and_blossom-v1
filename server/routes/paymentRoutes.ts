@@ -58,8 +58,11 @@ router.post('/create-order', async (req, res) => {
 
   } catch (error: any) {
     console.error('Payment initiation error:', error);
-    if (error.statusCode === 401 || error.statusCode === '401') {
-      return res.status(401).json({ error: 'Gateway Authentication Failed', details: error?.error?.description || error?.message });
+    if (error.statusCode === 401 || error.statusCode === '401' || error?.error?.description === 'Authentication failed') {
+      return res.status(401).json({ 
+        error: 'Gateway Authentication Failed', 
+        details: `Your Razorpay credentials (Key and Secret) do not match or are invalid. Please go to your Razorpay Dashboard -> API Keys, to generate a NEW Test Key pair. Then set both RAZORPAY_KEY_ID and RAZORPAY_KEY_SECRET in your settings exactly as they appear.` 
+      });
     }
     res.status(500).json({ error: 'Internal server error', details: error?.message || error?.toString() });
   }
