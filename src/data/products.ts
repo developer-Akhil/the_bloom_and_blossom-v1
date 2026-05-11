@@ -103,7 +103,7 @@ const hardcodedProducts: Product[] = [
     id: '8',
     name: 'Scrunchies',
     category: 'Scrunchies',
-    price: 40,
+    price: 2,
     description: 'Elevate your everyday style with this soft satin scrunchie, designed to be gentle on hair and reduce breakage. Smooth, stylish, and comfortable, it’s perfect for daily wear or adding a chic touch to any outfit.',
     images: ['/images/collections/scrunchies/red.jpg', '/images/collections/scrunchies/black.jpg', '/images/collections/scrunchies/purple.jpg', '/images/collections/scrunchies/white.jpg'],
     stock: 210,
