@@ -6,8 +6,13 @@ import { siteConfig } from '../../src/config/site.js';
 const router = express.Router();
 
 const getRazorpayClient = () => {
-  const key_id = process.env.RAZORPAY_KEY_ID?.trim();
-  const key_secret = process.env.RAZORPAY_KEY_SECRET?.trim();
+  let key_id = process.env.RAZORPAY_KEY_ID?.trim() || "";
+  let key_secret = process.env.RAZORPAY_KEY_SECRET?.trim() || "";
+
+  // Strip leading/trailing quotes if they accidentally included them in the dashboard string
+  key_id = key_id.replace(/^["']|["']$/g, '').trim();
+  key_secret = key_secret.replace(/^["']|["']$/g, '').trim();
+
   if (!key_id || !key_secret) {
     throw new Error('Razorpay keys not configured');
   }
@@ -47,7 +52,8 @@ router.post('/create-order', async (req, res) => {
     return res.json({
       order_id: order.id,
       amount: order.amount,
-      currency: order.currency
+      currency: order.currency,
+      key_id: razorpay.key_id || process.env.RAZORPAY_KEY_ID?.replace(/^["']|["']$/g, '').trim()
     });
 
   } catch (error: any) {

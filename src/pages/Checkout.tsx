@@ -176,7 +176,7 @@ export function Checkout() {
       const data = await res.json();
       
       const options = {
-        key: import.meta.env.VITE_RAZORPAY_KEY_ID, 
+        key: data.key_id || import.meta.env.VITE_RAZORPAY_KEY_ID, 
         amount: data.amount,
         currency: data.currency,
         name: siteConfig.name,

@@ -118,12 +118,21 @@ async function startServer() {
 
   // Temporary route to test ENV variables (diagnostics)
   app.get("/api/env-test", (req, res) => {
+    
+    let keyId = process.env.RAZORPAY_KEY_ID || "";
+    let keySecret = process.env.RAZORPAY_KEY_SECRET || "";
+    
+    keyId = keyId.replace(/^["']|["']$/g, '').trim();
+    keySecret = keySecret.replace(/^["']|["']$/g, '').trim();
+
     res.json({
       nodeEnv: process.env.NODE_ENV,
       port: process.env.PORT,
       hasRazorpayId: !!process.env.RAZORPAY_KEY_ID,
       hasRazorpaySecret: !!process.env.RAZORPAY_KEY_SECRET,
-      razorpayIdSegment: process.env.RAZORPAY_KEY_ID ? `${process.env.RAZORPAY_KEY_ID.substring(0, 4)}...` : null,
+      razorpayIdLength: keyId.length,
+      razorpaySecretLength: keySecret.length,
+      razorpayIdSegment: keyId ? `${keyId.substring(0, 4)}...${keyId.substring(keyId.length - 2)}` : null,
       keys: Object.keys(process.env).length
     });
   });
