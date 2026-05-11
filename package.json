@@ -3,10 +3,10 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
-  "main": "dist/server.js",
+  "main": "server.js",
   "scripts": {
     "dev": "tsx server.ts",
-    "start": "node dist/server.js",
+    "start": "node server.js",
     "postinstall": "npm run build",
     "build": "vite build && npx -y esbuild server.ts --bundle --platform=node --target=node18 --format=esm --outfile=dist/server.js --packages=external",
     "preview": "vite preview",
