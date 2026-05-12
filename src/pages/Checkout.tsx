@@ -120,7 +120,9 @@ export function Checkout() {
 
   const insertOrderToSupabase = async (paymentId: string | null = null, pStatus: string = 'pending') => {
     try {
-      const { data: orderData, error: orderError } = await supabase.from('orders').insert({
+      const newOrderId = crypto.randomUUID();
+      const { error: orderError } = await supabase.from('orders').insert({
+        id: newOrderId,
         guest_email: shippingData.email,
         guest_phone: shippingData.phone,
         total_amount: cartTotal,
@@ -129,22 +131,31 @@ export function Checkout() {
         shipping_address: shippingData,
         payment_status: pStatus,
         payment_id: paymentId,
-        user_id: user?.id || null,
+        user_id: null,
         order_status: 'processing'
-      }).select('id').single();
+      });
 
-      if (!orderError && orderData) {
-        const orderItems = cart.map(item => ({
-          order_id: orderData.id,
-          product_id: item.id,
-          product_name: item.name,
-          quantity: item.quantity,
-          price: item.price,
-          customization_name: item.customization || null
-        }));
-        await supabase.from('order_items').insert(orderItems);
+      if (orderError) {
+        console.error("Order Insert Error: ", orderError);
+        // Fallback to local storage on error
+        return null;
       }
-      return orderData?.id || null;
+
+      // Insert Items
+      const orderItems = cart.map(item => ({
+        order_id: newOrderId,
+        product_name: item.name,
+        quantity: item.quantity,
+        price: item.price,
+        customization_name: item.customizationName || null
+      }));
+      
+      const { error: itemsError } = await supabase.from('order_items').insert(orderItems);
+      if (itemsError) {
+        console.error("Items Insert Error: ", itemsError);
+      }
+      
+      return newOrderId;
     } catch (e) {
       console.error("Failed to save order to Supabase", e);
       return null;
@@ -233,6 +244,7 @@ export function Checkout() {
                sessionStorage.setItem('checkoutSession', JSON.stringify({
                  shippingData,
                  cart,
+                 total: finalTotal,
                  isFirstOrderEligible
                }));
                window.location.href = `/checkout/success?orderId=${data.order_id}&code=SUCCESS`;
@@ -469,6 +481,7 @@ export function Checkout() {
                           sessionStorage.setItem('checkoutSession', JSON.stringify({
                             shippingData,
                             cart,
+                            total: finalTotal,
                             isFirstOrderEligible
                           }));
                           

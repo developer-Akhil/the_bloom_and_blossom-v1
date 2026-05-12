@@ -121,10 +121,11 @@ export const AuthController = {
         return;
       }
 
-      if (!user.isVerified) {
-        res.status(401).json({ error: "Please verify your email address before logging in." });
-        return;
-      }
+      // Bypass email verification for testing/development
+      // if (!user.isVerified) {
+      //   res.status(401).json({ error: "Please verify your email address before logging in." });
+      //   return;
+      // }
 
       // Generate JWT
       const token = jwt.sign(

@@ -12,10 +12,13 @@ export function Contact() {
 
   const [status, setStatus] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle');
 
+  const [errorMessage, setErrorMessage] = useState('Failed to send message. Please try again later.');
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setStatus('submitting');
-    
+    setErrorMessage('Failed to send message. Please try again later.');
+
     try {
       const response = await fetch(`/api/contact`, {
         method: "POST",
@@ -35,6 +38,12 @@ export function Contact() {
         setFormData({ name: '', email: '', subject: 'General Inquiry', message: '' });
       } else {
         setStatus('error');
+        try {
+          const errData = await response.json();
+          if (errData.error) {
+            setErrorMessage(errData.error);
+          }
+        } catch(e) {}
       }
     } catch (error) {
       console.error("Error submitting form:", error);
@@ -145,7 +154,7 @@ export function Contact() {
                 {status === 'error' && (
                   <div className="p-4 bg-red-50 text-red-700 rounded-2xl flex items-center space-x-3 text-sm font-medium">
                     <XCircle size={18} />
-                    <span>Failed to send message. Please try again later.</span>
+                    <span>{errorMessage}</span>
                   </div>
                 )}
                 <button 

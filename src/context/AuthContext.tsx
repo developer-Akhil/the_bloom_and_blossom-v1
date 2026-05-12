@@ -52,7 +52,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setUser(null);
   }, []);
 
-  const isAdmin = useMemo(() => user?.email === 'developer.akhil04@gmail.com', [user]);
+  const isAdmin = useMemo(() => {
+    const adminEmail = import.meta.env.VITE_ADMIN_EMAIL;
+    if (adminEmail) {
+      return user?.email === adminEmail;
+    }
+    // Fallback logic, maybe check role if available
+    return user?.email === 'info@bloomandblossom.in'; 
+  }, [user]);
 
   const value = useMemo(() => ({
     user,

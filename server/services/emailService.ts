@@ -1,11 +1,12 @@
 import nodemailer from "nodemailer";
 import { config } from "../config/config.js";
 
-const transporter = nodemailer.createTransport({
+// Transporter for contact & customer communication (info@)
+const contactTransporter = nodemailer.createTransport({
   host: config.smtp.host,
   port: config.smtp.port,
-  secure: config.smtp.port === 465, // true for 465, false for other ports
-  connectionTimeout: 10000, // 10 seconds
+  secure: config.smtp.secure,
+  connectionTimeout: 10000,
   greetingTimeout: 10000,
   socketTimeout: 15000,
   auth: {
@@ -14,11 +15,25 @@ const transporter = nodemailer.createTransport({
   },
 });
 
+// Transporter for automated system emails (noreply@)
+const noreplyTransporter = nodemailer.createTransport({
+  host: config.smtp.host,
+  port: config.smtp.port,
+  secure: config.smtp.secure,
+  connectionTimeout: 10000,
+  greetingTimeout: 10000,
+  socketTimeout: 15000,
+  auth: {
+    user: config.smtp.noreplyUser,
+    pass: config.smtp.noreplyPass,
+  },
+});
+
 export const sendVerificationEmail = async (email: string, token: string, frontendUrl: string = config.app.url) => {
   const verificationLink = `${frontendUrl}/verify-email?token=${token}`;
   
   const mailOptions = {
-    from: `"Bloom & Blossom" <${config.smtp.user}>`,
+    from: `"Bloom & Blossom" <${config.smtp.noreplyUser}>`,
     to: email,
     subject: "Verify your email address - Bloom & Blossom",
     html: `
@@ -30,10 +45,9 @@ export const sendVerificationEmail = async (email: string, token: string, fronte
     `,
   };
 
-  // If we don't have an SMTP password set, just log the link and skip sending
-  if (!config.smtp.pass) {
+  if (!config.smtp.noreplyPass || config.smtp.noreplyPass === "YOUR_SMTP_PASSWORD") {
     console.log("--------------------------------------------------------------------------------");
-    console.log("SMTP Password not set! In a real environment, an email would be sent.");
+    console.log("SMTP Password not set for noreply! In a real environment, an email would be sent.");
     console.log(`[TESTING] VERIFICATION LINK FOR ${email}:`);
     console.log(`[TESTING] ${verificationLink}`);
     console.log("--------------------------------------------------------------------------------");
@@ -41,20 +55,94 @@ export const sendVerificationEmail = async (email: string, token: string, fronte
   }
 
   try {
-    await transporter.sendMail(mailOptions);
+    await noreplyTransporter.sendMail(mailOptions);
     console.log(`Verification email sent to ${email}`);
-  } catch (error) {
-    console.error(`Failed to send verification email to ${email}:`, error);
-    // In testing without config, we might want to just log it instead of failing
+  } catch (error: any) {
+    console.warn(`⚠️ Could not send verification email (SMTP error): ${error?.message || 'Unknown error'}`);
     console.log("--------------------------------------------------------------------------------");
-    console.log(`[TESTING] VERIFICATION LINK FOR ${email}:`);
-    console.log(`[TESTING] ${verificationLink}`);
+    console.log(`[FALLBACK LOG] VERIFICATION LINK FOR ${email}:`);
+    console.log(`${verificationLink}`);
     console.log("--------------------------------------------------------------------------------");
-    // We are deliberately eating the error so the test flow works in Preview mode
-    // throw new Error("Failed to send verification email");
   }
 };
 
+export const sendOrderConfirmationEmail = async (email: string, orderDetails: any) => {
+  const { orderId, cart = [], shippingData = {}, total } = orderDetails;
+  
+  const itemsHtml = (Array.isArray(cart) ? cart : []).map((item: any) => `
+    <tr>
+      <td style="padding: 10px; border-bottom: 1px solid #eee;">${item.name}</td>
+      <td style="padding: 10px; border-bottom: 1px solid #eee; text-align: center;">${item.quantity}</td>
+      <td style="padding: 10px; border-bottom: 1px solid #eee; text-align: right;">₹${(item.price || 0) * (item.quantity || 1)}</td>
+    </tr>
+  `).join('');
+
+  const mailOptions = {
+    from: `"Bloom & Blossom" <${config.smtp.noreplyUser}>`,
+    to: email,
+    subject: `Order Confirmation - ${orderId}`,
+    html: `
+      <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto;">
+        <h2 style="color: #FFB6C1;">Thank you for your order!</h2>
+        <p>Dear ${shippingData.name},</p>
+        <p>Your order <strong>${orderId}</strong> has been successfully placed. We'll send you another email when it ships.</p>
+        
+        <h3 style="margin-top: 30px;">Order Summary</h3>
+        <table style="width: 100%; border-collapse: collapse;">
+          <thead>
+            <tr style="background-color: #f9f9f9;">
+              <th style="padding: 10px; text-align: left; border-bottom: 2px solid #ddd;">Item</th>
+              <th style="padding: 10px; text-align: center; border-bottom: 2px solid #ddd;">Qty</th>
+              <th style="padding: 10px; text-align: right; border-bottom: 2px solid #ddd;">Price</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${itemsHtml}
+          </tbody>
+          <tfoot>
+            <tr>
+              <td colspan="2" style="padding: 10px; text-align: right; font-weight: bold;">Total:</td>
+              <td style="padding: 10px; text-align: right; font-weight: bold; color: #FFB6C1;">₹${total || cart.reduce((acc: number, item: any) => acc + item.price * item.quantity, 0)}</td>
+            </tr>
+          </tfoot>
+        </table>
+
+        <h3 style="margin-top: 30px;">Shipping Details</h3>
+        <p style="background-color: #f9f9f9; padding: 15px; border-radius: 5px;">
+          ${shippingData?.name || 'Customer'}<br/>
+          ${shippingData?.phone || ''}<br/>
+          ${shippingData?.address || ''}<br/>
+          ${shippingData?.city || ''}, ${shippingData?.state || ''} ${shippingData?.pincode || shippingData?.zip || ''}
+        </p>
+        
+        <p style="margin-top: 30px; font-size: 0.9em; color: #666;">
+          If you have any questions, please contact us at ${config.smtp.user}.
+        </p>
+      </div>
+    `,
+  };
+
+  if (!config.smtp.noreplyPass || config.smtp.noreplyPass === "YOUR_SMTP_PASSWORD") {
+    console.log("--------------------------------------------------------------------------------");
+    console.log("SMTP Password not set for noreply! In a real environment, an email would be sent.");
+    console.log(`[TESTING] ORDER CONFIRMATION FOR ${email}:`);
+    console.log(`[TESTING] Order ID: ${orderId}`);
+    console.log("--------------------------------------------------------------------------------");
+    return;
+  }
+
+  try {
+    await noreplyTransporter.sendMail(mailOptions);
+    console.log(`Order confirmation email sent to ${email}`);
+  } catch (error: any) {
+    console.warn(`⚠️ Could not send order confirmation email (SMTP error): ${error?.message || 'Unknown error'}`);
+    console.log("--------------------------------------------------------------------------------");
+    console.log(`[FALLBACK LOG] ORDER CONFIRMATION FOR ${email}`);
+    console.log(`Order ID: ${orderId}`);
+    console.log("--------------------------------------------------------------------------------");
+    throw new Error("SMTP_AUTH_FAILED");
+  }
+};
 export const sendContactEmail = async (name: string, senderEmail: string, subject: string, message: string) => {
   const mailOptions = {
     from: `"Bloom & Blossom Contact" <${config.smtp.user}>`,
@@ -73,9 +161,9 @@ export const sendContactEmail = async (name: string, senderEmail: string, subjec
     `,
   };
 
-  if (!config.smtp.pass) {
+  if (!config.smtp.pass || config.smtp.pass === "YOUR_SMTP_PASSWORD") {
     console.log("--------------------------------------------------------------------------------");
-    console.log("SMTP Password not set! In a real environment, an email would be sent.");
+    console.log("SMTP Password not set for contact! In a real environment, an email would be sent.");
     console.log(`[TESTING] CONTACT FORM SUBMISSION FROM ${senderEmail}:`);
     console.log(`[TESTING] SUBJECT: ${subject}`);
     console.log(`[TESTING] MESSAGE: ${message}`);
@@ -84,10 +172,34 @@ export const sendContactEmail = async (name: string, senderEmail: string, subjec
   }
 
   try {
-    await transporter.sendMail(mailOptions);
+    await contactTransporter.sendMail(mailOptions);
     console.log(`Contact email sent from ${senderEmail}`);
-  } catch (error) {
-    console.error(`Failed to send contact email from ${senderEmail}:`, error);
-    throw new Error("Failed to send contact email");
+    
+    // Send auto-reply to the user
+    const autoReplyOptions = {
+      from: `"Bloom & Blossom" <${config.smtp.noreplyUser}>`,
+      to: senderEmail,
+      subject: `We've received your message: ${subject}`,
+      html: `
+        <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto;">
+          <h2 style="color: #FFB6C1;">Thank you for contacting us!</h2>
+          <p>Hi ${name},</p>
+          <p>We've successfully received your inquiry about "<strong>${subject}</strong>".</p>
+          <p>Our team will get back to you at <strong>${senderEmail}</strong> within 24 hours.</p>
+          <br/>
+          <p>Best regards,<br/>The Bloom & Blossom Team</p>
+        </div>
+      `,
+    };
+    await noreplyTransporter.sendMail(autoReplyOptions);
+    console.log(`Auto-reply sent to ${senderEmail}`);
+  } catch (error: any) {
+    console.warn(`⚠️ Could not send contact email (SMTP error): ${error?.message || 'Unknown error'}`);
+    console.log("--------------------------------------------------------------------------------");
+    console.log(`[FALLBACK LOG] CONTACT FORM SUBMISSION FROM ${senderEmail}:`);
+    console.log(`SUBJECT: ${subject}`);
+    console.log(`MESSAGE: ${message}`);
+    console.log("--------------------------------------------------------------------------------");
+    throw new Error("SMTP_AUTH_FAILED");
   }
 };

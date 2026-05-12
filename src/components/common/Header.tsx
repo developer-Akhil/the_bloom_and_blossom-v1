@@ -4,6 +4,7 @@ import { Search, ShoppingBag, Heart, User, Menu, X, ArrowRight } from 'lucide-re
 import { motion, AnimatePresence } from 'motion/react';
 import { cn } from '../../lib/utils';
 import { useCart } from '../../context/CartContext';
+import { useAuth } from '../../context/AuthContext';
 import { OptimizedImage } from './OptimizedImage';
 
 export function Header() {
@@ -11,6 +12,7 @@ export function Header() {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const { cartCount } = useCart();
+  const { user } = useAuth();
   const navigate = useNavigate();
 
   const handleSearch = (e: React.FormEvent) => {
@@ -77,7 +79,7 @@ export function Header() {
             <Link to="/wishlist" className="p-2 text-gray-500 hover:text-bloom-rose transition-colors relative">
               <Heart size={20} />
             </Link>
-            <Link to="/auth" className="p-2 text-gray-500 hover:text-bloom-rose transition-colors">
+            <Link to={user ? "/dashboard" : "/auth"} className="p-2 text-gray-500 hover:text-bloom-rose transition-colors">
               <User size={20} />
             </Link>
             <Link to="/cart" className="p-2 text-gray-500 hover:text-bloom-rose transition-colors relative">

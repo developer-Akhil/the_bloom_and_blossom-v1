@@ -12,8 +12,10 @@ export const config = {
   smtp: {
     host: process.env.SMTP_HOST || "smtp.hostinger.com",
     port: parseInt(process.env.SMTP_PORT || "465", 10),
-    user: process.env.SMTP_USER || "verify@bloomandblossom.in",
+    user: process.env.SMTP_USER || "info@bloomandblossom.in",
     pass: process.env.SMTP_PASS || "",
+    noreplyUser: process.env.SMTP_NOREPLY_USER || process.env.SMTP_USER || "noreply@bloomandblossom.in",
+    noreplyPass: process.env.SMTP_NOREPLY_PASS || process.env.SMTP_PASS || "",
     secure: true, // Use TLS for 465
   },
   app: {

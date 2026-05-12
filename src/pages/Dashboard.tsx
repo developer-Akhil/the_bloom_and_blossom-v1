@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { products as baseProducts } from '../data/products';
 import { useDynamicProducts } from '../lib/dynamicPricing';
@@ -7,12 +7,79 @@ import { Package, Heart, Clock, Settings, User as UserIcon, LogOut, ChevronRight
 import { motion } from 'motion/react';
 import { cn } from '../lib/utils';
 import { useNavigate, Link } from 'react-router-dom';
+import { supabase } from '../lib/supabase';
 
 export function Dashboard() {
   const products = useDynamicProducts(baseProducts);
-  const { user, isAdmin, signOut } = useAuth();
+  const { user, loading, isAdmin, signOut } = useAuth();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<'orders' | 'wishlist' | 'recent' | 'settings'>('orders');
+  const [orders, setOrders] = useState<any[]>([]);
+  const [isLoadingOrders, setIsLoadingOrders] = useState(false);
+
+  useEffect(() => {
+    if (!loading && !user) {
+      navigate('/auth');
+      return;
+    }
+    if (user && activeTab === 'orders') {
+      const fetchOrders = async () => {
+        setIsLoadingOrders(true);
+        try {
+          const userEmail = user?.email || user?.user_metadata?.email || '';
+          
+          const { data, error } = await supabase
+            .from('orders')
+            .select('*')
+            .or(`user_id.eq.${user.id},guest_email.eq.${userEmail}`)
+            .order('created_at', { ascending: false });
+          
+          if (error) {
+            console.error("Dashboard fetch orders error: ", error);
+          }
+
+          let fetchedOrders: any[] = [];
+          if (!error && data) {
+            fetchedOrders = [...data];
+          }
+          
+          // Also check local storage for prototype testing / failed inserts
+          try {
+            const mockOrdersDB = JSON.parse(localStorage.getItem('bloom_db_orders') || '[]');
+            const userEmail = user?.email || user?.user_metadata?.email || '';
+            const mockOrders = mockOrdersDB.filter((o: any) => 
+                 o.userId === user?.id || 
+                 (userEmail && o.email?.toLowerCase() === userEmail?.toLowerCase()) || 
+                 (user?.phone && o.phone === user?.phone)
+            ).map((o: any) => ({
+               id: o.orderId || 'MANUAL-' + Math.random().toString(36).substr(2, 6),
+               order_status: 'Processing',
+               created_at: o.timestamp || new Date().toISOString(),
+               final_amount: 'Pending'
+            }));
+            
+            // Merge to avoid duplicates
+            const existingIds = new Set(fetchedOrders.map(o => o.payment_id || o.id));
+            mockOrders.forEach((mo: any) => {
+              if (!existingIds.has(mo.id)) {
+                fetchedOrders.push(mo);
+              }
+            });
+          } catch(e) {}
+          
+          // Sort by date descending
+          fetchedOrders.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+          
+          setOrders(fetchedOrders);
+        } catch (err) {
+          console.error("Error fetching orders:", err);
+        } finally {
+          setIsLoadingOrders(false);
+        }
+      };
+      fetchOrders();
+    }
+  }, [user, activeTab]);
 
   const name = user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'Beautiful User';
 
@@ -60,14 +127,32 @@ export function Dashboard() {
           </div>
 
           {activeTab === 'orders' && (
-            <div className="bg-white rounded-[2.5rem] p-10 border border-gray-100 flex flex-col items-center justify-center text-center space-y-4">
-              <div className="p-4 bg-gray-50 rounded-2xl text-gray-400">
-                <Package size={32} />
-              </div>
-              <div className="space-y-1">
-                <h3 className="font-bold text-lg">No orders yet</h3>
-                <p className="text-gray-400 text-sm">When you place an order, it will appear here.</p>
-              </div>
+            <div className="space-y-6">
+              {isLoadingOrders ? (
+                <div className="bg-white rounded-[2.5rem] p-10 border border-gray-100 flex items-center justify-center">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-bloom-rose"></div>
+                </div>
+              ) : orders.length > 0 ? (
+                orders.map((order) => (
+                  <OrderCard 
+                    key={order.id} 
+                    id={order.id.slice(0, 8).toUpperCase()} 
+                    status={order.order_status || 'Processing'} 
+                    date={new Date(order.created_at).toLocaleDateString()} 
+                    total={`₹${order.final_amount}`} 
+                  />
+                ))
+              ) : (
+                <div className="bg-white rounded-[2.5rem] p-10 border border-gray-100 flex flex-col items-center justify-center text-center space-y-4">
+                  <div className="p-4 bg-gray-50 rounded-2xl text-gray-400">
+                    <Package size={32} />
+                  </div>
+                  <div className="space-y-1">
+                    <h3 className="font-bold text-lg">No orders yet</h3>
+                    <p className="text-gray-400 text-sm">When you place an order, it will appear here.</p>
+                  </div>
+                </div>
+              )}
             </div>
           )}
 
