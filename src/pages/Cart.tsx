@@ -135,7 +135,7 @@ export function Cart() {
 
   const isFirstOrderEligible = user && !user.user_metadata?.has_used_first_discount && cartTotal >= 500;
   const discountAmount = isFirstOrderEligible ? cartTotal * 0.05 : 0;
-  const shippingCost = cartTotal > 2000 ? 0 : 8;
+  const shippingCost = cartTotal > 2000 ? 0 : 80;
   const finalTotal = cartTotal - discountAmount + shippingCost;
 
   const hasOutofStockItems = useMemo(() => {
