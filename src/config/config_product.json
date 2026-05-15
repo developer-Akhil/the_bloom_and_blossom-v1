@@ -285,7 +285,17 @@
 		},
 		
 	"Embroidery Bows":
+	
 	{
+		"public/images/collections/embroidery_bows/embroidery_name_tail_bow.jpg":{
+																		"Code":"EB-ETB-RED-001",
+																		"Name":"Embroidery Name Tail Bow",
+																		"Price":"200",
+																		"rating": "4.5",
+																		"stock": 30,
+																		"isCustomizable": true,
+																		"isBestSeller": true
+													},		
 		"Embroidery Tail Bows":{
 			"public/images/collections/embroidery_bows/embroidery_tail_bow/Red.jpg":{
 																		"Code":"EB-ETB-RED-001",

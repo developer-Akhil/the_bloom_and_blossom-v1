@@ -71,10 +71,15 @@ for (const [macroCategory, macroCategoryObj] of Object.entries(collectionsObj)) 
       const name = configData.Name || friendlyProductName;
       const price = parsePrice(configData.Price);
       const code = configData.Code;
-      const stock = configData.Stock !== undefined ? parseInt(String(configData.Stock), 10) : 50;
-      const rating = configData.Rating !== undefined ? parseFloat(String(configData.Rating)) : 5.0;
-      const isCustomizable = configData.IsCustomizable !== undefined ? String(configData.IsCustomizable).toLowerCase() === 'true' : false;
-      const isBestSeller = configData.IsBestSeller !== undefined ? String(configData.IsBestSeller).toLowerCase() === 'true' : false;
+      const stockVal = configData.Stock ?? configData.stock;
+      const ratingVal = configData.Rating ?? configData.rating;
+      const customVal = configData.IsCustomizable ?? configData.isCustomizable;
+      const bestVal = configData.IsBestSeller ?? configData.isBestSeller;
+
+      const stock = stockVal !== undefined ? parseInt(String(stockVal), 10) : 50;
+      const rating = ratingVal !== undefined ? parseFloat(String(ratingVal)) : 5.0;
+      const isCustomizable = customVal !== undefined ? String(customVal).toLowerCase() === 'true' : false;
+      const isBestSeller = bestVal !== undefined ? String(bestVal).toLowerCase() === 'true' : false;
 
       products.push({
         id: `prod_${autoId++}`,
@@ -111,7 +116,9 @@ for (const [macroCategory, macroCategoryObj] of Object.entries(collectionsObj)) 
         processedLocations.add(cleanUrl);
 
         const vPrice = parsePrice(varConfig.Price);
-        const vStock = varConfig.Stock !== undefined ? parseInt(String(varConfig.Stock), 10) : 50;
+        const vStockVal = varConfig.Stock ?? varConfig.stock;
+        const vRatingVal = varConfig.Rating ?? varConfig.rating;
+        const vStock = vStockVal !== undefined ? parseInt(String(vStockVal), 10) : 50;
         
         // Parent matches the price of the first child variant parsed
         if (isFirst) {
@@ -125,7 +132,7 @@ for (const [macroCategory, macroCategoryObj] of Object.entries(collectionsObj)) 
           image: cleanUrl,
           price: vPrice,
           stock: vStock,
-          rating: varConfig.Rating !== undefined ? parseFloat(String(varConfig.Rating)) : 5.0
+          rating: vRatingVal !== undefined ? parseFloat(String(vRatingVal)) : 5.0
         });
       }
 
