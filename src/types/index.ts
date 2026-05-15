@@ -20,6 +20,7 @@ export interface ProductOption {
 }
 
 export interface ProductVariant {
+  code?: string;
   color?: string;
   size?: string;
   image?: string;
@@ -30,6 +31,7 @@ export interface ProductVariant {
 
 export interface Product {
   id: string;
+  code?: string;
   name: string;
   category: Category;
   price: number;

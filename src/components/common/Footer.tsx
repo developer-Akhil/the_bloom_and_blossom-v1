@@ -3,8 +3,20 @@ import { Link } from 'react-router-dom';
 import { Instagram, Youtube, Facebook, Twitter, MapPin, Phone, Mail } from 'lucide-react';
 import { OptimizedImage } from './OptimizedImage';
 import { siteConfig } from '../../config/site';
+import { useMediaContext } from '../../context/MediaContext';
+import { rawLogoData } from '../../data/products';
 
 export function Footer() {
+  const { assets } = useMediaContext();
+
+  const logoKeys = Object.keys(rawLogoData);
+  const getLogoPath = () => {
+    const customLogo = assets?.find((a: any) => a.folder_id === 'logo');
+    if (customLogo) return customLogo.file_url;
+    return logoKeys.length > 0 ? logoKeys[0].replace('public', '') : '/images/logo/logo.jpeg';
+  };
+  const logoPath = getLogoPath();
+
   return (
     <footer className="bg-white border-t pt-16 pb-8">
       <div className="container mx-auto px-4 md:px-6">
@@ -14,7 +26,7 @@ export function Footer() {
             <Link to="/" className="flex items-center space-x-3 group">
               <div className="w-10 h-10 rounded-full overflow-hidden border border-bloom-rose/20 group-hover:border-bloom-rose transition-all">
                 <OptimizedImage 
-                  src="/images/logo/logo.jpeg" 
+                  src={logoPath} 
                   alt={`${siteConfig.name} Logo`} 
                   className="w-full h-full object-cover" 
                 />

@@ -1,0 +1,540 @@
+{
+	
+	"logo" : {
+		"public/images/logo/logo.jpeg":{"Name":"Logo"}
+		},
+	"home_images" : {
+					"public/images/home_images/photo_1.jpg":{"Name":"photo1"},
+					"public/images/home_images/photo_2.jpg":{"Name":"photo2"},
+					"public/images/home_images/photo_3.jpg":{"Name":"photo3"}
+					},
+	"product_images" : {
+					"public/images/product_images/alligator_clips.jpg":{"Name":"Alligator Clips"},
+					"public/images/product_images/bows.jpg":{"Name":"Bows"},
+					"public/images/product_images/crochet_clips.jpg":{"Name":"Crochet Clips"},
+					"public/images/product_images/customised_caps.jpg":{"Name":"Customised Caps"},
+					"public/images/product_images/customised_name_bows.jpg":{"Name":"Customised Name Bows"},
+					"public/images/product_images/customised_name_sunglasses.jpg":{"Name":"Customised Name Sunglasses"},
+					"public/images/product_images/embroidery_bows.jpg":{"Name":"Embroidery Bows"},
+					"public/images/product_images/hairbands.jpg":{"Name":"Hairbands"},
+					"public/images/product_images/headbands.jpg":{"Name":"Headbands"},
+					"public/images/product_images/jewelled_bows.jpg":{"Name":"Jewelled Bows"},
+					"public/images/product_images/premium_doll_bows.jpg":{"Name":"Premium Doll Bows"},
+					"public/images/product_images/scrunchies.jpg":{"Name":"Scrunchies"}
+					},
+	"Collections" : { 
+	"Customised Name Bows":{
+		"public/images/collections/customised_name_bows/golden_glitter_bow.jpeg":{												  "Code":"CNB-GGB-001",
+														"Name":"Golden Glitter Bow",									
+														"Price":"200",
+														"stock": 9,
+														"rating": "4.8",
+														"isCustomizable": true,
+														"isBestSeller": true
+														},
+		"public/images/collections/customised_name_bows/daisy_name_bow.jpg":{
+														"Code":"CNB-DNB-BLK-001",								
+														"Name":"Daisy Name Bow",
+														"Price":"200",
+														"stock": 9,
+														"rating": "4.8",
+														"isCustomizable": true,
+														"isBestSeller": true			
+														},
+		"public/images/collections/customised_name_bows/pearl_name_bow.jpg":{												 "Code":"CNB-PNB-BLK-001",
+														"Name":"Pearl Name Bow",
+														"Price":"200",
+														"stock": 9,
+														"rating": "4.8",
+														"isCustomizable": true,
+														"isBestSeller": true
+														},
+		"public/images/collections/customised_name_bows/daisy_name_without_tail_bow.jpg":{												  "Code":"CNB-DNWTB-PNK001",
+														"Name":"Daisy Name Without Tail",
+														"Price":"180",
+														"stock": 9,
+														"rating": "4.8",
+														"isCustomizable": true,
+														"isBestSeller": true
+														}														
+		},
+	"Premium Doll Bows" : {
+		"public/images/collections/premium_doll_bows/skyblue_doll.jpg":{
+														"Code":"PDB-SDB-001",
+														"Name":"Skyblue Doll Bow",
+														"Price":"300",
+														"stock": 9,
+														"rating": "4.8",
+														"isCustomizable": true,
+														"isBestSeller": true
+														},
+		"public/images/collections/premium_doll_bows/yellow_doll.jpg":{
+													"Code" : "PDB-YDB-001",										   
+													"Name":"Yellow Doll Bow",									   
+													"Price":"300",
+													"rating": "4.8",
+													"stock": 10,
+													"isCustomizable": true,
+													"isBestSeller": true
+													}
+		},
+	"Jewelled Bows":{
+		"public/images/collections/jewelled_bows/golden.jpg":{
+													"Code":"JB-PJB-GLD-001",										
+													"Name":"Golden Jewelled Bow",										
+													"Price":"320",
+													"rating": "4.8",
+													"stock": 20,
+													"isCustomizable": false,
+													"isBestSeller": true
+													},
+		"public/images/collections/jewelled_bows/pink.jpg":{
+													"Name":"Pink Jewelled Bow",										
+													"Code":"JB-GJB-GLD-001",										
+													"Price":"320",
+													"rating": "4.3",
+													"stock": 15,
+													"isCustomizable": false,
+													"isBestSeller": true
+													}
+	},
+
+	"Alligator Clips":{
+		"public/images/collections/alligator_clips/popsicle_clip.jpg":{
+													"Code":"AC-PC-PNK-001",											
+													"Name":"Popsicle Clip",											
+													"Price":"90",
+													"rating": "4.8",
+													"stock": 25,
+													"isCustomizable": false,
+													"isBestSeller": true
+														},
+		"public/images/collections/alligator_clips/velvet_stone_bow.jpg":{
+													"Code":"AC-VSB-MRN-001",											"Name":"Velvet Stone Bow",											"Price":"130",
+													"rating": "4.2",
+													"stock": 15,
+													"isCustomizable": false,
+													"isBestSeller": true
+													},
+		"public/images/collections/alligator_clips/valentine_bow.jpg": {
+													"Code":"AC-VSB-RED-001",											"Name":"Valentine Bow Clip",					
+													"Price":"100",
+													"rating": "4.2",
+													"stock": 12,
+													"isCustomizable": false,
+													"isBestSeller": true
+													},
+		"public/images/collections/alligator_clips/rainbow_alligator_clip.jpg":{
+													"Code":"AC-VSB-RAC-001",											
+													"Name":"Rainbow Alligator Clip",					
+													"Price":"100",
+													"rating": "4.2",
+													"stock": 12,
+													"isCustomizable": false,
+													"isBestSeller": true
+												}
+		},
+
+	"Scrunchies" :
+		{
+		"Scrunchies" : {
+				"public/images/collections/scrunchies/red.jpg":{
+														"Code":"SCR-RED-001",									
+														"Name":"Red",											
+														"Price":"40",
+														"rating": "4.3",
+														"stock": 12,
+														"isCustomizable": false,
+														"isBestSeller": true
+														},
+				"public/images/collections/scrunchies/black.jpg":{
+														"Code":"SCR-BLK-002",
+														"Name":"Black",
+														"Price":"40",
+														"rating": "4.8",
+														"stock": 10,
+														"isCustomizable": false,
+														"isBestSeller": true
+													},
+				"public/images/collections/scrunchies/white.jpg":{
+														"Code":"SCR-WHT-003",
+														"Name":"White",
+														"Price":"40",
+														"rating": "4.8",
+														"stock": 14,
+														"isCustomizable": false,
+														"isBestSeller": true
+														},
+				"public/images/collections/scrunchies/purple.jpg":{
+														"Code":"SCR-PLE-004",		
+														"Name":"Purple",
+														"Price":"40",
+														"rating": "4.8",
+														"stock": 16,
+														"isCustomizable": false,
+														"isBestSeller": true
+														}
+			},
+		"public/images/collections/scrunchies/rainbow.jpg":	{
+													"Code":"SCR-RS-001",											
+													"Name":"Rainbow Scrunchie",											
+													"Price":"55",
+													"rating": "4.8",
+													"stock": 10,
+													"isCustomizable": false,
+													"isBestSeller": true
+													},
+		"public/images/collections/scrunchies/rang_birangi.jpg":  {
+													"Code":"SCR-RBS-001",										
+													"Name":"Rang Birangi Scrunchie",
+													"Price":"55",
+													"rating": "4.4",
+													"stock": 16,
+													"isCustomizable": false,
+													"isBestSeller": true
+													},
+		"public/images/collections/scrunchies/skyblue_check.jpg": {
+													"Code":"SCR-SCS-001",									
+													"Name":"Skyblue Check Scrunchie",
+													"Price":"55",
+													"rating": "4.5",
+													"stock": 12,
+													"isCustomizable": false,
+													"isBestSeller": true
+													},
+		"public/images/collections/scrunchies/flamingo.jpg": {
+													"Code":"SCR-FS-001",									
+													"Name":"Flamingo Scrunchie",
+													"Price":"55",
+													"rating": "4.2",
+													"stock": 10,
+													"isCustomizable": false,
+													"isBestSeller": true
+													},
+		"public/images/collections/scrunchies/pinky.jpg": {												
+													"Code":"SCR-PS-001",
+													"Name":"Pinky Scrunchie",
+													"Price":"55",
+													"rating": "4.6",
+													"stock": 16,
+													"isCustomizable": false,
+													"isBestSeller": true
+													}
+		},
+
+	"Bows":{
+		"public/images/collections/bows/mickey_mouse_bow.jpg": {
+														"Code":"BOW-MMB-001",
+														"Name":"Mickey Mouse Bow",
+														"Price":"70",
+														"rating": "4.8",
+														"stock": 16,
+														"isCustomizable": false,
+														"isBestSeller": true
+														},
+		"public/images/collections/bows/pink_heart_bow.jpg": {"Code":"BOW-PHB-001",
+														"Name":"Pink Heart Bow",
+														"Price":"70",
+														"rating": "4.8",
+														"stock": 20,
+														"isCustomizable": false,
+														"isBestSeller": true
+														},
+		"public/images/collections/bows/skyblue_check_bow.jpg":  {
+														"Code":"BOW-SCB-001",
+														"Name":"Skyblue Check Bow",
+														"Price":"70",
+														"rating": "4.8",
+														"stock": 15,
+														"isCustomizable": false,
+														"isBestSeller": true
+													}
+		},
+
+	"Headbands":{
+		"public/images/collections/headbands/white_headband.jpg":{
+														"Code":"HDD-WH-001",
+														"Name":"White Headband",
+														"Price":"120",
+														"rating": "4.5",
+														"stock": 15,
+														"isCustomizable": false,
+														"isBestSeller": true
+														}
+		},
+	"Hairbands":
+		{
+			"public/images/collections/hairbands/cup_cake.jpg":{
+													"Code":"HRD-CCH-001",
+													"Name":"Cupcake Hairband",
+													"Price":"120",
+													"rating": "4.5",
+													"stock": 12,
+													"isCustomizable": false,
+													"isBestSeller": true
+													},
+			"public/images/collections/hairbands/colourful.jpg":{
+													"Code":"HRD-CFH-001",
+													"Name":"Colourful Hairband",
+													"Price":"120",
+													"rating": "4.2",
+													"stock": 16,
+													"isCustomizable": false,
+													"isBestSeller": true
+													}
+		},
+		
+	"Embroidery Bows":
+	{
+		"Embroidery Tail Bows":{
+			"public/images/collections/embroidery_bows/embroidery_tail_bow/Red.jpg":{
+																		"Code":"EB-ETB-RED-001",
+																		"Name":"Red",
+																		"Price":"150",
+																		"rating": "4.5",
+																		"stock": 30,
+																		"isCustomizable": false,
+																		"isBestSeller": true
+													},
+			"public/images/collections/embroidery_bows/embroidery_tail_bow/white.jpg":{
+																		"Code":"EB-ETB-WHT-002",
+																		"Name":"White",
+																		"Price":"150",
+																		"rating": "4.4",
+																		"stock": 32,
+																		"isCustomizable": false,
+																		"isBestSeller": true
+													},
+			"public/images/collections/embroidery_bows/embroidery_tail_bow/black.jpg":{
+																		"Code":"EB-ETB-PNK-003",
+																		"Name":"Black",
+																		"Price":"150",
+																		"rating": "4.2",
+																		"stock": 30,
+																		"isCustomizable": false,
+																		"isBestSeller": true
+													},
+			"public/images/collections/embroidery_bows/embroidery_tail_bow/brown.jpg":{
+																		"Code":"EB-ETB-BRN-004",
+																		"Name":"Brown",
+																		"Price":"150",
+																		"rating": "4.2",
+																		"stock": 10,
+																		"isCustomizable": false,
+																		"isBestSeller": true
+													}
+			},
+		"Embroidery Alligator Clips":{
+			"public/images/collections/embroidery_bows/embroidery_alligator_clip/peach.jpg":{
+																		"Code":"EB-EAC-PCE-001",
+																		"Name":"Peach",
+																		"Price":"120",
+																		"rating": "4.2",
+																		"stock": 30,
+																		"isCustomizable": false,
+																		"isBestSeller": true
+																		},
+			"public/images/collections/embroidery_bows/embroidery_alligator_clip/red.jpg":{
+																		"Code":"EB-EAC-RED-002",
+																		"Name":"Red",
+																		"Price":"120",
+																		"rating": "4.6",
+																		"stock": 30,
+																		"isCustomizable": false,
+																		"isBestSeller": true
+																		},
+			"public/images/collections/embroidery_bows/embroidery_alligator_clip/pink.jpg":{
+																	"Code":"EB-EAC-PNK-003",
+																	"Name":"Pink",
+																	"Price":"120",
+																	"rating": "4.2",
+																	"stock": 10,
+																	"isCustomizable": false,
+																	"isBestSeller": true
+																		},
+			"public/images/collections/embroidery_bows/embroidery_alligator_clip/purple.jpg":{
+																		"Code":"EB-EAC-PLE-004",
+																		"Name":"Purple",
+																		"Price":"120",
+																		"rating": "4.5",
+																		"stock": 10,
+																		"isCustomizable": false,
+																		"isBestSeller": true
+																		}
+			}
+	},
+
+	"Crochet Clips":{
+			"public/images/collections/crochet_clips/crochet_rainbow_clip.jpg":{
+											"Code":"CC-CRC-001",
+											"Name":"Crochet Rainbow Clips",												
+											"Price":"90",
+											"rating": "4.5",
+											"stock": 30,
+											"isCustomizable": false,
+											"isBestSeller": true
+											},
+			"public/images/collections/crochet_clips/flower_hairband.jpg":{
+											"Code":"CC-FHC-001",
+											"Name":"Flower Hairband Crochet",
+											"Price":"120",
+											"rating": "4.5",
+											"stock": 30,
+											"isCustomizable": false,
+											"isBestSeller": true
+											},
+		"Crochet Clips" : {
+				"public/images/collections/crochet_clips/oragne.jpg":{
+											"Code":"CC-CC-ORG-001",
+											"Name":"Orange",
+											"Price":"100",
+											"rating": "4.5",
+											"stock": 30,
+											"isCustomizable": false,
+											"isBestSeller": true
+											},
+				"public/images/collections/crochet_clips/off_white.jpg":{
+											"Code":"CC-CC-OWHT-002",
+											"Name":"OFF White",
+											"Price":"100",
+											"rating": "4.5",
+											"stock": 30,
+											"isCustomizable": false,
+											"isBestSeller": true
+											},
+				"public/images/collections/crochet_clips/red.jpg":{
+											"Code":"CC-CC-RED-003",								
+											"Name":"Red",								
+											"Price":"100",
+											"rating": "4.2",
+											"stock": 30,
+											"isCustomizable": false,
+											"isBestSeller": true
+											},
+				"public/images/collections/crochet_clips/pink.jpg":{
+											"Code":"CC-CC-PNK-004",									
+											"Name":"Pink",
+											"Price":"100",
+											"rating": "4.2",
+											"stock": 30,
+											"isCustomizable": false,
+											"isBestSeller": true
+											},
+				"public/images/collections/crochet_clips/yellow.jpg":{
+											"Code":"CC-CC-YEL-004",								
+											"Name":"Yellow",								
+											"Price":"100",
+											"rating": "4.5",
+											"stock": 30,
+											"isCustomizable": false,
+											"isBestSeller": true
+											}
+			}		
+	},
+
+	"Customised Caps" : {
+			"public/images/collections/customised_caps/red.jpg":{
+								"Code":"CNC-RED-001",
+								"Name":"Red Cap",
+								"Price":"200",
+								"rating": "4.5",
+								"stock": 30,
+								"isCustomizable": true,
+								"isBestSeller": true
+								},
+			"public/images/collections/customised_caps/pink.jpg":{
+								"Code":"CNC-PNK-002",
+								"Name":"Pink Cap",
+								"Price":"200",
+								"rating": "4.5",
+								"stock": 30,
+								"isCustomizable": true,
+								"isBestSeller": true
+								},
+			"public/images/collections/customised_caps/black.jpg":{
+								"Code":"CNC-BLK-003",
+								"Name":"Black Cap",
+								"Price":"200",
+								"rating": "4.5",
+								"stock": 30,
+								"isCustomizable": true,
+								"isBestSeller": true
+								},
+			"public/images/collections/customised_caps/white.jpg":{
+								"Code":"CNC-WHT-004",
+								"Name":"White Cap",
+								"Price":"200",
+								"rating": "4.5",
+								"stock": 30,
+								"isCustomizable": true,
+								"isBestSeller": true
+								},
+			"public/images/collections/customised_caps/yellow.jpg":{
+								"Code":"CNC-YEL-004",
+								"Name":"Yellow Cap",
+								"Price":"200",
+								"rating": "4.5",
+								"stock": 30,
+								"isCustomizable": true,
+								"isBestSeller": true
+								}
+	},
+	"Customised Name Sunglasses":{
+			"public/images/collections/customised_name_sunglasses/pink.jpg" :{
+								"Code":"CNS-PNK-001",
+								"Name":"Pink Sunglass",
+								"Price":"200",
+								"rating": "4.5",
+								"stock": 30,
+								"isCustomizable": true,
+								"isBestSeller": true
+								},
+			"public/images/collections/customised_name_sunglasses/skyblue.jpg":{
+								"Code":"CNS-SKB-002",
+								"Name":"Skyblue Sunglass",
+								"Price":"200",
+								"rating": "4.5",
+								"stock": 30,
+								"isCustomizable": true,
+								"isBestSeller": true
+								},
+			"public/images/collections/customised_name_sunglasses/red.jpg":{
+								"Code":"CNS-RED-003",
+								"Name":"Red Sunglass",
+								"Price":"200",
+								"rating": "4.5",
+								"stock": 30,
+								"isCustomizable": true,
+								"isBestSeller": true
+								},
+			"public/images/collections/customised_name_sunglasses/purple.jpg":{
+								"Code":"CNS-PLE-004",
+								"Name":"Purple Sunglass",
+								"Price":"200",
+								"rating": "4.5",
+								"stock": 30,
+								"isCustomizable": true,
+								"isBestSeller": true
+								},
+			"public/images/collections/customised_name_sunglasses/black.jpg":{
+							    "Code":"CNS-BLK-004",
+							    "Name":"Black Sunglass",
+							    "Price":"200",
+								"rating": "4.5",
+								"stock": 30,
+								"isCustomizable": true,
+								"isBestSeller": true
+							    },
+			"public/images/collections/customised_name_sunglasses/green.jpg":{
+								"Code":"CNS-GRN-005",
+								"Name":"Green Sunglass",
+								"Price":"200",
+								"rating": "4.5",
+								"stock": 30,
+								"isCustomizable": true,
+								"isBestSeller": true
+								}
+	}
+	
+	}
+}

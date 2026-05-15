@@ -2,7 +2,7 @@ import React, { useMemo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'motion/react';
 import { ArrowRight, Star, Heart, ShoppingBag } from 'lucide-react';
-import { products as baseProducts, categories as baseCategories } from '../data/products';
+import { products as baseProducts, categories as baseCategories, rawHomeImages, rawProductImages } from '../data/products';
 import { useMediaContext } from '../context/MediaContext';
 import { useProductContext } from '../context/ProductContext';
 import { useCart } from '../context/CartContext';
@@ -15,10 +15,19 @@ export function Home() {
   const { products, categories } = useProductContext();
   const { assets } = useMediaContext();
   
-  // Custom helper to dynamically find an overridden image from the admin "home_images" folder
-  const getHeroImage = () => {
+  // Convert rawHomeImages keys to useful URLs
+  const homeBgKeys = Object.keys(rawHomeImages);
+  const getHeroBg = () => {
     const customHero = assets.find(a => a.folder_id === 'home_images');
-    return customHero ? customHero.file_url : 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&q=80&w=1920';
+    if (customHero) return customHero.file_url;
+    return homeBgKeys.length > 0 ? homeBgKeys[0].replace('public', '') : 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&q=80&w=1920';
+  };
+
+  const getHomeImage = (index: number) => {
+    if (homeBgKeys.length > index) {
+      return homeBgKeys[index].replace('public', '');
+    }
+    return '';
   };
 
   return (
@@ -31,7 +40,7 @@ export function Home() {
             animate={{ opacity: 0.15, scale: 1 }}
             transition={{ duration: 2 }}
             className="absolute inset-0 bg-gray-50 bg-cover bg-center"
-            style={{ backgroundImage: `url('${getHeroImage()}')` }}
+            style={{ backgroundImage: `url('${getHeroBg()}')` }}
           />
           <div className="absolute inset-0 bg-white/40 md:bg-transparent" />
           
@@ -128,32 +137,38 @@ export function Home() {
 
         {/* Floating Decorative Elements - Bow Collection */}
         <div className="absolute right-[5%] top-[15%] bottom-[10%] hidden lg:flex flex-col items-center justify-center pointer-events-none">
-          {/* photo_1 - Main Large Image (Bows on Mat) */}
+          {/* Main Large Image */}
+          {getHomeImage(0) && (
           <motion.div 
             animate={{ y: [0, -20, 0], rotate: [3, -1, 3] }}
             transition={{ duration: 7, repeat: Infinity, ease: "easeInOut" }}
             className="relative w-80 h-80 rounded-[4rem] overflow-hidden border-8 border-white shadow-[0_25px_50px_-12px_rgba(255,182,193,0.5)] z-20"
           >
-             <OptimizedImage src="/images/home_images/photo_1.jpg" alt="Handcrafted Bow Collection" className="w-full h-full object-cover" />
+             <OptimizedImage src={getHomeImage(0)} alt="Handcrafted Bow Collection" className="w-full h-full object-cover" />
           </motion.div>
+          )}
 
-          {/* photo_2 - Overlapping Smaller Image 1 (Name Bows) */}
+          {/* Overlapping Smaller Image 1 */}
+          {getHomeImage(1) && (
           <motion.div 
             animate={{ y: [0, 25, 0], rotate: [-5, -12, -5] }}
             transition={{ duration: 5, repeat: Infinity, ease: "easeInOut", delay: 1 }}
             className="absolute -left-16 bottom-[10%] w-56 h-56 rounded-[3.5rem] overflow-hidden border-4 border-white shadow-2xl z-30"
           >
-             <OptimizedImage src="/images/home_images/photo_2.jpg" alt="Customised Name Bows" className="w-full h-full object-cover" />
+             <OptimizedImage src={getHomeImage(1)} alt="Customised Name Bows" className="w-full h-full object-cover" />
           </motion.div>
+          )}
 
-          {/* photo_3 - Overlapping Smaller Image 2 (Character Bows) */}
+          {/* Overlapping Smaller Image 2 */}
+          {getHomeImage(2) && (
           <motion.div 
             animate={{ x: [0, 20, 0], y: [0, -15, 0] }}
             transition={{ duration: 6, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
             className="absolute -right-12 top-[5%] w-44 h-44 rounded-full overflow-hidden border-4 border-white shadow-xl z-10 opacity-90"
           >
-             <OptimizedImage src="/images/home_images/photo_3.jpg" alt="Doll & Character Bows" className="w-full h-full object-cover" />
+             <OptimizedImage src={getHomeImage(2)} alt="Doll & Character Bows" className="w-full h-full object-cover" />
           </motion.div>
+          )}
         </div>
       </section>
 
@@ -239,21 +254,14 @@ function CategoryCard({ title, index }: { title: string; index: number }) {
     );
     if (exactMatch) return exactMatch.file_url;
 
-    // 3. System Defaults as strict map
-    const defaults: Record<string, string> = {
-      'Customised Name Bows': '/images/product_images/customised_name_bows.jpg',
-      'Premium Doll Bows': '/images/product_images/premium_doll_bows.jpg',
-      'Jewelled Bows': '/images/product_images/jewelled_bows.jpg',
-      'Hairbands': '/images/product_images/hairbands.jpg',
-      'Embroidery Bows': '/images/product_images/embroidery_bows.jpg',
-      'Crochet Clips': '/images/product_images/crochet_clips.jpg',
-      'Alligator Clips': '/images/product_images/alligator_clips.jpg',
-      'Customised Name Sunglasses': '/images/product_images/customised_name_sunglasses.jpg',
-      'Headbands': '/images/product_images/headbands.jpg',
-      'Customised Caps': '/images/product_images/customised_caps.jpg',
-      'Scrunchies': '/images/product_images/scrunchies.jpg',
-      'Bows': '/images/product_images/bows.jpg'
-    };
+    // 3. System Defaults as strict map from the config file
+    const defaults = Object.keys(rawProductImages).reduce((acc: any, key: string) => {
+      const item = rawProductImages[key] as any;
+      if (item && item.Name) {
+        acc[item.Name] = key.replace('public', '');
+      }
+      return acc;
+    }, {});
     
     // Final check: if everything else fails, try to construct a direct path based on slug
     const directPathFallback = `/images/product_images/${slug}.jpg`;

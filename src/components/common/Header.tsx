@@ -5,6 +5,8 @@ import { motion, AnimatePresence } from 'motion/react';
 import { cn } from '../../lib/utils';
 import { useCart } from '../../context/CartContext';
 import { useAuth } from '../../context/AuthContext';
+import { useMediaContext } from '../../context/MediaContext';
+import { rawLogoData } from '../../data/products';
 import { OptimizedImage } from './OptimizedImage';
 
 export function Header() {
@@ -14,6 +16,16 @@ export function Header() {
   const { cartCount } = useCart();
   const { user } = useAuth();
   const navigate = useNavigate();
+
+  const { assets } = useMediaContext();
+
+  const logoKeys = Object.keys(rawLogoData);
+  const getLogoPath = () => {
+    const customLogo = assets?.find(a => a.folder_id === 'logo');
+    if (customLogo) return customLogo.file_url;
+    return logoKeys.length > 0 ? logoKeys[0].replace('public', '') : '/images/logo/logo.jpeg';
+  };
+  const logoPath = getLogoPath();
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -40,7 +52,7 @@ export function Header() {
           <Link to="/" className="flex items-center space-x-3 group">
             <div className="w-10 h-10 md:w-12 md:h-12 rounded-full overflow-hidden border-2 border-bloom-rose/20 group-hover:border-bloom-rose transition-all duration-500 shadow-inner">
               <OptimizedImage 
-                src="/images/logo/logo.jpeg" 
+                src={logoPath} 
                 alt="Logo" 
                 className="w-full h-full object-cover transition-transform group-hover:scale-110" 
               />
