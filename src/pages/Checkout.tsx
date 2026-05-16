@@ -220,7 +220,7 @@ export function Checkout() {
       const data = await res.json();
       
       const options = {
-        key: data.key_id || import.meta.env.VITE_RAZORPAY_KEY_ID, 
+        key: data.key_id, 
         amount: data.amount,
         currency: data.currency,
         name: siteConfig.name,
@@ -241,7 +241,7 @@ export function Checkout() {
             if (verifyData.success) {
                await insertOrderToSupabase(response.razorpay_payment_id, 'paid');
                
-               sessionStorage.setItem('checkoutSession', JSON.stringify({
+               localStorage.setItem('checkoutSession', JSON.stringify({
                  shippingData,
                  cart,
                  total: finalTotal,
@@ -478,7 +478,7 @@ export function Checkout() {
                           const internalOrderId = await insertOrderToSupabase(null, 'pending');
                           const waText = encodeURIComponent(`Hello, I've made the payment of Rs ${finalTotal} for my order using Manual UPI. Order ID: ${internalOrderId || 'Pending'}. I am sharing the payment screenshot below.`);
                           
-                          sessionStorage.setItem('checkoutSession', JSON.stringify({
+                          localStorage.setItem('checkoutSession', JSON.stringify({
                             shippingData,
                             cart,
                             total: finalTotal,

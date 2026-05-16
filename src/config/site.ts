@@ -27,6 +27,9 @@ export const siteConfig = {
       verifyPayment: `${API_BASE_URL}/api/payment/verify-payment`,
       refund: `${API_BASE_URL}/api/payment/refund`,
       webhook: `${API_BASE_URL}/api/payment/webhook`
+    },
+    contact: {
+      orderConfirmation: `${API_BASE_URL}/api/contact/order-confirmation`
     }
   }
 };

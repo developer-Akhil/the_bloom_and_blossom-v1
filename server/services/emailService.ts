@@ -47,7 +47,7 @@ export const sendVerificationEmail = async (email: string, token: string, fronte
 
   if (!config.smtp.noreplyPass || config.smtp.noreplyPass === "YOUR_SMTP_PASSWORD") {
     console.log("--------------------------------------------------------------------------------");
-    console.log("SMTP Password not set for noreply! In a real environment, an email would be sent.");
+    console.log("SMTP Password not set for verification! In a real environment, an email would be sent.");
     console.log(`[TESTING] VERIFICATION LINK FOR ${email}:`);
     console.log(`[TESTING] ${verificationLink}`);
     console.log("--------------------------------------------------------------------------------");
@@ -77,7 +77,7 @@ export const sendOrderConfirmationEmail = async (email: string, orderDetails: an
     </tr>
   `).join('');
 
-  const mailOptions = {
+  const customerMailOptions = {
     from: `"Bloom & Blossom" <${config.smtp.noreplyUser}>`,
     to: email,
     subject: `Order Confirmation - ${orderId}`,
@@ -102,7 +102,7 @@ export const sendOrderConfirmationEmail = async (email: string, orderDetails: an
           <tfoot>
             <tr>
               <td colspan="2" style="padding: 10px; text-align: right; font-weight: bold;">Total:</td>
-              <td style="padding: 10px; text-align: right; font-weight: bold; color: #FFB6C1;">₹${total || cart.reduce((acc: number, item: any) => acc + item.price * item.quantity, 0)}</td>
+              <td style="padding: 10px; text-align: right; font-weight: bold; color: #FFB6C1;">₹${total !== undefined && total !== null ? total : (Array.isArray(cart) ? cart.reduce((acc: number, item: any) => acc + item.price * item.quantity, 0) : 0)}</td>
             </tr>
           </tfoot>
         </table>
@@ -124,7 +124,7 @@ export const sendOrderConfirmationEmail = async (email: string, orderDetails: an
 
   if (!config.smtp.noreplyPass || config.smtp.noreplyPass === "YOUR_SMTP_PASSWORD") {
     console.log("--------------------------------------------------------------------------------");
-    console.log("SMTP Password not set for noreply! In a real environment, an email would be sent.");
+    console.log("SMTP Password not set for order confirmation! In a real environment, an email would be sent.");
     console.log(`[TESTING] ORDER CONFIRMATION FOR ${email}:`);
     console.log(`[TESTING] Order ID: ${orderId}`);
     console.log("--------------------------------------------------------------------------------");
@@ -132,8 +132,29 @@ export const sendOrderConfirmationEmail = async (email: string, orderDetails: an
   }
 
   try {
-    await noreplyTransporter.sendMail(mailOptions);
-    console.log(`Order confirmation email sent to ${email}`);
+    // Send to customer
+    await noreplyTransporter.sendMail(customerMailOptions);
+    console.log(`Order confirmation email sent to CUSTOMER: ${email}`);
+    
+    // Send alert to Admin
+    const adminAlertOptions = {
+      from: `"Bloom & Blossom System" <${config.smtp.noreplyUser}>`,
+      to: config.smtp.user,
+      subject: `New Order Received - ${orderId}`,
+      html: `
+        <h2>New Order Alert!</h2>
+        <p>A new order has been placed on the website.</p>
+        <p><strong>Order ID:</strong> ${orderId}</p>
+        <p><strong>Customer Name:</strong> ${shippingData.name || 'N/A'}</p>
+        <p><strong>Customer Email:</strong> ${email || 'N/A'}</p>
+        <p><strong>Customer Phone:</strong> ${shippingData.phone || 'N/A'}</p>
+        <p><strong>Order Total:</strong> ₹${total !== undefined && total !== null ? total : (Array.isArray(cart) ? cart.reduce((acc: number, item: any) => acc + item.price * item.quantity, 0) : 0)}</p>
+        <br/>
+        <p>Please check the admin dashboard for full order details.</p>
+      `,
+    };
+    await noreplyTransporter.sendMail(adminAlertOptions);
+    console.log(`Order alert email sent to ADMIN: ${config.smtp.user}`);
   } catch (error: any) {
     console.warn(`⚠️ Could not send order confirmation email (SMTP error): ${error?.message || 'Unknown error'}`);
     console.log("--------------------------------------------------------------------------------");
@@ -177,7 +198,7 @@ export const sendContactEmail = async (name: string, senderEmail: string, subjec
     
     // Send auto-reply to the user
     const autoReplyOptions = {
-      from: `"Bloom & Blossom" <${config.smtp.noreplyUser}>`,
+      from: `"Bloom & Blossom" <${config.smtp.user}>`,
       to: senderEmail,
       subject: `We've received your message: ${subject}`,
       html: `
@@ -191,7 +212,7 @@ export const sendContactEmail = async (name: string, senderEmail: string, subjec
         </div>
       `,
     };
-    await noreplyTransporter.sendMail(autoReplyOptions);
+    await contactTransporter.sendMail(autoReplyOptions);
     console.log(`Auto-reply sent to ${senderEmail}`);
   } catch (error: any) {
     console.warn(`⚠️ Could not send contact email (SMTP error): ${error?.message || 'Unknown error'}`);

@@ -26,7 +26,7 @@ export function Dashboard() {
       const fetchOrders = async () => {
         setIsLoadingOrders(true);
         try {
-          const userEmail = user?.email || user?.user_metadata?.email || '';
+          const userEmail = user?.email || (user?.user_metadata as any)?.email || '';
           
           const { data, error } = await supabase
             .from('orders')
@@ -46,7 +46,7 @@ export function Dashboard() {
           // Also check local storage for prototype testing / failed inserts
           try {
             const mockOrdersDB = JSON.parse(localStorage.getItem('bloom_db_orders') || '[]');
-            const userEmail = user?.email || user?.user_metadata?.email || '';
+            const userEmail = user?.email || (user?.user_metadata as any)?.email || '';
             const mockOrders = mockOrdersDB.filter((o: any) => 
                  o.userId === user?.id || 
                  (userEmail && o.email?.toLowerCase() === userEmail?.toLowerCase()) || 

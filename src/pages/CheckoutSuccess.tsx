@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
@@ -17,10 +17,15 @@ export function CheckoutSuccess() {
   
   const [status, setStatus] = useState<'loading' | 'success' | 'failed'>('loading');
   const [message, setMessage] = useState('Verifying your payment...');
+  const [emailStatus, setEmailStatus] = useState<'pending' | 'sending' | 'sent' | 'failed' | 'skipped'>('pending');
   const [orderDetails, setOrderDetails] = useState<any>(null);
+  const hasRun = useRef(false);
 
   useEffect(() => {
     async function verifyPayment() {
+      if (hasRun.current) return;
+      hasRun.current = true;
+
       if (!orderId) {
         setStatus('failed');
         setMessage('Invalid order ID.');
@@ -39,57 +44,91 @@ export function CheckoutSuccess() {
         setStatus('success');
         clearCart();
 
-        // Process the local mock DB update
-        const sessionStr = sessionStorage.getItem('checkoutSession');
-        if (sessionStr) {
-          const session = JSON.parse(sessionStr);
-          setOrderDetails(session);
-          const { shippingData, isFirstOrderEligible } = session;
+        try {
+          // Attempt to load from localStorage first as primary data for now due to missing DB
+          let dbOrderDetails: any = null;
+          let emailToUse = '';
+          const sessionStr = localStorage.getItem('checkoutSession');
+          let session: any = null;
+          if (sessionStr) {
+             session = JSON.parse(sessionStr);
+             dbOrderDetails = {
+               orderId: orderId,
+               cart: session.cart,
+               total: session.total || 0,
+               shippingData: session.shippingData,
+               isFirstOrderEligible: session.isFirstOrderEligible
+             };
+             emailToUse = session.shippingData?.email;
+          }
 
-          const email = shippingData?.email?.trim().toLowerCase();
-          const phone = shippingData?.phone?.trim();
+          try {
+            const res = await fetch(`/api/orders/${orderId}`);
+            if (res.ok) {
+              const data = await res.json();
+              const { order, items } = data;
+              dbOrderDetails = {
+                orderId: order.id,
+                cart: items.map((i: any) => ({
+                  id: i.product_id || i.id,
+                  name: i.product_name,
+                  price: i.price,
+                  quantity: i.quantity
+                })),
+                total: order.final_amount,
+                shippingData: order.shipping_address,
+              };
+              emailToUse = order.guest_email || order.shipping_address?.email;
+            }
+          } catch(err) {
+             console.warn("DB order fetch failed, using local session data", err);
+          }
 
-          const mockOrdersDB = JSON.parse(localStorage.getItem('bloom_db_orders') || '[]');
-          mockOrdersDB.push({ 
-            orderId, 
-            email, 
-            phone, 
-            userId: user?.id || null,
-            timestamp: new Date().toISOString() 
-          });
-          localStorage.setItem('bloom_db_orders', JSON.stringify(mockOrdersDB));
+          if (!dbOrderDetails) {
+            throw new Error("No order details found in DB or local session");
+          }
+          
+          setOrderDetails(dbOrderDetails);
 
-          if (email) {
-            console.log("Found email in session, initiating order confirmation to: ", email);
+          if (emailToUse && emailToUse !== 'youremail@example.com' && !emailToUse.includes('testcall')) {
+            console.log("Initiating order confirmation to email: ", emailToUse);
+            setEmailStatus('sending');
             fetch('/api/contact/order-confirmation', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({
-                email,
-                orderDetails: {
-                  orderId,
-                  cart: session.cart,
-                  total: session.total || 0,
-                  shippingData: session.shippingData,
-                  isFirstOrderEligible: session.isFirstOrderEligible,
-                }
+                email: emailToUse,
+                orderDetails: dbOrderDetails
               })
             })
-            .then(async (res) => {
-              const text = await res.text();
-              console.log("Order confirmation API response:", res.status, text);
+            .then(async (r) => {
+              if (!r.ok) {
+                console.error("Order confirmation failed:", await r.text());
+                setEmailStatus('failed');
+              } else {
+                setEmailStatus('sent');
+              }
             })
-            .catch((err) => console.error("Order confirmation API catch error:", err));
+            .catch((err) => {
+               console.error("Order confirmation API catch error:", err);
+               setEmailStatus('failed');
+            });
           } else {
-            console.warn("No email found in shippingData, skipping order confirmation.");
+             console.warn("No valid email found, skipping confirmation");
+             setEmailStatus('skipped');
           }
 
-          if (isFirstOrderEligible && user) {
-            supabase.auth.updateUser({ 
-              data: { has_used_first_discount: true } 
-            });
+          // Mark first discount used if previously tracked locally
+          if (sessionStr && session) {
+            if (session.isFirstOrderEligible && user) {
+               supabase.auth.updateUser({ 
+                 data: { has_used_first_discount: true } 
+               });
+            }
+            // Removed localStorage.removeItem to prevent StrictMode bugs!
           }
-          sessionStorage.removeItem('checkoutSession');
+        } catch (e) {
+          console.error("Failed to sequence order success:", e);
         }
       } else if (queryCode === 'FAILED' || queryCode === 'PAYMENT_ERROR') {
         setStatus('failed');
@@ -124,6 +163,10 @@ export function CheckoutSuccess() {
             <p className="text-gray-500 max-w-md mx-auto">
               Thank you for shopping with The Bloom & Blossom. Your order (ID: {orderId}) has been placed successfully and we'll start preparing it soon.
             </p>
+            {emailStatus === 'sending' && <p className="text-sm text-blue-500">Sending confirmation email...</p>}
+            {emailStatus === 'sent' && <p className="text-sm text-green-500">A confirmation email has been sent to {orderDetails?.shippingData?.email}</p>}
+            {emailStatus === 'failed' && <p className="text-sm text-red-500">Failed to send confirmation email. Please check your order details below.</p>}
+            {emailStatus === 'skipped' && <p className="text-sm text-gray-500">No email was provided, skipping confirmation email.</p>}
           </div>
 
           {orderDetails && (

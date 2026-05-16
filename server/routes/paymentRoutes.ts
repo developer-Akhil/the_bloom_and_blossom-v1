@@ -13,8 +13,14 @@ const getRazorpayClient = () => {
   key_id = key_id.replace(/^["']|["']$/g, '').trim();
   key_secret = key_secret.replace(/^["']|["']$/g, '').trim();
 
-  if (!key_id || !key_secret) {
-    throw new Error('Razorpay keys not configured');
+  console.log("Initializing Razorpay with key_id:", key_id, "key_secret.length:", key_secret.length);
+
+  if (!key_id || !key_secret || key_id === 'YOUR_RAZORPAY_KEY_ID' || key_secret === 'YOUR_RAZORPAY_KEY_SECRET') {
+    throw new Error('Razorpay keys not configured or are placeholders');
+  }
+
+  if (!key_id.startsWith('rzp_test_') && !key_id.startsWith('rzp_live_')) {
+    throw new Error('RAZORPAY_KEY_ID should start with rzp_test_ or rzp_live_. Current value starts with: ' + key_id.substring(0, 5));
   }
   return new Razorpay({ key_id, key_secret });
 };
@@ -36,6 +42,7 @@ router.post('/create-order', async (req, res) => {
     try {
       razorpay = getRazorpayClient();
     } catch (e: any) {
+      console.error("Razorpay Client configuration error:", e.message);
       return res.status(401).json({ error: 'Gateway Not Configured', details: e.message });
     }
 
@@ -47,7 +54,20 @@ router.post('/create-order', async (req, res) => {
       receipt: receipt
     };
 
-    const order = await razorpay.orders.create(options);
+    let order;
+    try {
+      order = await razorpay.orders.create(options);
+    } catch (createError: any) {
+      console.error('Payment initiation error:', createError);
+      if (createError.statusCode === 401 || createError.statusCode === '401' || createError?.error?.description === 'Authentication failed') {
+        return res.status(401).json({ 
+          error: 'Gateway Authentication Failed', 
+          details: 'Your Razorpay credentials (Key and Secret) do not match or are invalid. Please check your Dashboard API keys and ensure both RAZORPAY_KEY_ID and RAZORPAY_KEY_SECRET are set correctly without extra characters or quotes.' 
+        });
+      }
+      return res.status(500).json({ error: 'Internal server error', details: createError?.message || createError?.toString() });
+    }
+
     
     return res.json({
       order_id: order.id,
@@ -57,14 +77,8 @@ router.post('/create-order', async (req, res) => {
     });
 
   } catch (error: any) {
-    console.error('Payment initiation error:', error);
-    if (error.statusCode === 401 || error.statusCode === '401' || error?.error?.description === 'Authentication failed') {
-      return res.status(401).json({ 
-        error: 'Gateway Authentication Failed', 
-        details: `Your Razorpay credentials (Key and Secret) do not match or are invalid. Please go to your Razorpay Dashboard -> API Keys, to generate a NEW Test Key pair. Then set both RAZORPAY_KEY_ID and RAZORPAY_KEY_SECRET in your settings exactly as they appear.` 
-      });
-    }
-    res.status(500).json({ error: 'Internal server error', details: error?.message || error?.toString() });
+    console.error('Payment endpoints error:', error);
+    return res.status(500).json({ error: 'Unexpected server error', details: error?.message || error?.toString() });
   }
 });
 
@@ -76,10 +90,11 @@ router.post('/verify-payment', async (req, res) => {
       return res.status(400).json({ error: 'Missing payment verification details' });
     }
 
-    const key_secret = process.env.RAZORPAY_KEY_SECRET;
+    let key_secret = process.env.RAZORPAY_KEY_SECRET;
     if (!key_secret) {
       return res.status(500).json({ error: 'Server configuration error' });
     }
+    key_secret = key_secret.replace(/^["']|["']$/g, '').trim();
 
     const body = razorpay_order_id + "|" + razorpay_payment_id;
     const expectedSignature = crypto

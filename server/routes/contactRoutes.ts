@@ -11,25 +11,25 @@ router.post("/order-confirmation", async (req, res) => {
     const { email, orderDetails } = req.body;
 
     if (!email || !orderDetails) {
-      console.log("Missing email or orderDetails");
+      console.error("❌ Missing email or orderDetails in payload", req.body);
       return res.status(400).json({ error: "Email and orderDetails are required" });
     }
 
     try {
-      console.log(`Attempting to send order email to: ${email}`);
+      console.log(`✉️ Attempting to send order email to CUSTOMER: ${email}`);
       await sendOrderConfirmationEmail(email, orderDetails);
-      console.log(`Order confirmation sent successfully to: ${email}`);
-      res.status(200).json({ message: "Order confirmation email request initiated" });
+      console.log(`✅ Order confirmation sent successfully to CUSTOMER: ${email}`);
+      return res.status(200).json({ message: "Order confirmation email request initiated" });
     } catch (err: any) {
-      console.error("sendOrderConfirmationEmail error:", err);
+      console.error("❌ sendOrderConfirmationEmail error:", err);
       if (err.message === "SMTP_AUTH_FAILED") {
         return res.status(500).json({ error: "SMTP Authentication Failed" });
       }
       return res.status(500).json({ error: "Failed to send order email" });
     }
   } catch (error: any) {
-    console.error("Order confirmation email API Outer error:", error);
-    res.status(500).json({ error: "Failed to process email request" });
+    console.error("❌ Order confirmation email API Outer error:", error);
+    return res.status(500).json({ error: "Failed to process email request" });
   }
 });
 
