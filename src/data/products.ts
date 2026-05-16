@@ -105,6 +105,9 @@ for (const [macroCategory, macroCategoryObj] of Object.entries(collectionsObj)) 
       const variants: ProductVariant[] = [];
       const images: string[] = [];
       let groupPrice = 199; // Fallback price
+      let groupCustomizable = false;
+      let groupBestSeller = true;
+      let groupRating = 5.0;
       
       let isFirst = true;
 
@@ -118,11 +121,17 @@ for (const [macroCategory, macroCategoryObj] of Object.entries(collectionsObj)) 
         const vPrice = parsePrice(varConfig.Price);
         const vStockVal = varConfig.Stock ?? varConfig.stock;
         const vRatingVal = varConfig.Rating ?? varConfig.rating;
+        const vCustomVal = varConfig.IsCustomizable ?? varConfig.isCustomizable;
+        const vBestVal = varConfig.IsBestSeller ?? varConfig.isBestSeller;
+
         const vStock = vStockVal !== undefined ? parseInt(String(vStockVal), 10) : 50;
         
-        // Parent matches the price of the first child variant parsed
+        // Parent matches the price & fields of the first child variant parsed
         if (isFirst) {
           groupPrice = vPrice;
+          groupCustomizable = vCustomVal !== undefined ? String(vCustomVal).toLowerCase() === 'true' : false;
+          groupBestSeller = vBestVal !== undefined ? String(vBestVal).toLowerCase() === 'true' : false;
+          groupRating = vRatingVal !== undefined ? parseFloat(String(vRatingVal)) : 5.0;
           isFirst = false;
         }
 
@@ -146,9 +155,9 @@ for (const [macroCategory, macroCategoryObj] of Object.entries(collectionsObj)) 
           images,
           variants,
           stock: variants.reduce((total, v) => total + (v.stock || 0), 0),
-          rating: 4.8,
-          isCustomizable: false,
-          isBestSeller: true
+          rating: groupRating,
+          isCustomizable: groupCustomizable,
+          isBestSeller: groupBestSeller
         });
       }
     }

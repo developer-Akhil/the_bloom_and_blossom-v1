@@ -32,23 +32,95 @@
 														"isCustomizable": true,
 														"isBestSeller": true
 														},
-		"public/images/collections/customised_name_bows/daisy_name_bow.jpg":{
+		"Daisy Name Bows": {
+					"public/images/collections/customised_name_bows/daisy_name_bows/black.jpg":{
 														"Code":"CNB-DNB-BLK-001",								
-														"Name":"Daisy Name Bow",
+														"Name":"Daisy Black Bow",
 														"Price":"200",
 														"stock": 9,
 														"rating": "4.8",
 														"isCustomizable": true,
 														"isBestSeller": true			
 														},
-		"public/images/collections/customised_name_bows/pearl_name_bow.jpg":{												 "Code":"CNB-PNB-BLK-001",
-														"Name":"Pearl Name Bow",
+					"public/images/collections/customised_name_bows/daisy_name_bows/light_purple.jpg":{
+														"Code":"CNB-DNB-BLK-002",								
+														"Name":"Daisy Light Purple Bow",
 														"Price":"200",
 														"stock": 9,
-														"rating": "4.8",
+														"rating": "4.6",
 														"isCustomizable": true,
 														"isBestSeller": true
 														},
+					"public/images/collections/customised_name_bows/daisy_name_bows/pink.jpg":{
+														"Code":"CNB-DNB-PNK-003",								
+														"Name":"Daisy Pink Bow",
+														"Price":"200",
+														"stock": 9,
+														"rating": "4.3",
+														"isCustomizable": true,
+														"isBestSeller": true
+														},
+					"public/images/collections/customised_name_bows/daisy_name_bows/red.jpg":{
+														"Code":"CNB-DNB-RED-004",								
+														"Name":"Daisy Red Bow",
+														"Price":"200",
+														"stock": 9,
+														"rating": "4.2",
+														"isCustomizable": true,
+														"isBestSeller": true
+					},
+					"public/images/collections/customised_name_bows/daisy_name_bows/skyblue.jpg":{
+														"Code":"CNB-DNB-SKB-005",								
+														"Name":"Daisy Skyblue Bow",
+														"Price":"200",
+														"stock": 9,
+														"rating": "4.2",
+														"isCustomizable": true,
+														"isBestSeller": true
+					}
+		},
+		"Pearl Name Bows":{
+					"public/images/collections/customised_name_bows/pearl_name_bows/black.jpg":{																"Code":"CNB-PNB-BLK-001",
+														"Name":"Pearl Name Bow",
+														"Price":"200",
+														"stock": 9,
+														"rating": "4.3",
+														"isCustomizable": true,
+														"isBestSeller": true
+														},
+					"public/images/collections/customised_name_bows/pearl_name_bows/red.jpg":{																	"Code":"CNB-PNB-RED-002",
+														"Name":"Pearl Name Bow",
+														"Price":"200",
+														"stock": 9,
+														"rating": "4.2",
+														"isCustomizable": true,
+														"isBestSeller": true
+														},
+					"public/images/collections/customised_name_bows/pearl_name_bows/pink.jpg":{																	"Code":"CNB-PNB-PNK-003",
+														"Name":"Pearl Name Bow",
+														"Price":"200",
+														"stock": 9,
+														"rating": "4.4",
+														"isCustomizable": true,
+														"isBestSeller": true
+														},
+					"public/images/collections/customised_name_bows/pearl_name_bows/skyblue.jpg":{																"Code":"CNB-PNB-SKB-004",
+														"Name":"Pearl Name Bow",
+														"Price":"200",
+														"stock": 9,
+														"rating": "4.1",
+														"isCustomizable": true,
+														"isBestSeller": true
+														},
+					"public/images/collections/customised_name_bows/pearl_name_bows/light_purple.jpg":{															"Code":"CNB-PNB-LPLE-005",
+														"Name":"Pearl Name Bow",
+														"Price":"200",
+														"stock": 9,
+														"rating": "4.3",
+														"isCustomizable": true,
+														"isBestSeller": true
+														}
+		},
 		"public/images/collections/customised_name_bows/daisy_name_without_tail_bow.jpg":{												  "Code":"CNB-DNWTB-PNK001",
 														"Name":"Daisy Name Without Tail",
 														"Price":"180",
