@@ -21,6 +21,8 @@ import { Privacy } from './pages/Privacy';
 import { Terms } from './pages/Terms';
 import { FAQ } from './pages/FAQ';
 import { Admin } from './pages/Admin';
+import { AdminOrders } from './pages/AdminOrders';
+import { AdminOrderDetail } from './pages/AdminOrderDetail';
 import { AdminLogin } from './pages/AdminLogin';
 import { NewArrivals } from './pages/NewArrivals';
 import { CartProvider } from './context/CartContext';
@@ -59,6 +61,8 @@ export default function App() {
                     <Route path="terms" element={<Terms />} />
                     <Route path="faq" element={<FAQ />} />
                     <Route path="admin" element={<Admin />} />
+                    <Route path="admin/orders" element={<AdminOrders />} />
+                    <Route path="admin/orders/:id" element={<AdminOrderDetail />} />
                     <Route path="admin/login" element={<AdminLogin />} />
                     <Route path="new-arrivals" element={<NewArrivals />} />
                     <Route path="wishlist" element={<Wishlist />} />

@@ -122,8 +122,28 @@ export function Checkout() {
     try {
       const newOrderId = crypto.randomUUID();
       
-      const productNames = cart.map(item => item.name).join(', ');
-      const productCodes = cart.map(item => item.code || 'N/A').join(', ');
+      const productNames = cart.map(item => {
+        let name = item.name;
+        if (item.selectedOptions && Object.keys(item.selectedOptions).length > 0) {
+           name += ` - ${Object.values(item.selectedOptions).join(', ')}`;
+        }
+        if (item.customizationName) {
+           name += ` [Custom: ${item.customizationName}]`;
+        }
+        return name;
+      }).join(' | ');
+
+      const productCodes = cart.map(item => {
+         let code = item.code || '';
+         if (!code && item.variants && item.variants.length > 0 && item.selectedOptions && item.selectedOptions['Color']) {
+            const variantColor = item.selectedOptions['Color'];
+            const variant = item.variants.find(v => v.color === variantColor);
+            if (variant && variant.code) {
+               code = variant.code;
+            }
+         }
+         return code || 'N/A';
+      }).join(' | ');
 
       const { error: orderError } = await supabase.schema('bb_ecommerce_sc').from('orders').insert({
         id: newOrderId,
@@ -150,7 +170,7 @@ export function Checkout() {
       // Insert Items
       const orderItems = cart.map(item => ({
         order_id: newOrderId,
-        product_id: item.id,
+        product_id: null,
         product_name: item.name,
         quantity: item.quantity,
         price: item.price,

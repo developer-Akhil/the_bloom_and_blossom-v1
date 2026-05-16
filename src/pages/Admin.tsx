@@ -142,6 +142,15 @@ export function Admin() {
                 <p className="text-gray-500 text-sm">Configure modules and control UI dynamically.</p>
               </div>
             </div>
+            
+            <Link 
+              to="/admin/orders"
+              className="hidden md:flex items-center space-x-2 px-4 py-2 bg-gray-100 font-bold text-gray-700 hover:bg-gray-200 transition-colors rounded-xl"
+            >
+              <Package size={16} />
+              <span>Manage Orders</span>
+            </Link>
+
             <button 
               onClick={logout}
               className="flex items-center space-x-2 text-xs font-bold text-gray-400 hover:text-red-500 transition-colors uppercase tracking-widest"

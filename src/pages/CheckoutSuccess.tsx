@@ -19,116 +19,144 @@ export function CheckoutSuccess() {
   const [message, setMessage] = useState('Verifying your payment...');
   const [emailStatus, setEmailStatus] = useState<'pending' | 'sending' | 'sent' | 'failed' | 'skipped'>('pending');
   const [orderDetails, setOrderDetails] = useState<any>(null);
-  const hasRun = useRef(false);
+
+  const queryCode = searchParams.get('code');
 
   useEffect(() => {
-    async function verifyPayment() {
-      if (hasRun.current) return;
-      hasRun.current = true;
+    let ignore = false;
 
+    console.log("CheckoutSuccess useEffect triggered with:", { orderId, queryCode });
+
+    async function verifyPayment() {
+      console.log("verifyPayment called!");
+      
       if (!orderId) {
-        setStatus('failed');
-        setMessage('Invalid order ID.');
+        if (!ignore) {
+          setStatus('failed');
+          setMessage('Invalid order ID.');
+        }
         return;
       }
       
-      const queryCode = searchParams.get('code');
-      // If payment was cancelled by user
       if (queryCode === 'PAYMENT_CANCELLED' || queryCode === 'CANCELLED') {
-        setStatus('failed');
-        setMessage('Payment was cancelled. Please try again.');
+        if (!ignore) {
+          setStatus('failed');
+          setMessage('Payment was cancelled. Please try again.');
+        }
         return;
       }
 
       if (queryCode === 'COMPLETED' || queryCode === 'SUCCESS' || queryCode === 'PAYMENT_SUCCESS' || queryCode === 'UPI_MANUAL') {
-        setStatus('success');
-        clearCart();
-
         try {
+          // Immediately show success so the user isn't stuck
+          if (!ignore) setStatus('success');
+
+          console.log("Fetching order:", orderId);
           let dbOrderDetails: any = null;
           let emailToUse = '';
 
           try {
             const res = await fetch(`/api/orders/${orderId}`);
+            console.log("Fetch finished with status:", res.status);
             if (res.ok) {
               const data = await res.json();
+              console.log("Fetch data parsed:", data);
               const { order, items } = data;
               dbOrderDetails = {
                 orderId: order.id,
                 productNames: order.product_name,
                 productCodes: order.product_code,
-                cart: items.map((i: any) => ({
+                cart: (items || []).map((i: any) => ({
                   id: i.product_id || i.id,
                   name: i.product_name,
                   price: i.price,
-                  quantity: i.quantity
+                  quantity: i.quantity,
+                  customizationName: i.customization_name
                 })),
                 total: order.final_amount,
                 shippingData: order.shipping_address,
               };
               emailToUse = order.guest_email || order.shipping_address?.email;
+            } else {
+               const textObj = await res.text();
+               throw new Error(`API returned ${res.status}: ${textObj}`);
             }
-          } catch(err) {
-             console.warn("DB order fetch failed", err);
+          } catch(err: any) {
+             console.warn("DB order fetch failed:", err);
+             if (!ignore) {
+                setMessage("DB order fetch failed: " + err.message);
+             }
           }
 
-          if (!dbOrderDetails) {
-            throw new Error("No order details found in DB");
+          console.log("Setting order details! ignore:", ignore);
+          if (!ignore) {
+            if (dbOrderDetails) {
+              setOrderDetails(dbOrderDetails);
+            }
+            try { clearCart(); } catch(e) { console.error("clearCart error", e); }
           }
-          
-          setOrderDetails(dbOrderDetails);
 
           if (emailToUse && emailToUse !== 'youremail@example.com' && !emailToUse.includes('testcall')) {
-            console.log("Initiating order confirmation to email: ", emailToUse);
-            setEmailStatus('sending');
-            fetch('/api/contact/order-confirmation', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({
-                email: emailToUse,
-                orderDetails: dbOrderDetails
-              })
-            })
-            .then(async (r) => {
-              if (!r.ok) {
-                console.error("Order confirmation failed:", await r.text());
-                setEmailStatus('failed');
-              } else {
-                setEmailStatus('sent');
+              console.log("Initiating order confirmation to email: ", emailToUse);
+              if (!ignore) setEmailStatus('sending');
+              
+              try {
+                const r = await fetch('/api/contact/order-confirmation', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({
+                    email: emailToUse,
+                    orderDetails: dbOrderDetails
+                  })
+                });
+                if (!r.ok) {
+                  console.error("Order confirmation failed:", await r.text());
+                  if (!ignore) setEmailStatus('failed');
+                } else {
+                  if (!ignore) setEmailStatus('sent');
+                }
+              } catch (err) {
+                 console.error("Order confirmation API catch error:", err);
+                 if (!ignore) setEmailStatus('failed');
               }
-            })
-            .catch((err) => {
-               console.error("Order confirmation API catch error:", err);
-               setEmailStatus('failed');
-            });
           } else {
              console.warn("No valid email found, skipping confirmation");
-             setEmailStatus('skipped');
+             if (!ignore) setEmailStatus('skipped');
           }
 
-          // Since we removed local storage, if we need to mark first order eligibility, 
-          // we could check the database or auth state, but for now we'll mark it if user exists.
-          // Wait, actually, let's just mark it if the user is authenticated, 
-          // or we can remove this block if we handle it elsewhere.
           if (user && !user.user_metadata?.has_used_first_discount) {
                supabase.auth.updateUser({ 
                  data: { has_used_first_discount: true } 
                });
           }
-        } catch (e) {
+        } catch (e: any) {
           console.error("Failed to sequence order success:", e);
+          if (!ignore) {
+             setStatus('success'); // Still show success even if order fetch fails
+             setEmailStatus('failed');
+             setMessage(e.message || "Unknown error occurred while fetching details.");
+          }
         }
       } else if (queryCode === 'FAILED' || queryCode === 'PAYMENT_ERROR') {
-        setStatus('failed');
-        setMessage('Payment failed. Please try again.');
+        if (!ignore) {
+          setStatus('failed');
+          setMessage('Payment failed. Please try again.');
+        }
       } else {
-         setStatus('failed');
-         setMessage('Payment could not be verified. Please contact support.');
+         if (!ignore) {
+           setStatus('failed');
+           setMessage('Payment could not be verified. Please contact support.');
+         }
       }
     }
     
     verifyPayment();
-  }, [orderId, clearCart, user, searchParams]);
+
+    return () => {
+       ignore = true;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [orderId, queryCode]);
 
   return (
     <div className="container min-h-screen pt-32 pb-20 flex flex-col items-center justify-center space-y-8 px-4">
@@ -151,6 +179,9 @@ export function CheckoutSuccess() {
             <p className="text-gray-500 max-w-md mx-auto">
               Thank you for shopping with The Bloom & Blossom. Your order (ID: {orderId}) has been placed successfully and we'll start preparing it soon.
             </p>
+            {message && message !== 'Verifying your payment...' && (
+              <p className="text-sm text-red-500 font-bold bg-red-50 p-2 rounded">{message}</p>
+            )}
             {emailStatus === 'sending' && <p className="text-sm text-blue-500">Sending confirmation email...</p>}
             {emailStatus === 'sent' && <p className="text-sm text-green-500">A confirmation email has been sent to {orderDetails?.shippingData?.email}</p>}
             {emailStatus === 'failed' && <p className="text-sm text-red-500">Failed to send confirmation email. Please check your order details below.</p>}
@@ -172,11 +203,19 @@ export function CheckoutSuccess() {
                    <div key={item.id} className="flex justify-between items-center bg-gray-50 p-4 rounded-2xl">
                      <div className="flex flex-col">
                        <span className="font-medium text-gray-900">{item.name}</span>
+                       {item.customizationName && <span className="text-xs text-gray-500">Custom: {item.customizationName}</span>}
                        <span className="text-sm text-gray-500">Qty: {item.quantity}</span>
                      </div>
                      <span className="font-bold text-bloom-rose">₹{item.price * item.quantity}</span>
                    </div>
                  ))}
+                 
+                 <div className="pt-4 mt-4 border-t border-gray-200">
+                    <div className="flex justify-between items-center">
+                      <span className="font-bold text-gray-900 font-serif text-xl">Total Amount</span>
+                      <span className="font-bold text-bloom-rose text-2xl">₹{orderDetails.total}</span>
+                    </div>
+                 </div>
                </div>
                
                <div className="pt-2">

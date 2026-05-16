@@ -166,6 +166,44 @@ export const sendOrderConfirmationEmail = async (email: string, orderDetails: an
     throw new Error("SMTP_AUTH_FAILED");
   }
 };
+
+export const sendDispatchConfirmationEmail = async (email: string, orderDetails: any) => {
+  const { orderId, shippingData = {}, productNames } = orderDetails;
+  
+  const customerMailOptions = {
+    from: `"Bloom & Blossom" <${config.smtp.noreplyUser}>`,
+    to: email,
+    subject: `Order Dispatched - ${orderId}`,
+    html: `
+      <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto;">
+        <h2 style="color: #FFB6C1;">Your Order is on the way!</h2>
+        <p>Dear ${shippingData.name || 'Customer'},</p>
+        <p>Great news! Your order <strong>${orderId}</strong> has been dispatched.</p>
+        
+        <h3 style="margin-top: 30px;">Order Summary</h3>
+        ${productNames ? `<p><strong>Products:</strong> ${productNames}</p>` : ''}
+
+        <p style="margin-top: 30px; font-size: 0.9em; color: #666;">
+          If you have any questions, please contact us at ${config.smtp.user}.
+        </p>
+      </div>
+    `,
+  };
+
+  if (!config.smtp.noreplyPass || config.smtp.noreplyPass === "YOUR_SMTP_PASSWORD") {
+    console.log("SMTP Password not set. [TESTING] DISPATCH CONFIRMATION FOR ", email);
+    return;
+  }
+
+  try {
+    await noreplyTransporter.sendMail(customerMailOptions);
+    console.log(`Dispatch confirmation email sent to CUSTOMER: ${email}`);
+  } catch (error: any) {
+    console.warn(`⚠️ Could not send dispatch email: ${error?.message || 'Unknown error'}`);
+    throw new Error("SMTP_AUTH_FAILED");
+  }
+};
+
 export const sendContactEmail = async (name: string, senderEmail: string, subject: string, message: string) => {
   const mailOptions = {
     from: `"Bloom & Blossom Contact" <${config.smtp.user}>`,
