@@ -145,29 +145,6 @@ export function Checkout() {
          return code || 'N/A';
       }).join(' | ');
 
-      const { error: orderError } = await supabase.schema('bb_ecommerce_sc').from('orders').insert({
-        id: newOrderId,
-        guest_email: shippingData.email,
-        guest_phone: shippingData.phone,
-        total_amount: cartTotal,
-        discount_applied: discountAmount,
-        final_amount: finalTotal,
-        shipping_address: shippingData,
-        payment_status: pStatus,
-        payment_id: paymentId,
-        user_id: null,
-        order_status: 'processing',
-        product_name: productNames,
-        product_code: productCodes
-      });
-
-      if (orderError) {
-        console.error("Order Insert Error: ", orderError);
-        // Fallback to local storage on error
-        return null;
-      }
-
-      // Insert Items
       const orderItems = cart.map(item => ({
         order_id: newOrderId,
         product_id: null,
@@ -176,10 +153,33 @@ export function Checkout() {
         price: item.price,
         customization_name: item.customizationName || null
       }));
-      
-      const { error: itemsError } = await supabase.schema('bb_ecommerce_sc').from('order_items').insert(orderItems);
-      if (itemsError) {
-        console.error("Items Insert Error: ", itemsError);
+
+      const res = await fetch('/api/orders', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          newOrderId,
+          guest_email: shippingData.email,
+          guest_phone: shippingData.phone,
+          total_amount: cartTotal,
+          discount_applied: discountAmount,
+          final_amount: finalTotal,
+          shipping_address: shippingData,
+          payment_status: pStatus,
+          payment_id: paymentId,
+          user_id: null,
+          order_status: 'processing',
+          product_name: productNames,
+          product_code: productCodes,
+          cartItems: orderItems
+        })
+      });
+
+      if (!res.ok) {
+        console.error("Order Insert Error");
+        return null;
       }
       
       return newOrderId;
@@ -268,7 +268,12 @@ export function Checkout() {
             if (verifyData.success) {
                const internalOrderId = await insertOrderToSupabase(response.razorpay_payment_id, 'paid');
                
-               window.location.href = `/checkout/success?orderId=${internalOrderId}&code=SUCCESS`;
+               if (internalOrderId) {
+                 window.location.href = `/checkout/success?orderId=${internalOrderId}&code=SUCCESS`;
+               } else {
+                 alert('Payment was successful, but there was an error saving your order. Please contact support.');
+                 setIsProcessing(false);
+               }
             } else {
                alert('Payment verification failed');
                setIsProcessing(false);
@@ -443,7 +448,7 @@ export function Checkout() {
                       {isProcessing ? (
                         <>
                           <Loader2 size={24} className="animate-spin" />
-                          <span>Initiating Payment...</span>
+                          <span>Payment in Progress...</span>
                         </>
                       ) : (
                         <>
@@ -497,10 +502,14 @@ export function Checkout() {
                       <button 
                         onClick={async () => {
                           const internalOrderId = await insertOrderToSupabase(null, 'pending');
-                          const waText = encodeURIComponent(`Hello, I've made the payment of Rs ${finalTotal} for my order using Manual UPI. Order ID: ${internalOrderId || 'Pending'}. I am sharing the payment screenshot below.`);
+                          if (!internalOrderId) {
+                            alert('An error occurred while creating your order. Please try again or contact support.');
+                            return;
+                          }
+                          const waText = encodeURIComponent(`Hello, I've made the payment of Rs ${finalTotal} for my order using Manual UPI. Order ID: ${internalOrderId}. I am sharing the payment screenshot below.`);
                           
                           window.open(`https://wa.me/${siteConfig.contact.phone.replace(/\D/g, '')}?text=${waText}`, '_blank');
-                          window.location.href = `/checkout/success?orderId=${internalOrderId || 'MANUAL'}&code=UPI_MANUAL`;
+                          window.location.href = `/checkout/success?orderId=${internalOrderId}&code=UPI_MANUAL`;
                         }}
                         className="w-full h-16 bg-[#25D366] text-white rounded-full font-bold text-lg hover:bg-[#128C7E] transition-all flex items-center justify-center space-x-3 shadow-xl shadow-green-600/20"
                       >

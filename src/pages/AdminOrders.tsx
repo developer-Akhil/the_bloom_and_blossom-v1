@@ -84,7 +84,6 @@ export function AdminOrders() {
               <th className="p-4 border-b font-bold">Date</th>
               <th className="p-4 border-b font-bold">Customer</th>
               <th className="p-4 border-b font-bold">Products</th>
-              <th className="p-4 border-b font-bold">Links</th>
               <th className="p-4 border-b font-bold">Status</th>
               <th className="p-4 border-b font-bold">Payment</th>
               <th className="p-4 border-b font-bold text-right">Actions</th>
@@ -93,7 +92,7 @@ export function AdminOrders() {
           <tbody className="divide-y divide-gray-100">
             {orders.length === 0 ? (
               <tr>
-                <td colSpan={8} className="p-8 text-center text-gray-400">No orders found.</td>
+                <td colSpan={7} className="p-8 text-center text-gray-400">No orders found.</td>
               </tr>
             ) : null}
             {orders.map((order) => {
@@ -119,27 +118,6 @@ export function AdminOrders() {
                   <td className="p-4">
                     <p className="text-sm text-gray-900 line-clamp-2 w-48" title={order.product_name}>{order.product_name || 'N/A'}</p>
                     <p className="text-xs text-gray-500 font-mono">Code: {order.product_code || 'N/A'}</p>
-                  </td>
-                  <td className="p-4">
-                    <ul className="text-xs space-y-1">
-                       {(() => {
-                         if (!order.product_name) return <li className="text-gray-400">N/A</li>;
-                         const productNames = order.product_name.split(' | ');
-                         return productNames.map((name: string, i: number) => {
-                           const matchedProduct = products.find(p => p.name.toLowerCase() === name.toLowerCase().trim() || (p.code && p.code.toLowerCase() === name.toLowerCase().trim()));
-                           if (matchedProduct) {
-                             return (
-                               <li key={i}>
-                                 <Link to={`/product/${matchedProduct.id}`} target="_blank" className="text-blue-500 hover:text-blue-700 hover:underline inline-flex items-center">
-                                   Link <ExternalLink size={10} className="ml-1" />
-                                 </Link>
-                               </li>
-                             );
-                           }
-                           return <li key={i} className="text-gray-400">No link</li>;
-                         });
-                       })()}
-                    </ul>
                   </td>
                   <td className="p-4">
                     <select

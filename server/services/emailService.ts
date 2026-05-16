@@ -6,34 +6,27 @@ const contactTransporter = nodemailer.createTransport({
   host: config.smtp.host,
   port: config.smtp.port,
   secure: config.smtp.secure,
-  connectionTimeout: 10000,
-  greetingTimeout: 10000,
-  socketTimeout: 15000,
+  // Add pooling and higher timeouts for reliability
+  pool: true,
+  maxConnections: 3,
+  maxMessages: 100,
+  connectionTimeout: 20000,
+  greetingTimeout: 20000,
+  socketTimeout: 30000,
   auth: {
     user: config.smtp.user,
     pass: config.smtp.pass,
   },
 });
 
-// Transporter for automated system emails (noreply@)
-const noreplyTransporter = nodemailer.createTransport({
-  host: config.smtp.host,
-  port: config.smtp.port,
-  secure: config.smtp.secure,
-  connectionTimeout: 10000,
-  greetingTimeout: 10000,
-  socketTimeout: 15000,
-  auth: {
-    user: config.smtp.noreplyUser,
-    pass: config.smtp.noreplyPass,
-  },
-});
+// Use contactTransporter for automated system emails as well to avoid SPF/DKIM/deliverability issues with noreply@
+const noreplyTransporter = contactTransporter;
 
 export const sendVerificationEmail = async (email: string, token: string, frontendUrl: string = config.app.url) => {
   const verificationLink = `${frontendUrl}/verify-email?token=${token}`;
   
   const mailOptions = {
-    from: `"Bloom & Blossom" <${config.smtp.noreplyUser}>`,
+    from: `"Bloom & Blossom" <${config.smtp.user}>`,
     to: email,
     subject: "Verify your email address - Bloom & Blossom",
     html: `
@@ -45,7 +38,7 @@ export const sendVerificationEmail = async (email: string, token: string, fronte
     `,
   };
 
-  if (!config.smtp.noreplyPass || config.smtp.noreplyPass === "YOUR_SMTP_PASSWORD") {
+  if (!config.smtp.pass || config.smtp.pass === "YOUR_SMTP_PASSWORD") {
     console.log("--------------------------------------------------------------------------------");
     console.log("SMTP Password not set for verification! In a real environment, an email would be sent.");
     console.log(`[TESTING] VERIFICATION LINK FOR ${email}:`);
@@ -78,7 +71,7 @@ export const sendOrderConfirmationEmail = async (email: string, orderDetails: an
   `).join('');
 
   const customerMailOptions = {
-    from: `"Bloom & Blossom" <${config.smtp.noreplyUser}>`,
+    from: `"Bloom & Blossom" <${config.smtp.user}>`,
     to: email,
     subject: `Order Confirmation - ${orderId}`,
     html: `
@@ -112,6 +105,7 @@ export const sendOrderConfirmationEmail = async (email: string, orderDetails: an
         <h3 style="margin-top: 30px;">Shipping Details</h3>
         <p style="background-color: #f9f9f9; padding: 15px; border-radius: 5px;">
           ${shippingData?.name || 'Customer'}<br/>
+          ${shippingData?.email || email || ''}<br/>
           ${shippingData?.phone || ''}<br/>
           ${shippingData?.address || ''}<br/>
           ${shippingData?.city || ''}, ${shippingData?.state || ''} ${shippingData?.pincode || shippingData?.zip || ''}
@@ -124,7 +118,7 @@ export const sendOrderConfirmationEmail = async (email: string, orderDetails: an
     `,
   };
 
-  if (!config.smtp.noreplyPass || config.smtp.noreplyPass === "YOUR_SMTP_PASSWORD") {
+  if (!config.smtp.pass || config.smtp.pass === "YOUR_SMTP_PASSWORD") {
     console.log("--------------------------------------------------------------------------------");
     console.log("SMTP Password not set for order confirmation! In a real environment, an email would be sent.");
     console.log(`[TESTING] ORDER CONFIRMATION FOR ${email}:`);
@@ -140,7 +134,7 @@ export const sendOrderConfirmationEmail = async (email: string, orderDetails: an
     
     // Send alert to Admin
     const adminAlertOptions = {
-      from: `"Bloom & Blossom System" <${config.smtp.noreplyUser}>`,
+      from: `"Bloom & Blossom System" <${config.smtp.user}>`,
       to: config.smtp.user,
       subject: `New Order Received - ${orderId}`,
       html: `
@@ -163,7 +157,7 @@ export const sendOrderConfirmationEmail = async (email: string, orderDetails: an
     console.log(`[FALLBACK LOG] ORDER CONFIRMATION FOR ${email}`);
     console.log(`Order ID: ${orderId}`);
     console.log("--------------------------------------------------------------------------------");
-    throw new Error("SMTP_AUTH_FAILED");
+    throw new Error(error?.message || "SMTP_SEND_FAILED");
   }
 };
 
@@ -171,7 +165,7 @@ export const sendDispatchConfirmationEmail = async (email: string, orderDetails:
   const { orderId, shippingData = {}, productNames } = orderDetails;
   
   const customerMailOptions = {
-    from: `"Bloom & Blossom" <${config.smtp.noreplyUser}>`,
+    from: `"Bloom & Blossom" <${config.smtp.user}>`,
     to: email,
     subject: `Order Dispatched - ${orderId}`,
     html: `
@@ -190,7 +184,7 @@ export const sendDispatchConfirmationEmail = async (email: string, orderDetails:
     `,
   };
 
-  if (!config.smtp.noreplyPass || config.smtp.noreplyPass === "YOUR_SMTP_PASSWORD") {
+  if (!config.smtp.pass || config.smtp.pass === "YOUR_SMTP_PASSWORD") {
     console.log("SMTP Password not set. [TESTING] DISPATCH CONFIRMATION FOR ", email);
     return;
   }

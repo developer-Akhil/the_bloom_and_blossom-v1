@@ -107,9 +107,9 @@ CREATE TABLE IF NOT EXISTS bb_ecommerce_sc.order_items (
 
 -- Crucial: Grant access to the custom schema so the API can reach it
 GRANT USAGE ON SCHEMA bb_ecommerce_sc TO postgres, anon, authenticated, service_role;
-GRANT ALL ON ALL TABLES IN SCHEMA bb_ecommerce_sc TO anon, authenticated;
-GRANT ALL ON ALL SEQUENCES IN SCHEMA bb_ecommerce_sc TO anon, authenticated;
-GRANT ALL ON ALL FUNCTIONS IN SCHEMA bb_ecommerce_sc TO anon, authenticated;
+GRANT ALL ON ALL TABLES IN SCHEMA bb_ecommerce_sc TO anon, authenticated, service_role;
+GRANT ALL ON ALL SEQUENCES IN SCHEMA bb_ecommerce_sc TO anon, authenticated, service_role;
+GRANT ALL ON ALL FUNCTIONS IN SCHEMA bb_ecommerce_sc TO anon, authenticated, service_role;
 
 -- ==============================================================================
 -- App Users Table (Custom email verification flow)

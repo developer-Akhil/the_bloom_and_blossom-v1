@@ -62,6 +62,15 @@ export function CheckoutSuccess() {
               const data = await res.json();
               console.log("Fetch data parsed:", data);
               const { order, items } = data;
+                let shippingDataObj = order.shipping_address;
+                if (typeof shippingDataObj === 'string') {
+                  try {
+                    shippingDataObj = JSON.parse(shippingDataObj);
+                  } catch (e) {
+                    console.warn("Failed to parse shipping_address string", e);
+                  }
+                }
+                
               dbOrderDetails = {
                 orderId: order.id,
                 productNames: order.product_name,
@@ -74,9 +83,9 @@ export function CheckoutSuccess() {
                   customizationName: i.customization_name
                 })),
                 total: order.final_amount,
-                shippingData: order.shipping_address,
+                shippingData: shippingDataObj,
               };
-              emailToUse = order.guest_email || order.shipping_address?.email;
+              emailToUse = order.guest_email || shippingDataObj?.email;
             } else {
                const textObj = await res.text();
                throw new Error(`API returned ${res.status}: ${textObj}`);

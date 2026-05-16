@@ -22,10 +22,8 @@ router.post("/order-confirmation", async (req, res) => {
       return res.status(200).json({ message: "Order confirmation email request initiated" });
     } catch (err: any) {
       console.error("❌ sendOrderConfirmationEmail error:", err);
-      if (err.message === "SMTP_AUTH_FAILED") {
-        return res.status(500).json({ error: "SMTP Authentication Failed" });
-      }
-      return res.status(500).json({ error: "Failed to send order email" });
+      // Return 500 for any email sending error, allowing frontend to inform user.
+      return res.status(500).json({ error: err.message || "Failed to send order email" });
     }
   } catch (error: any) {
     console.error("❌ Order confirmation email API Outer error:", error);

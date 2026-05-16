@@ -4,6 +4,45 @@ import { sendDispatchConfirmationEmail } from "../services/emailService.js";
 
 const router = express.Router();
 
+router.post("/", async (req, res) => {
+  const { newOrderId, guest_email, guest_phone, total_amount, discount_applied, final_amount, shipping_address, payment_status, payment_id, user_id, order_status, product_name, product_code, cartItems } = req.body;
+
+  try {
+    const { error: orderError } = await (supabase as any).schema('bb_ecommerce_sc').from('orders').insert({
+      id: newOrderId,
+      guest_email,
+      guest_phone,
+      total_amount,
+      discount_applied,
+      final_amount,
+      shipping_address,
+      payment_status,
+      payment_id,
+      user_id,
+      order_status,
+      product_name,
+      product_code
+    });
+
+    if (orderError) {
+      console.error('Order creation error:', orderError);
+      return res.status(500).json({ error: "Failed to create order" });
+    }
+
+    if (cartItems && cartItems.length > 0) {
+      const { error: itemsError } = await (supabase as any).schema('bb_ecommerce_sc').from('order_items').insert(cartItems);
+      if (itemsError) {
+        console.error('Order items creation error:', itemsError);
+      }
+    }
+
+    return res.status(201).json({ success: true, id: newOrderId });
+  } catch (err) {
+    console.error('Create Order API error:', err);
+    return res.status(500).json({ error: "Internal server error" });
+  }
+});
+
 router.get("/", async (req, res) => {
   try {
     const { data: orders, error } = await (supabase as any)
@@ -44,11 +83,15 @@ router.put("/:id/status", async (req, res) => {
     // Call email trigger if dispatched
     if (order_status === 'dispatched' || order_status === 'shipped') {
        try {
-          const email = order.guest_email || (order.shipping_address && order.shipping_address.email);
+          let shippingDataObj = order.shipping_address;
+          if (typeof shippingDataObj === 'string') {
+            try { shippingDataObj = JSON.parse(shippingDataObj); } catch(e) {}
+          }
+          const email = order.guest_email || shippingDataObj?.email;
           if (email) {
             await sendDispatchConfirmationEmail(email, {
               orderId: order.id,
-              shippingData: order.shipping_address,
+              shippingData: shippingDataObj,
               productNames: order.product_name
             });
           }
