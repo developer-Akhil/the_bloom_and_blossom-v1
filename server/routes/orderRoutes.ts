@@ -6,14 +6,14 @@ const router = express.Router();
 router.get("/:id", async (req, res) => {
   const { id } = req.params;
   try {
-    const { data: order, error: orderError } = await (supabase as any).from('orders').select('*').eq('id', id).single();
+    const { data: order, error: orderError } = await (supabase as any).schema('bb_ecommerce_sc').from('orders').select('*').eq('id', id).single();
     
     if (orderError || !order) {
       console.error('Order fetch error:', orderError);
       return res.status(404).json({ error: "Order not found" });
     }
 
-    const { data: items, error: itemsError } = await (supabase as any).from('order_items').select('*').eq('order_id', id);
+    const { data: items, error: itemsError } = await (supabase as any).schema('bb_ecommerce_sc').from('order_items').select('*').eq('order_id', id);
 
     if (itemsError) {
       console.error('Order items fetch error:', itemsError);

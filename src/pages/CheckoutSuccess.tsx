@@ -45,22 +45,8 @@ export function CheckoutSuccess() {
         clearCart();
 
         try {
-          // Attempt to load from localStorage first as primary data for now due to missing DB
           let dbOrderDetails: any = null;
           let emailToUse = '';
-          const sessionStr = localStorage.getItem('checkoutSession');
-          let session: any = null;
-          if (sessionStr) {
-             session = JSON.parse(sessionStr);
-             dbOrderDetails = {
-               orderId: orderId,
-               cart: session.cart,
-               total: session.total || 0,
-               shippingData: session.shippingData,
-               isFirstOrderEligible: session.isFirstOrderEligible
-             };
-             emailToUse = session.shippingData?.email;
-          }
 
           try {
             const res = await fetch(`/api/orders/${orderId}`);
@@ -69,6 +55,8 @@ export function CheckoutSuccess() {
               const { order, items } = data;
               dbOrderDetails = {
                 orderId: order.id,
+                productNames: order.product_name,
+                productCodes: order.product_code,
                 cart: items.map((i: any) => ({
                   id: i.product_id || i.id,
                   name: i.product_name,
@@ -81,11 +69,11 @@ export function CheckoutSuccess() {
               emailToUse = order.guest_email || order.shipping_address?.email;
             }
           } catch(err) {
-             console.warn("DB order fetch failed, using local session data", err);
+             console.warn("DB order fetch failed", err);
           }
 
           if (!dbOrderDetails) {
-            throw new Error("No order details found in DB or local session");
+            throw new Error("No order details found in DB");
           }
           
           setOrderDetails(dbOrderDetails);
@@ -118,14 +106,14 @@ export function CheckoutSuccess() {
              setEmailStatus('skipped');
           }
 
-          // Mark first discount used if previously tracked locally
-          if (sessionStr && session) {
-            if (session.isFirstOrderEligible && user) {
+          // Since we removed local storage, if we need to mark first order eligibility, 
+          // we could check the database or auth state, but for now we'll mark it if user exists.
+          // Wait, actually, let's just mark it if the user is authenticated, 
+          // or we can remove this block if we handle it elsewhere.
+          if (user && !user.user_metadata?.has_used_first_discount) {
                supabase.auth.updateUser({ 
                  data: { has_used_first_discount: true } 
                });
-            }
-            // Removed localStorage.removeItem to prevent StrictMode bugs!
           }
         } catch (e) {
           console.error("Failed to sequence order success:", e);
@@ -174,6 +162,12 @@ export function CheckoutSuccess() {
                <h3 className="font-bold text-xl mb-6 font-serif">Order Summary</h3>
                
                <div className="space-y-4 mb-8 border-b border-gray-100 pb-6">
+                 {orderDetails.productNames && (
+                   <div className="mb-4 space-y-1 bg-bloom-rose/5 p-4 rounded-xl text-sm">
+                     <p><span className="font-medium text-gray-900">Products:</span> {orderDetails.productNames}</p>
+                     <p><span className="font-medium text-gray-900">Product Codes:</span> {orderDetails.productCodes}</p>
+                   </div>
+                 )}
                  {orderDetails.cart?.map((item: any) => (
                    <div key={item.id} className="flex justify-between items-center bg-gray-50 p-4 rounded-2xl">
                      <div className="flex flex-col">

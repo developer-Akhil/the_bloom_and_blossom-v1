@@ -121,7 +121,11 @@ export function Checkout() {
   const insertOrderToSupabase = async (paymentId: string | null = null, pStatus: string = 'pending') => {
     try {
       const newOrderId = crypto.randomUUID();
-      const { error: orderError } = await supabase.from('orders').insert({
+      
+      const productNames = cart.map(item => item.name).join(', ');
+      const productCodes = cart.map(item => item.code || 'N/A').join(', ');
+
+      const { error: orderError } = await supabase.schema('bb_ecommerce_sc').from('orders').insert({
         id: newOrderId,
         guest_email: shippingData.email,
         guest_phone: shippingData.phone,
@@ -132,7 +136,9 @@ export function Checkout() {
         payment_status: pStatus,
         payment_id: paymentId,
         user_id: null,
-        order_status: 'processing'
+        order_status: 'processing',
+        product_name: productNames,
+        product_code: productCodes
       });
 
       if (orderError) {
@@ -144,13 +150,14 @@ export function Checkout() {
       // Insert Items
       const orderItems = cart.map(item => ({
         order_id: newOrderId,
+        product_id: item.id,
         product_name: item.name,
         quantity: item.quantity,
         price: item.price,
         customization_name: item.customizationName || null
       }));
       
-      const { error: itemsError } = await supabase.from('order_items').insert(orderItems);
+      const { error: itemsError } = await supabase.schema('bb_ecommerce_sc').from('order_items').insert(orderItems);
       if (itemsError) {
         console.error("Items Insert Error: ", itemsError);
       }
@@ -239,15 +246,9 @@ export function Checkout() {
             });
             const verifyData = await verifyRes.json();
             if (verifyData.success) {
-               await insertOrderToSupabase(response.razorpay_payment_id, 'paid');
+               const internalOrderId = await insertOrderToSupabase(response.razorpay_payment_id, 'paid');
                
-               localStorage.setItem('checkoutSession', JSON.stringify({
-                 shippingData,
-                 cart,
-                 total: finalTotal,
-                 isFirstOrderEligible
-               }));
-               window.location.href = `/checkout/success?orderId=${data.order_id}&code=SUCCESS`;
+               window.location.href = `/checkout/success?orderId=${internalOrderId}&code=SUCCESS`;
             } else {
                alert('Payment verification failed');
                setIsProcessing(false);
@@ -477,13 +478,6 @@ export function Checkout() {
                         onClick={async () => {
                           const internalOrderId = await insertOrderToSupabase(null, 'pending');
                           const waText = encodeURIComponent(`Hello, I've made the payment of Rs ${finalTotal} for my order using Manual UPI. Order ID: ${internalOrderId || 'Pending'}. I am sharing the payment screenshot below.`);
-                          
-                          localStorage.setItem('checkoutSession', JSON.stringify({
-                            shippingData,
-                            cart,
-                            total: finalTotal,
-                            isFirstOrderEligible
-                          }));
                           
                           window.open(`https://wa.me/${siteConfig.contact.phone.replace(/\D/g, '')}?text=${waText}`, '_blank');
                           window.location.href = `/checkout/success?orderId=${internalOrderId || 'MANUAL'}&code=UPI_MANUAL`;

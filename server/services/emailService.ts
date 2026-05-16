@@ -67,7 +67,7 @@ export const sendVerificationEmail = async (email: string, token: string, fronte
 };
 
 export const sendOrderConfirmationEmail = async (email: string, orderDetails: any) => {
-  const { orderId, cart = [], shippingData = {}, total } = orderDetails;
+  const { orderId, cart = [], shippingData = {}, total, productNames, productCodes } = orderDetails;
   
   const itemsHtml = (Array.isArray(cart) ? cart : []).map((item: any) => `
     <tr>
@@ -88,6 +88,8 @@ export const sendOrderConfirmationEmail = async (email: string, orderDetails: an
         <p>Your order <strong>${orderId}</strong> has been successfully placed. We'll send you another email when it ships.</p>
         
         <h3 style="margin-top: 30px;">Order Summary</h3>
+        ${productNames ? `<p><strong>Products:</strong> ${productNames}</p>` : ''}
+        ${productCodes ? `<p><strong>Product Codes:</strong> ${productCodes}</p>` : ''}
         <table style="width: 100%; border-collapse: collapse;">
           <thead>
             <tr style="background-color: #f9f9f9;">

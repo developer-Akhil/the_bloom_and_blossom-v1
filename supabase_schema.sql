@@ -84,6 +84,8 @@ CREATE TABLE IF NOT EXISTS bb_ecommerce_sc.orders (
   order_status TEXT DEFAULT 'processing', -- processing, shipped, delivered, cancelled
   shipping_address JSONB,
   payment_id TEXT, -- Payment gateway transaction ID
+  product_name TEXT,
+  product_code TEXT,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL
 );
 
