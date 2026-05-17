@@ -81,14 +81,14 @@ export function AdminProducts() {
           const finalBestSellers = dynamicProducts
               .filter(p => bestSellerEdits[p.id] !== undefined ? bestSellerEdits[p.id] : p.isBestSeller)
               .map(p => p.id);
-          await updateBestSellers(finalBestSellers);
+          await updateBestSellers(finalBestSellers, dynamicProducts.map(p => p.id));
       }
 
       if (Object.keys(newArrivalEdits).length > 0) {
           const finalNewArrivals = dynamicProducts
               .filter(p => newArrivalEdits[p.id] !== undefined ? newArrivalEdits[p.id] : p.isNewArrival)
               .map(p => p.id);
-          await updateNewArrivals(finalNewArrivals);
+          await updateNewArrivals(finalNewArrivals, dynamicProducts.map(p => p.id));
       }
       
       if (Object.keys(availabilityEdits).length > 0) {
@@ -99,7 +99,7 @@ export function AdminProducts() {
           const finalOnSale = dynamicProducts
               .filter(p => onSaleEdits[p.id] !== undefined ? onSaleEdits[p.id] : p.isOnSale)
               .map(p => p.id);
-          await updateOnSale(finalOnSale);
+          await updateOnSale(finalOnSale, dynamicProducts.map(p => p.id));
       }
 
       if (Object.keys(originalPriceEdits).length > 0) {

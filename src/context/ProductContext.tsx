@@ -61,6 +61,35 @@ export function ProductProvider({ children }: { children: React.ReactNode }) {
         localStorage.setItem('bloom_product_availability', JSON.stringify(availMap));
         setAvailabilityMap(availMap);
       }
+
+      const { data: attrData, error: attrError } = await supabase.from('product_attributes').select('*');
+      if (!attrError && attrData && attrData.length > 0) {
+         const newBestSellers = new Set(JSON.parse(localStorage.getItem('bloom_best_sellers') || '[]'));
+         const newNewArrivals = new Set(JSON.parse(localStorage.getItem('bloom_new_arrivals') || '[]'));
+         const newOnSale = new Set(JSON.parse(localStorage.getItem('bloom_on_sale') || '[]'));
+         const newOriginalPrices = JSON.parse(localStorage.getItem('bloom_original_prices') || '{}');
+         const newDescriptions = JSON.parse(localStorage.getItem('bloom_descriptions') || '{}');
+
+         attrData.forEach(item => {
+            if (item.is_best_seller) newBestSellers.add(item.product_id); else newBestSellers.delete(item.product_id);
+            if (item.is_new_arrival) newNewArrivals.add(item.product_id); else newNewArrivals.delete(item.product_id);
+            if (item.is_on_sale) newOnSale.add(item.product_id); else newOnSale.delete(item.product_id);
+            if (item.original_price !== null) newOriginalPrices[item.product_id] = item.original_price;
+            if (item.description !== null) newDescriptions[item.product_id] = item.description;
+         });
+
+         localStorage.setItem('bloom_best_sellers', JSON.stringify(Array.from(newBestSellers)));
+         localStorage.setItem('bloom_new_arrivals', JSON.stringify(Array.from(newNewArrivals)));
+         localStorage.setItem('bloom_on_sale', JSON.stringify(Array.from(newOnSale)));
+         localStorage.setItem('bloom_original_prices', JSON.stringify(newOriginalPrices));
+         localStorage.setItem('bloom_descriptions', JSON.stringify(newDescriptions));
+
+         setBestSellersSet(newBestSellers);
+         setNewArrivalsSet(newNewArrivals);
+         setOnSaleSet(newOnSale);
+         setOriginalPriceOverrides(newOriginalPrices);
+         setDescriptionOverrides(newDescriptions);
+      }
     } catch (e) {
       console.error("Supabase sync Error:", e);
     }

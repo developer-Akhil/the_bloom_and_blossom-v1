@@ -62,6 +62,17 @@ CREATE TABLE IF NOT EXISTS bb_ecommerce_sc.product_availability (
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL
 );
 
+-- 5c. Product Attributes Table (For generic attributes like best_seller, new_arrival)
+CREATE TABLE IF NOT EXISTS bb_ecommerce_sc.product_attributes (
+  product_id TEXT PRIMARY KEY,
+  is_best_seller BOOLEAN DEFAULT FALSE,
+  is_new_arrival BOOLEAN DEFAULT FALSE,
+  is_on_sale BOOLEAN DEFAULT FALSE,
+  original_price DECIMAL(10, 2),
+  description TEXT,
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL
+);
+
 -- 6. Wishlist Table
 CREATE TABLE IF NOT EXISTS bb_ecommerce_sc.wishlist (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -137,6 +148,7 @@ ALTER TABLE bb_ecommerce_sc.profiles ENABLE ROW LEVEL SECURITY;
 ALTER TABLE bb_ecommerce_sc.admin_users ENABLE ROW LEVEL SECURITY;
 ALTER TABLE bb_ecommerce_sc.dynamic_prices ENABLE ROW LEVEL SECURITY;
 ALTER TABLE bb_ecommerce_sc.product_availability ENABLE ROW LEVEL SECURITY;
+ALTER TABLE bb_ecommerce_sc.product_attributes ENABLE ROW LEVEL SECURITY;
 ALTER TABLE bb_ecommerce_sc.orders ENABLE ROW LEVEL SECURITY;
 ALTER TABLE bb_ecommerce_sc.wishlist ENABLE ROW LEVEL SECURITY;
 
@@ -147,6 +159,10 @@ CREATE POLICY "Dynamic prices can be updated by authenticated users in admin boa
 -- Product Availability
 CREATE POLICY "Product availability is readable by everyone" ON bb_ecommerce_sc.product_availability FOR SELECT USING (true);
 CREATE POLICY "Product availability can be updated by authenticated users" ON bb_ecommerce_sc.product_availability FOR ALL USING (auth.role() = 'authenticated');
+
+-- Product Attributes
+CREATE POLICY "Product attributes are readable by everyone" ON bb_ecommerce_sc.product_attributes FOR SELECT USING (true);
+CREATE POLICY "Product attributes can be updated by authenticated users" ON bb_ecommerce_sc.product_attributes FOR ALL USING (auth.role() = 'authenticated');
 
 -- Admin Users: Allow anon access for login checks (since it doesn't use auth.uid)
 CREATE POLICY "Admin users check" ON bb_ecommerce_sc.admin_users FOR SELECT USING (true);
