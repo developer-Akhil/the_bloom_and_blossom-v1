@@ -13,6 +13,7 @@ import authRoutes from "./server/routes/authRoutes.js";
 import paymentRoutes from "./server/routes/paymentRoutes.js";
 import contactRoutes from "./server/routes/contactRoutes.js";
 import orderRoutes from "./server/routes/orderRoutes.js";
+import adminRoutes from "./server/routes/adminRoutes.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -117,6 +118,7 @@ async function startServer() {
   app.use("/api/payment", paymentRoutes);
   app.use("/api/contact", contactRoutes);
   app.use("/api/orders", orderRoutes);
+  app.use("/api/admin", adminRoutes);
 
   // Temporary route to test ENV variables (diagnostics)
   app.get("/api/env-test", (req, res) => {

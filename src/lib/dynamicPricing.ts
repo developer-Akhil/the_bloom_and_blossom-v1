@@ -18,22 +18,20 @@ export const updateDynamicPricesBatch = async (updates: Record<string, number>) 
   localStorage.setItem('bloom_dynamic_prices', JSON.stringify(dynamicPrices));
   window.dispatchEvent(new Event('dynamic_price_updated'));
 
-  // 2. Persist to Supabase
+  // 2. Persist to Express backend which uses Service Role
   try {
-    const records = Object.entries(updates).map(([id, price]) => ({
-      product_id: id,
-      price: price
-    }));
-
-    const { error } = await supabase
-      .from('dynamic_prices')
-      .upsert(records, { onConflict: 'product_id' });
-      
-    if (error) {
-      console.error("Failed to sync prices to DB:", error);
+    const response = await fetch('/api/admin/pricing', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ updates })
+    });
+    
+    if (!response.ok) {
+      const errorData = await response.json();
+      console.error("Failed to sync prices to DB:", errorData);
     }
   } catch (e) {
-    console.error("Supabase sync exception:", e);
+    console.error("Express sync exception:", e);
   }
 };
 
@@ -62,22 +60,20 @@ export const updateAvailabilityBatch = async (updates: Record<string, boolean>) 
   localStorage.setItem('bloom_product_availability', JSON.stringify(localAvailability));
   window.dispatchEvent(new Event('availability_updated'));
 
-  // 2. Persist to Supabase
+  // 2. Persist to Express backend which uses Service Role
   try {
-    const records = Object.entries(updates).map(([id, inStock]) => ({
-      product_id: id,
-      in_stock: inStock
-    }));
-
-    const { error } = await supabase
-      .from('product_availability')
-      .upsert(records, { onConflict: 'product_id' });
-      
-    if (error) {
-      console.error("Failed to sync availability to DB:", error);
+    const response = await fetch('/api/admin/availability', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ updates })
+    });
+    
+    if (!response.ok) {
+      const errorData = await response.json();
+      console.error("Failed to sync availability to DB:", errorData);
     }
   } catch (e) {
-    console.error("Supabase sync exception:", e);
+    console.error("Express sync exception:", e);
   }
 };
 
