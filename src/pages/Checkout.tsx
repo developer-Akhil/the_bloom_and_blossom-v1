@@ -37,6 +37,7 @@ export function Checkout() {
     phone: '',
     address: '',
     city: '',
+    state: '',
     zip: ''
   });
 
@@ -379,8 +380,9 @@ export function Checkout() {
                 <Input label="Apartment, Street Address" value={shippingData.address} required onChange={v => setShippingData({...shippingData, address: v})} />
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                   <Input label="City" value={shippingData.city} required onChange={v => setShippingData({...shippingData, city: v})} />
-                  <Input label="Zip Code" value={shippingData.zip} required error={zipError} onChange={v => { setShippingData({...shippingData, zip: v}); setZipError(''); }} />
+                  <Input label="State" value={shippingData.state} required onChange={v => setShippingData({...shippingData, state: v})} />
                 </div>
+                <Input label="PIN Code" value={shippingData.zip} required error={zipError} onChange={v => { setShippingData({...shippingData, zip: v}); setZipError(''); }} />
                 <button 
                   type="submit"
                   className="w-full h-16 bg-bloom-rose text-white rounded-full font-bold text-lg hover:bg-bloom-rose/90 transition-all shadow-xl shadow-bloom-rose/20"
