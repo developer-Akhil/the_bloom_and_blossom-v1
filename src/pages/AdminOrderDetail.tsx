@@ -152,18 +152,45 @@ export function AdminOrderDetail() {
            <div className="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm">
              <h3 className="font-serif text-xl font-bold mb-4 text-gray-900">Items Ordered</h3>
              <div className="space-y-4 max-h-[300px] overflow-y-auto pr-2">
-               {items && items.length > 0 ? items.map((item: any) => {
+                {items && items.length > 0 ? items.map((item: any) => {
                  const matchedProduct = products.find(p => p.name.toLowerCase() === item.product_name.toLowerCase().trim() || (p.code && p.code.toLowerCase() === item.product_name.toLowerCase().trim()));
                  
+                 // Attempt to extract variant information from customization_name if we don't have it natively
+                 let variantColor = '';
+                 let customNameDisplay = item.customization_name;
+                 
+                 // If the customization string is formatted from our updated checkout logic: 'Code: XYZ | Color | Custom'
+                 if (customNameDisplay && customNameDisplay.includes('Code:')) {
+                    // It's already formatted well, just display as is
+                 } else if (customNameDisplay) {
+                    customNameDisplay = `Custom: ${customNameDisplay}`;
+                 }
+
+                 let displayedCode = matchedProduct?.code || 'N/A';
+                 if (!matchedProduct?.code && matchedProduct?.variants && matchedProduct.variants.length > 0) {
+                    // fallback to finding variant code via order.product_code string matching or looking at item properties
+                    if (order && order.product_code) {
+                         const codes = order.product_code.split('|').map((c: string) => c.trim());
+                         // Very naive mapping, but better than nothing for past orders
+                         const possibleVariant = matchedProduct.variants.find(v => v.code && codes.includes(v.code));
+                         if (possibleVariant) {
+                           displayedCode = possibleVariant.code || 'N/A';
+                         }
+                    }
+                 }
+                 // If we have an intelligently formatted customNameDisplay (from updated checkout), it already has the Code, so we only append if not present.
+                 const hasCodeInCustom = customNameDisplay && customNameDisplay.includes('Code:');
+
                  return (
                  <div key={item.id} className="flex justify-between items-center p-3 bg-gray-50 rounded-2xl text-sm">
                    <div className="flex items-center space-x-3">
                       <div className="flex flex-col">
                         <span className="font-bold text-gray-900">{item.product_name}</span>
-                        {item.customization_name && <span className="text-xs text-gray-500">Custom: {item.customization_name}</span>}
+                        {!hasCodeInCustom && displayedCode !== 'N/A' && <span className="text-xs text-gray-600 font-mono">Code: {displayedCode}</span>}
+                        {customNameDisplay && <span className="text-xs text-gray-500">{customNameDisplay}</span>}
                         <span className="text-gray-500">Qty: {item.quantity}</span>
                         {matchedProduct && (
-                          <Link to={`/product/${matchedProduct.id}`} target="_blank" className="text-blue-500 hover:text-blue-700 hover:underline inline-flex items-center text-xs mt-1">
+                          <Link to={`/products/${matchedProduct.id}`} target="_blank" className="text-blue-500 hover:text-blue-700 hover:underline inline-flex items-center text-xs mt-1">
                             Product Link <ExternalLink size={10} className="ml-1" />
                           </Link>
                         )}

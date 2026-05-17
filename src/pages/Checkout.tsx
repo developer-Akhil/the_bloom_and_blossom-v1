@@ -146,14 +146,33 @@ export function Checkout() {
          return code || 'N/A';
       }).join(' | ');
 
-      const orderItems = cart.map(item => ({
-        order_id: newOrderId,
-        product_id: null,
-        product_name: item.name,
-        quantity: item.quantity,
-        price: item.price,
-        customization_name: item.customizationName || null
-      }));
+      const orderItems = cart.map(item => {
+        let code = item.code || '';
+        if (!code && item.variants && item.variants.length > 0 && item.selectedOptions && item.selectedOptions['Color']) {
+           const variantColor = item.selectedOptions['Color'];
+           const variant = item.variants.find(v => v.color === variantColor);
+           if (variant && variant.code) {
+              code = variant.code;
+           }
+        }
+        let customParts = [];
+        if (code) customParts.push(`Code: ${code}`);
+        if (item.selectedOptions && Object.keys(item.selectedOptions).length > 0) {
+           customParts.push(Object.values(item.selectedOptions).join(', '));
+        }
+        if (item.customizationName) {
+           customParts.push(`Custom text: ${item.customizationName}`);
+        }
+        
+        return {
+          order_id: newOrderId,
+          product_id: null,
+          product_name: item.name,
+          quantity: item.quantity,
+          price: item.price,
+          customization_name: customParts.length > 0 ? customParts.join(' | ') : null
+        };
+      });
 
       const res = await fetch('/api/orders', {
         method: 'POST',
