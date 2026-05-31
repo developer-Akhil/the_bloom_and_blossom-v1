@@ -4,11 +4,9 @@ import express from "express";
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
-import helmet from "helmet";
 import compression from "compression";
 import cors from "cors";
 import morgan from "morgan";
-import rateLimit from "express-rate-limit";
 import authRoutes from "./server/routes/authRoutes.js";
 import paymentRoutes from "./server/routes/paymentRoutes.js";
 import contactRoutes from "./server/routes/contactRoutes.js";
@@ -16,7 +14,6 @@ import orderRoutes from "./server/routes/orderRoutes.js";
 import adminRoutes from "./server/routes/adminRoutes.js";
 
 const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 
 async function startServer() {
   const app = express();
@@ -27,7 +24,7 @@ async function startServer() {
   app.set('trust proxy', 1);
 
   // Comprehensive request logging
-  app.use((req, res, next) => {
+  app.use((req, _res, next) => {
     console.log(`[Incoming Request] ${req.method} ${req.url}`);
     console.log(`[Headers] ${JSON.stringify({
       ip: req.ip,
@@ -77,30 +74,30 @@ async function startServer() {
   */
 
   // Request logging for debugging routing issues in production
-  app.use("/api", (req, res, next) => {
+  app.use("/api", (req, _res, next) => {
     console.log(`[API Request] ${req.method} ${req.url}`);
     next();
   });
 
   app.use(express.json({ 
     limit: '50mb',
-    verify: (req: any, res, buf) => {
+    verify: (req: any, _res, buf) => {
       req.rawBody = buf;
     }
   }));
   app.use(express.urlencoded({ extended: true }));
 
   // Root health check as suggested by Hostinger
-  app.get("/health", (req, res) => {
+  app.get("/health", (_req, res) => {
     res.json({ status: "ok", message: "Server is healthy", timestamp: new Date().toISOString() });
   });
 
-  app.get("/ping", (req, res) => {
+  app.get("/ping", (_req, res) => {
     res.send("pong");
   });
 
   // Health check endpoint
-  app.get("/api/health", (req, res) => {
+  app.get("/api/health", (_req, res) => {
     const razorpayKeysSet = !!(process.env.RAZORPAY_KEY_ID && process.env.RAZORPAY_KEY_SECRET);
     res.json({ 
       status: "ok", 
@@ -121,7 +118,7 @@ async function startServer() {
   app.use("/api/admin", adminRoutes);
 
   // Temporary route to test ENV variables (diagnostics)
-  app.get("/api/env-test", (req, res) => {
+  app.get("/api/env-test", (_req, res) => {
     
     let keyId = process.env.RAZORPAY_KEY_ID || "";
     let keySecret = process.env.RAZORPAY_KEY_SECRET || "";
@@ -234,7 +231,7 @@ async function startServer() {
     const defaultDist = path.join(process.cwd(), 'dist');
     const distPath = fs.existsSync(defaultDist) ? defaultDist : process.cwd();
     app.use(express.static(distPath));
-    app.get('*', (req, res) => {
+    app.get('*', (_req, res) => {
       const indexPath = path.join(distPath, 'index.html');
       if (fs.existsSync(indexPath)) {
         res.sendFile(indexPath);
@@ -244,7 +241,7 @@ async function startServer() {
     });
   }
 
-  app.use('/api', (err: any, req: any, res: any, next: any) => {
+  app.use('/api', (err: any, _req: any, res: any, _next: any) => {
     console.error('API Error:', err);
     res.status(500).json({ error: err.message || 'Internal Server Error' });
   });

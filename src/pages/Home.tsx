@@ -1,8 +1,8 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'motion/react';
 import { ArrowRight, Star, Heart, ShoppingBag } from 'lucide-react';
-import { products as baseProducts, categories as baseCategories, rawHomeImages, rawProductImages } from '../data/products';
+import { rawHomeImages, rawProductImages } from '../data/products';
 import { useMediaContext } from '../context/MediaContext';
 import { useProductContext } from '../context/ProductContext';
 import { useCart } from '../context/CartContext';

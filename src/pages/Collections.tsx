@@ -1,10 +1,8 @@
 import React, { useState, useMemo } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { products as baseProducts, categories as baseCategories } from '../data/products';
 import { useProductContext } from '../context/ProductContext';
 import { ProductCard } from './Home';
 import { Filter, ChevronDown, SlidersHorizontal } from 'lucide-react';
-import { motion } from 'motion/react';
 import { cn } from '../lib/utils';
 
 export function Collections() {

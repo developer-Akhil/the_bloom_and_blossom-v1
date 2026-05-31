@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Instagram, Youtube, Facebook, Twitter, MapPin, Phone, Mail } from 'lucide-react';
+import { Instagram, Youtube, Facebook, MapPin, Phone, Mail } from 'lucide-react';
 import { OptimizedImage } from './OptimizedImage';
 import { siteConfig } from '../../config/site';
 import { useMediaContext } from '../../context/MediaContext';

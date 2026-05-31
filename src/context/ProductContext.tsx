@@ -181,7 +181,7 @@ export function ProductProvider({ children }: { children: React.ReactNode }) {
       }
 
       const productAssets = allAssets.filter(a => a.id.startsWith(`builtin_${product.id}_`));
-      updatedProduct.images = product.images.filter((img, idx) => {
+      updatedProduct.images = product.images.filter((_img, idx) => {
          const builtinMatch = productAssets.find(a => a.id === `builtin_${product.id}_${idx}`);
          return builtinMatch ? builtinMatch.is_active : true;
       });
@@ -302,7 +302,7 @@ export function useProductContext() {
 }
 
 // Keep the hook for backward compatibility but make it a wrapper
-export const useDynamicProducts = (incomingBaseProducts?: any) => {
+export const useDynamicProducts = (_incomingBaseProducts?: any) => {
   const { products } = useProductContext();
   return products;
 };

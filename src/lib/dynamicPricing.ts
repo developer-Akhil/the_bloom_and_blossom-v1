@@ -1,8 +1,7 @@
 import { useProductContext } from '../context/ProductContext';
-import { supabase } from './supabase';
 
 // Legacy hook wrapper for compatibility
-export const useDynamicProducts = (baseProducts?: any) => {
+export const useDynamicProducts = (_baseProducts?: any) => {
   const { products } = useProductContext();
   return products;
 };

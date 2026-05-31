@@ -3,15 +3,14 @@ import { useAuth } from '../context/AuthContext';
 import { products as baseProducts } from '../data/products';
 import { useDynamicProducts } from '../lib/dynamicPricing';
 import { ProductCard } from './Home';
-import { Package, Heart, Clock, Settings, User as UserIcon, LogOut, ChevronRight, ShieldCheck } from 'lucide-react';
-import { motion } from 'motion/react';
+import { Package, Heart, Clock, Settings, LogOut, ChevronRight } from 'lucide-react';
 import { cn } from '../lib/utils';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 
 export function Dashboard() {
   const products = useDynamicProducts(baseProducts);
-  const { user, loading, isAdmin, signOut } = useAuth();
+  const { user, loading, signOut } = useAuth();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<'orders' | 'wishlist' | 'recent' | 'settings'>('orders');
   const [orders, setOrders] = useState<any[]>([]);

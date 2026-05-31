@@ -8,7 +8,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { cn } from '../lib/utils';
 import { OptimizedImage } from '../components/common/OptimizedImage';
 
-function CartItemComponent({ item, idx }: { item: any, idx: number }) {
+function CartItemComponent({ item }: { item: any }) {
   const { removeFromCart, updateQuantity, updateCustomizationName } = useCart();
   const { products } = useProductContext();
   const [isEditing, setIsEditing] = useState(false);
@@ -128,7 +128,7 @@ function CartItemComponent({ item, idx }: { item: any, idx: number }) {
 }
 
 export function Cart() {
-  const { cart, removeFromCart, updateQuantity, cartTotal, cartCount } = useCart();
+  const { cart, cartTotal, cartCount } = useCart();
   const { products } = useProductContext();
   const { user } = useAuth();
   const navigate = useNavigate();
@@ -169,7 +169,7 @@ export function Cart() {
         <div className="lg:col-span-2 space-y-8">
           <AnimatePresence>
             {cart.map((item, idx) => (
-              <CartItemComponent key={`${item.id}-${item.customizationName}-${JSON.stringify(item.selectedOptions)}-${idx}`} item={item} idx={idx} />
+              <CartItemComponent key={`${item.id}-${item.customizationName}-${JSON.stringify(item.selectedOptions)}-${idx}`} item={item} />
             ))}
           </AnimatePresence>
           

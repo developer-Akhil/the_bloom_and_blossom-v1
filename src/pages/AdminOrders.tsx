@@ -1,9 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Navigate, Link } from 'react-router-dom';
 import { useAdminAuth } from '../context/AdminAuthContext';
-import { PackageOpen, ExternalLink, Mail, Phone, Loader2, ArrowLeft, Image as ImageIcon } from 'lucide-react';
-import { motion } from 'motion/react';
-import { products } from '../data/products';
+import { ExternalLink, Mail, Phone, Loader2, ArrowLeft } from 'lucide-react';
 
 export function AdminOrders() {
   const { isAdminAuthenticated } = useAdminAuth();
@@ -99,7 +97,6 @@ export function AdminOrders() {
               const customerName = order.shipping_address?.name || 'Customer';
               const phone = order.shipping_address?.phone || order.guest_phone || '';
               const email = order.shipping_address?.email || order.guest_email || '';
-              const address = `${order.shipping_address?.address || ''}, ${order.shipping_address?.city || ''}`;
               const orderDate = new Date(order.created_at).toLocaleDateString() + ' ' + new Date(order.created_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
               
               return (
