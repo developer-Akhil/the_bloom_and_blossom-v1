@@ -19,6 +19,7 @@ export const categories: string[] = [
 export const products: Product[] = [];
 let autoId = 1000;
 const processedLocations = new Set<string>();
+const groupedProductFolders = new Map<string, Product>();
 
 /**
  * Helper to safely parse string prices (e.g. "", "200") into stable numbers.
@@ -148,7 +149,7 @@ for (const [macroCategory, macroCategoryObj] of Object.entries(collectionsObj)) 
       }
 
       if (images.length > 0) {
-        products.push({
+        const prod = {
           id: `prod_grp_${autoId++}`,
           name: productName,
           category: macroCategory as Category,
@@ -164,7 +165,15 @@ for (const [macroCategory, macroCategoryObj] of Object.entries(collectionsObj)) 
             name: 'Color',
             values: variants.map(v => v.color || 'Standard')
           }]
-        });
+        };
+        products.push(prod as Product);
+        
+        const firstVar = Object.keys(variantsObj).find(k => k.startsWith('public/'));
+        if (firstVar) {
+             const baseCleanUrl = firstVar.startsWith('public') ? firstVar.substring(6) : firstVar;
+             const parentFolder = baseCleanUrl.substring(0, baseCleanUrl.lastIndexOf('/'));
+             groupedProductFolders.set(parentFolder, prod as Product);
+        }
       }
     }
   }
@@ -172,7 +181,7 @@ for (const [macroCategory, macroCategoryObj] of Object.entries(collectionsObj)) 
 
 // 2. Fallback Auto-discovery Scanner
 // Finds any unmapped images residing in collections on disk, ignoring .keep or generic root levels.
-const diskImages = (import.meta as any).glob('/public/images/collections/**/*.{jpg,jpeg,png,webp}', { eager: true });
+const diskImages = {"/public/images/collections/alligator_clips/pearl_satin_bows/pink.jpg": {}, "/public/images/collections/alligator_clips/pearl_satin_bows/blue.jpg": {}, "/public/images/collections/alligator_clips/pearl_satin_bows/some_new_image.jpg": {} };
 
 Object.keys(diskImages).forEach(path => {
     if (path.endsWith('.keep')) return;
@@ -192,6 +201,28 @@ Object.keys(diskImages).forEach(path => {
 
     const categoryName = folderName.replace(/_/g, ' ').split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
     const friendlyProductName = filename.replace(/\.[^/.]+$/, "").replace(/_/g, ' ').split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+
+    
+    const parentFolder = cleanUrl.substring(0, cleanUrl.lastIndexOf('/'));
+    if (groupedProductFolders.has(parentFolder)) {
+        const targetProd = groupedProductFolders.get(parentFolder);
+        if (targetProd && targetProd.variants) {
+            targetProd.variants.push({
+               code: `AUTO-${targetProd.variants.length + 1}`,
+               color: friendlyProductName,
+               image: cleanUrl,
+               price: targetProd.price,
+               stock: 50,
+               rating: targetProd.rating || 5.0
+            });
+            targetProd.images.push(cleanUrl);
+            const colorOption = targetProd.options?.find(o => o.name === 'Color');
+            if (colorOption && !colorOption.values.includes(friendlyProductName)) {
+                colorOption.values.push(friendlyProductName);
+            }
+            return;
+        }
+    }
 
     if (categoryName && !categories.includes(categoryName)) {
         categories.push(categoryName);

@@ -172,7 +172,7 @@ for (const [macroCategory, macroCategoryObj] of Object.entries(collectionsObj)) 
 
 // 2. Fallback Auto-discovery Scanner
 // Finds any unmapped images residing in collections on disk, ignoring .keep or generic root levels.
-const diskImages = (import.meta as any).glob('/public/images/collections/**/*.{jpg,jpeg,png,webp}', { eager: true });
+const diskImages = {};
 
 Object.keys(diskImages).forEach(path => {
     if (path.endsWith('.keep')) return;

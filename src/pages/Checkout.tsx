@@ -86,7 +86,7 @@ export function Checkout() {
 
   const isFirstOrderEligible = !isExistingCustomer && cartTotal >= 500 && (shippingData.email !== '' || shippingData.phone !== '');
   const discountAmount = isFirstOrderEligible ? cartTotal * 0.05 : 0;
-  const shippingCost = cartTotal > 2000 ? 0 : 80;
+  const shippingCost = cartTotal > 2000 ? 0 : 90;
   const finalTotal = cartTotal - discountAmount + shippingCost;
 
   const validateIndianPhone = (phone: string) => {

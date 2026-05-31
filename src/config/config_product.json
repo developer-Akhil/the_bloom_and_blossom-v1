@@ -181,13 +181,6 @@
 													"isCustomizable": false,
 													"isBestSeller": true
 														},
-		"public/images/collections/alligator_clips/velvet_stone_bow.jpg":{
-													"Code":"AC-VSB-MRN-001",											"Name":"Velvet Stone Bow",											"Price":"130",
-													"rating": "4.2",
-													"stock": 15,
-													"isCustomizable": false,
-													"isBestSeller": true
-													},
 		"public/images/collections/alligator_clips/valentine_bow.jpg": {
 													"Code":"AC-VSB-RED-001",											"Name":"Valentine Bow Clip",					
 													"Price":"100",
@@ -204,7 +197,102 @@
 													"stock": 12,
 													"isCustomizable": false,
 													"isBestSeller": true
-												}
+												},
+		"Velvet Stone Bows":{
+			"public/images/collections/alligator_clips/velvet_stone_bows/maroon.jpg":{
+													"Code":"AC-VSB-MRN-001",											"Name":"Maroon",
+													"Price":"130",
+													"rating": "4.2",
+													"stock": 15,
+													"isCustomizable": false,
+													"isBestSeller": true
+													},
+			"public/images/collections/alligator_clips/velvet_stone_bows/black.jpg":{
+													"Code":"AC-VSB-BLK-002",
+													"Name":"Black",
+													"Price":"130",
+													"rating": "4.2",
+													"stock": 15,
+													"isCustomizable": false,
+													"isBestSeller": true
+													}
+		},
+		"Pearl Satin Bows":{
+		"public/images/collections/alligator_clips/pearl_satin_bows/red.jpg":{
+													"Code":"AC-PSB-RED-001",
+													"Name":"Red",
+													"Price":"130",
+													"rating": "4.0",
+													"stock": 10,
+													"isCustomizable": false,
+													"isBestSeller": true
+													},
+		"public/images/collections/alligator_clips/pearl_satin_bows/black.jpg":{
+													"Code":"AC-PSB-BLK-002",
+													"Name":"Black",
+													"Price":"130",
+													"rating": "4.3",
+													"stock": 15,
+													"isCustomizable": false,
+													"isBestSeller": true
+													},
+		"public/images/collections/alligator_clips/pearl_satin_bows/pink.jpg":{
+													"Code":"AC-PSB-PNK-003",
+													"Name":"Pink",
+													"Price":"130",
+													"rating": "4.2",
+													"stock": 15,
+													"isCustomizable": false,
+													"isBestSeller": true
+													},
+		"public/images/collections/alligator_clips/pearl_satin_bows/blue.jpg":{
+													"Code":"AC-PSB-BLU-004",
+													"Name":"Blue",
+													"Price":"130",
+													"rating": "4.2",
+													"stock": 15,
+													"isCustomizable": false,
+													"isBestSeller": true
+													}
+		},
+		"Pearl Hairclips" : {
+				"public/images/collections/alligator_clips/pearl_hairclips/black.jpg":{
+													"Code":"AC-PHC-BLK-001",
+													"Name":"Black",
+													"Price":"130",
+													"rating": "4.2",
+													"stock": 12,
+													"isCustomizable": false,
+													"isBestSeller": true
+													},
+				"public/images/collections/alligator_clips/pearl_hairclips/red.jpg":{
+													"Code":"AC-PHC-RED-002",
+													"Name":"Red",
+													"Price":"130",
+													"rating": "4.5",
+													"stock": 8,
+													"isCustomizable": false,
+													"isBestSeller": true
+													},
+				"public/images/collections/alligator_clips/pearl_hairclips/white.jpg":{
+													"Code":"AC-PHC-WHT-003",
+													"Name":"White",
+													"Price":"130",
+													"rating": "4.2",
+													"stock": 12,
+													"isCustomizable": false,
+													"isBestSeller": true
+													},
+				"public/images/collections/alligator_clips/pearl_hairclips/pink.jpg":{
+													"Code":"AC-PHC-PNK-004",
+													"Name":"Pink",
+													"Price":"130",
+													"rating": "4.5",
+													"stock": 8,
+													"isCustomizable": false,
+													"isBestSeller": true
+													}
+		}
 		},
 
 	"Scrunchies" :
@@ -459,6 +547,15 @@
 			"public/images/collections/crochet_clips/flower_hairband.jpg":{
 											"Code":"CC-FHC-001",
 											"Name":"Flower Hairband Crochet",
+											"Price":"120",
+											"rating": "4.5",
+											"stock": 30,
+											"isCustomizable": false,
+											"isBestSeller": true
+											},
+			"public/images/collections/crochet_clips/flower_tik_tak_pin.jpg":{
+											"Code":"CC-FTTP-001",
+											"Name":"Flower Tik Tak Pin Crochet",
 											"Price":"120",
 											"rating": "4.5",
 											"stock": 30,

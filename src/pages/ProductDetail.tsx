@@ -180,7 +180,7 @@ export function ProductDetail() {
           <p className="text-gray-500 leading-relaxed font-light">
             {product.description}
           </p>          {/* Options Selection */}
-          {product.options?.map((option) => (
+          {product.options?.filter(option => !(option.name.toLowerCase() === 'color' && product.variants && product.variants.length > 0)).map((option) => (
             <div key={option.name} className="space-y-4">
               <label className="block text-xs font-bold uppercase tracking-widest text-gray-500">
                 {option.name}: <span className="text-gray-900">{selectedOptions[option.name]}</span>

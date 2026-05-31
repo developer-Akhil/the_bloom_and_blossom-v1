@@ -64,9 +64,9 @@ export function ProductProvider({ children }: { children: React.ReactNode }) {
 
       const { data: attrData, error: attrError } = await supabase.from('product_attributes').select('*');
       if (!attrError && attrData && attrData.length > 0) {
-         const newBestSellers = new Set(JSON.parse(localStorage.getItem('bloom_best_sellers') || '[]'));
-         const newNewArrivals = new Set(JSON.parse(localStorage.getItem('bloom_new_arrivals') || '[]'));
-         const newOnSale = new Set(JSON.parse(localStorage.getItem('bloom_on_sale') || '[]'));
+         const newBestSellers = new Set<string>(JSON.parse(localStorage.getItem('bloom_best_sellers') || '[]'));
+         const newNewArrivals = new Set<string>(JSON.parse(localStorage.getItem('bloom_new_arrivals') || '[]'));
+         const newOnSale = new Set<string>(JSON.parse(localStorage.getItem('bloom_on_sale') || '[]'));
          const newOriginalPrices = JSON.parse(localStorage.getItem('bloom_original_prices') || '{}');
          const newDescriptions = JSON.parse(localStorage.getItem('bloom_descriptions') || '{}');
 

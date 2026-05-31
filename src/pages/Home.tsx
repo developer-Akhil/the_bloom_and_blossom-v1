@@ -144,7 +144,7 @@ export function Home() {
             transition={{ duration: 7, repeat: Infinity, ease: "easeInOut" }}
             className="relative w-80 h-80 rounded-[4rem] overflow-hidden border-8 border-white shadow-[0_25px_50px_-12px_rgba(255,182,193,0.5)] z-20"
           >
-             <OptimizedImage src={getHomeImage(0)} alt="Handcrafted Bow Collection" className="w-full h-full object-cover" />
+             <OptimizedImage src={getHomeImage(0)} alt="Featured Look" className="w-full h-full object-cover" />
           </motion.div>
           )}
 

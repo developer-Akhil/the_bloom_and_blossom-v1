@@ -35,28 +35,24 @@ export function OptimizedImage({
 
   const handleLoad = () => {
     setIsLoading(false);
-    setError(false);
+    // Do not reset error state here, otherwise it will loop back to the broken src
   };
 
   return (
     <div className={cn("relative overflow-hidden bg-gray-50 w-full h-full", containerClassName)}>
-      {isLoading && (
+      {isLoading && !error && (
         <div className="absolute inset-0 animate-pulse bg-bloom-pink/10 flex items-center justify-center">
           <div className="w-8 h-8 rounded-full border-2 border-bloom-rose/20 border-t-bloom-rose animate-spin" />
         </div>
       )}
-      <img
-        ref={imgRef}
-        src={error ? fallbackSrc : src}
-        alt={alt}
-        onLoad={handleLoad}
-        onError={handleError}
-        className={cn(
-          "transition-opacity duration-500",
-          isLoading ? "opacity-0" : "opacity-100",
-          className
-        )}
-        {...props}
+      <img 
+        ref={imgRef} 
+        src={error ? fallbackSrc : src} 
+        alt={alt} 
+        onLoad={handleLoad} 
+        onError={handleError} 
+        className={cn("transition-opacity duration-500", isLoading && !error ? "opacity-0" : "opacity-100", className)} 
+        {...props} 
       />
     </div>
   );
