@@ -135,7 +135,7 @@ export const sendOrderConfirmationEmail = async (email: string, orderDetails: an
     // Send alert to Admin
     const adminAlertOptions = {
       from: `"Bloom & Blossom System" <${config.smtp.user}>`,
-      to: config.smtp.user,
+      to: config.smtp.adminEmail,
       subject: `New Order Received - ${orderId}`,
       html: `
         <h2>New Order Alert!</h2>
@@ -150,7 +150,7 @@ export const sendOrderConfirmationEmail = async (email: string, orderDetails: an
       `,
     };
     await noreplyTransporter.sendMail(adminAlertOptions);
-    console.log(`Order alert email sent to ADMIN: ${config.smtp.user}`);
+    console.log(`Order alert email sent to ADMIN: ${config.smtp.adminEmail}`);
   } catch (error: any) {
     console.warn(`⚠️ Could not send order confirmation email (SMTP error): ${error?.message || 'Unknown error'}`);
     console.log("--------------------------------------------------------------------------------");
@@ -167,6 +167,7 @@ export const sendDispatchConfirmationEmail = async (email: string, orderDetails:
   const customerMailOptions = {
     from: `"Bloom & Blossom" <${config.smtp.user}>`,
     to: email,
+    bcc: config.smtp.adminEmail,
     subject: `Order Dispatched - ${orderId}`,
     html: `
       <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto;">
@@ -201,7 +202,7 @@ export const sendDispatchConfirmationEmail = async (email: string, orderDetails:
 export const sendContactEmail = async (name: string, senderEmail: string, subject: string, message: string) => {
   const mailOptions = {
     from: `"Bloom & Blossom Contact" <${config.smtp.user}>`,
-    to: config.smtp.user,
+    to: config.smtp.adminEmail,
     replyTo: senderEmail,
     subject: `New Contact Form Submission: ${subject}`,
     text: `Name: ${name}\nEmail: ${senderEmail}\nSubject: ${subject}\n\nMessage:\n${message}`,
@@ -234,6 +235,7 @@ export const sendContactEmail = async (name: string, senderEmail: string, subjec
     const autoReplyOptions = {
       from: `"Bloom & Blossom" <${config.smtp.user}>`,
       to: senderEmail,
+      bcc: config.smtp.adminEmail,
       subject: `We've received your message: ${subject}`,
       html: `
         <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto;">

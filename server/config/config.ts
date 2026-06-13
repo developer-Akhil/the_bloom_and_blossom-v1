@@ -16,6 +16,7 @@ export const config = {
     pass: process.env.SMTP_PASS || "",
     noreplyUser: process.env.SMTP_NOREPLY_USER || process.env.SMTP_USER || "noreply@bloomandblossom.in",
     noreplyPass: process.env.SMTP_NOREPLY_PASS || process.env.SMTP_PASS || "",
+    adminEmail: process.env.ADMIN_EMAIL || process.env.SMTP_USER || "info@bloomandblossom.in",
     secure: true, // Use TLS for 465
   },
   app: {
