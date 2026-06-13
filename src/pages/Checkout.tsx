@@ -85,8 +85,34 @@ export function Checkout() {
   }, [shippingData.email, shippingData.phone, user]);
 
   const isFirstOrderEligible = !isExistingCustomer && cartTotal >= 500 && (shippingData.email !== '' || shippingData.phone !== '');
-  const discountAmount = isFirstOrderEligible ? cartTotal * 0.05 : 0;
-  const shippingCost = cartTotal > 2000 ? 0 : 90;
+  
+  let discountAmount = 0;
+  let shippingCost = 90; // Default shipping
+  let discountLabel = "";
+  
+  if (cartTotal > 10000) {
+    discountAmount = cartTotal * 0.30;
+    shippingCost = 400;
+    discountLabel = "Bulk Order Discount (30%)";
+  } else if (cartTotal > 7000) {
+    discountAmount = cartTotal * 0.20;
+    shippingCost = 250;
+    discountLabel = "Bulk Order Discount (20%)";
+  } else if (cartTotal > 5000) {
+    discountAmount = cartTotal * 0.15;
+    shippingCost = 200;
+    discountLabel = "Bulk Order Discount (15%)";
+  } else {
+    // Normal rules
+    if (cartTotal > 2000) {
+      shippingCost = 0;
+    }
+    if (isFirstOrderEligible) {
+      discountAmount = cartTotal * 0.05;
+      discountLabel = "First Order Discount (5%)";
+    }
+  }
+
   const finalTotal = cartTotal - discountAmount + shippingCost;
 
   const validateIndianPhone = (phone: string) => {
@@ -593,7 +619,7 @@ export function Checkout() {
               </div>
               {discountAmount > 0 && (
                 <div className="flex justify-between text-bloom-rose font-medium">
-                  <span>First Order Discount (5%)</span>
+                  <span>{discountLabel}</span>
                   <span>-₹{discountAmount.toFixed(2)}</span>
                 </div>
               )}
