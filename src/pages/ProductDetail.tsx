@@ -107,7 +107,7 @@ export function ProductDetail() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
         {/* Image Gallery */}
         <div className="space-y-6">
-          <div className="group relative aspect-square rounded-[2.5rem] overflow-hidden bg-gray-50 border border-gray-100 shadow-sm">
+          <div className="group relative aspect-square rounded-[2.5rem] overflow-hidden bg-white border border-gray-100 shadow-sm">
             <OptimizedImage 
               src={product.images[activeImage]} 
               alt={product.name} 
@@ -137,11 +137,11 @@ export function ProductDetail() {
                 key={idx}
                 onClick={() => setActiveImage(idx)}
                 className={cn(
-                  "w-24 h-24 rounded-2xl overflow-hidden border-2 transition-all min-w-[6rem]",
+                  "w-24 h-24 rounded-2xl overflow-hidden border-2 transition-all min-w-[6rem] bg-white",
                   activeImage === idx ? "border-bloom-rose" : "border-transparent opacity-60 hover:opacity-100"
                 )}
               >
-                <OptimizedImage src={img} alt={`${product.name} ${idx}`} className="w-full h-full object-cover" />
+                <OptimizedImage src={img} alt={`${product.name} ${idx}`} className="w-full h-full object-contain" />
               </button>
             ))}
           </div>
@@ -243,7 +243,7 @@ export function ProductDetail() {
                     title={variant.color}
                   >
                     {variant.image ? (
-                        <OptimizedImage src={variant.image} alt={variant.color || 'Color'} className="w-full h-full object-cover" />
+                        <OptimizedImage src={variant.image} alt={variant.color || 'Color'} className="w-full h-full object-contain" />
                     ) : (
                         <div className="w-full h-full" style={{ backgroundColor: variant.color?.toLowerCase() }} />
                     )}

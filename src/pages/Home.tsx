@@ -323,7 +323,7 @@ export function ProductCard({ product, redirectToCategory = false }: { product: 
 
   return (
     <div className="group space-y-4">
-      <div className="relative aspect-square overflow-hidden rounded-3xl bg-gray-50 shadow-sm border border-gray-50">
+      <div className="relative aspect-square overflow-hidden rounded-3xl bg-white shadow-sm border border-gray-50">
         <OptimizedImage 
           src={getDisplayImage()} 
           alt={product.name} 

@@ -49,8 +49,8 @@ function CartItemComponent({ item }: { item: any }) {
       exit={{ opacity: 0, x: 20 }}
       className={cn("flex items-center space-x-6 pb-8 border-b border-gray-100 group", isItemOutofStock && "opacity-60")}
     >
-      <div className="w-24 sm:w-32 aspect-square rounded-2xl overflow-hidden bg-gray-50 flex-shrink-0">
-        <OptimizedImage src={getDisplayImage()} alt={item.name} className="w-full h-full object-cover" />
+      <div className="w-24 sm:w-32 aspect-square rounded-2xl overflow-hidden bg-white flex-shrink-0">
+        <OptimizedImage src={getDisplayImage()} alt={item.name} className="w-full h-full object-contain" />
       </div>
       
       <div className="flex-grow space-y-2">

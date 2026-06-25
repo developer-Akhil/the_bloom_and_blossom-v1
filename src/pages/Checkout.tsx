@@ -541,7 +541,7 @@ export function Checkout() {
                 return (
                   <div key={`${item.id}-${idx}`} className="flex items-center space-x-4">
                     <div className="w-16 h-16 rounded-xl overflow-hidden bg-white shrink-0">
-                      <OptimizedImage src={displayImage} alt={item.name} className="w-full h-full object-cover" />
+                      <OptimizedImage src={displayImage} alt={item.name} className="w-full h-full object-contain" />
                     </div>
                     <div className="flex-grow min-w-0">
                     <h4 className="font-bold text-sm line-clamp-1">{item.name}</h4>

@@ -41,12 +41,21 @@
   },
   "Collections": {
     "Customised Name Bows": {
-      "public/images/collections/customised_name_bows/golden_glitter_bow.jpeg": {
+      "public/images/collections/customised_name_bows/golden_glitter_bow.jpg": {
         "Code": "CNB-GGB-001",
         "Name": "Golden Glitter Bow",
         "Price": "200",
         "stock": 9,
         "rating": "4.8",
+        "isCustomizable": true,
+        "isBestSeller": true
+      },
+	  "public/images/collections/customised_name_bows/flower_name_headband.jpg": {
+        "Code": "CNB-FNH-001",
+        "Name": "Flower Name Headband",
+        "Price": "200",
+        "stock": 11,
+        "rating": "4.9",
         "isCustomizable": true,
         "isBestSeller": true
       },
@@ -197,7 +206,7 @@
 
     "Alligator Clips": {
       "public/images/collections/alligator_clips/popsicle_clip.jpg": {
-        "Code": "AC-PC-PNK-001",
+        "Code": "AC-PC-001",
         "Name": "Popsicle Clip",
         "Price": "90",
         "rating": "4.8",
@@ -206,7 +215,7 @@
         "isBestSeller": true
       },
       "public/images/collections/alligator_clips/valentine_bow.jpg": {
-        "Code": "AC-VSB-RED-001",
+        "Code": "AC-VB-001",
         "Name": "Valentine Bow Clip",
         "Price": "100",
         "rating": "4.2",
@@ -215,11 +224,20 @@
         "isBestSeller": true
       },
       "public/images/collections/alligator_clips/rainbow_alligator_clip.jpg": {
-        "Code": "AC-VSB-RAC-001",
+        "Code": "AC-RAC-001",
         "Name": "Rainbow Alligator Clip",
         "Price": "100",
         "rating": "4.2",
         "stock": 12,
+        "isCustomizable": false,
+        "isBestSeller": true
+      },
+	  "public/images/collections/alligator_clips/ice_cream_peach_clip.jpg": {
+        "Code": "AC-RAC-001",
+        "Name": "Ice Cream Peach Clip",
+        "Price": "130",
+        "rating": "4.6",
+        "stock": 10,
         "isCustomizable": false,
         "isBestSeller": true
       },
@@ -350,17 +368,17 @@
         }
       },
 	  
-      "Butterfly Long Tail Bows": {
-        "public/images/collections/alligator_clips/butterfly_long_tail_bow/skyblue.jpg": {
-          "Code": "AC-BLTB-SKB-001",
+	  "Butterfly Long Tail Bows":{
+	  "public/images/collections/alligator_clips/butterfly_long_tail_bow/skyblue.jpg" : {
+	  "Code": "AC-BLTB-ORG-003",
           "Name": "Skyblue",
           "Price": "150",
           "rating": "4.9",
           "stock": 20,
           "isCustomizable": false,
           "isBestSeller": true
-        }
-      }
+	  }
+	  }
     },
 
     "Scrunchies": {
@@ -486,6 +504,36 @@
         "Price": "120",
         "rating": "4.5",
         "stock": 15,
+        "isCustomizable": false,
+        "isBestSeller": true
+      },
+	  
+	  "public/images/collections/headbands/glitter_flower_headband.jpg": {
+        "Code": "HDD-GFH-001",
+        "Name": "Glitter Flower Headband",
+        "Price": "120",
+        "rating": "4.5",
+        "stock": 15,
+        "isCustomizable": false,
+        "isBestSeller": true
+      },
+	  
+	  "public/images/collections/headbands/pink_flower_headband.jpg": {
+        "Code": "HDD-PFH-001",
+        "Name": "Pink Flower Headband",
+        "Price": "120",
+        "rating": "4.5",
+        "stock": 15,
+        "isCustomizable": false,
+        "isBestSeller": true
+      },
+	  
+	  "public/images/collections/headbands/purple_flower_headband.jpg": {
+        "Code": "HDD-PFH-002",
+        "Name": "Purple Flower Headband",
+        "Price": "120",
+        "rating": "4.8",
+        "stock": 12,
         "isCustomizable": false,
         "isBestSeller": true
       }
