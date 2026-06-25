@@ -337,7 +337,27 @@
           "isBestSeller": true
         }
       },
-
+	  "Pearl Organza Bows":{
+		"public/images/collections/alligator_clips/pearl_organza_bows/black.jpg": {
+          "Code": "AC-POB-BLK-001",
+          "Name": "Black",
+          "Price": "100",
+          "rating": "4.2",
+          "stock": 10,
+          "isCustomizable": false,
+          "isBestSeller": true
+        },
+		
+		"public/images/collections/alligator_clips/pearl_organza_bows/pink.jpg": {
+          "Code": "AC-POB-PNK-001",
+          "Name": "Pink",
+          "Price": "100",
+          "rating": "4.6",
+          "stock": 19,
+          "isCustomizable": false,
+          "isBestSeller": true
+        }
+	  },
       "Toffee Clips": {
         "public/images/collections/alligator_clips/toffee_clips/skyblue_toffee_clip.jpg": {
           "Code": "AC-TC-SKB-001",
@@ -369,8 +389,8 @@
       },
 	  
 	  "Butterfly Long Tail Bows":{
-	  "public/images/collections/alligator_clips/butterfly_long_tail_bow/skyblue.jpg" : {
-	  "Code": "AC-BLTB-ORG-003",
+	  "public/images/collections/alligator_clips/butterfly_long_tail_bows/skyblue.jpg" : {
+	  "Code": "AC-BLTB-SKB-001",
           "Name": "Skyblue",
           "Price": "150",
           "rating": "4.9",
