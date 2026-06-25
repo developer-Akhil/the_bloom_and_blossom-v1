@@ -59,6 +59,25 @@
         "isCustomizable": true,
         "isBestSeller": true
       },
+	  "public/images/collections/customised_name_bows/candy_cloud_name_bow.jpg": {
+        "Code": "CNB-CCNB-001",
+        "Name": "Candy Cloud Name Bow",
+        "Price": "200",
+        "stock": 19,
+        "rating": "4.9",
+        "isCustomizable": true,
+        "isBestSeller": true
+      },
+	  "public/images/collections/customised_name_bows/golden_dreams_name_bow.jpg": {
+        "Code": "CNB-GDNB-001",
+        "Name": "Golden Dreams Name Bow",
+        "Price": "200",
+        "stock": 9,
+        "rating": "4.2",
+        "isCustomizable": true,
+        "isBestSeller": true
+      },
+	  
       "Daisy Name Bows": {
         "public/images/collections/customised_name_bows/daisy_name_bows/black.jpg": {
           "Code": "CNB-DNB-BLK-001",
@@ -232,6 +251,15 @@
         "isCustomizable": false,
         "isBestSeller": true
       },
+	  "public/images/collections/alligator_clips/rainbow_cloud_alligator_clip.jpg": {
+        "Code": "AC-RCAC-001",
+        "Name": "Rainbow Cloud Alligator Clip",
+        "Price": "120",
+        "rating": "4.6",
+        "stock": 8,
+        "isCustomizable": false,
+        "isBestSeller": true
+      },
 	  "public/images/collections/alligator_clips/ice_cream_peach_clip.jpg": {
         "Code": "AC-RAC-001",
         "Name": "Ice Cream Peach Clip",
@@ -250,7 +278,44 @@
         "isCustomizable": false,
         "isBestSeller": true
       },
-	  
+	  "Heart Alligator Clips": {
+        "public/images/collections/alligator_clips/heart_alligator_clips/yellow.jpg": {
+          "Code": "AC-HAC-YEL-001",
+          "Name": "Yellow",
+          "Price": "90",
+          "rating": "4.8",
+          "stock": 15,
+          "isCustomizable": false,
+          "isBestSeller": true
+        },
+		"public/images/collections/alligator_clips/heart_alligator_clips/white.jpg": {
+          "Code": "AC-HAC-WHT-002",
+          "Name": "White",
+          "Price": "90",
+          "rating": "4.2",
+          "stock": 10,
+          "isCustomizable": false,
+          "isBestSeller": true
+        },
+		"public/images/collections/alligator_clips/heart_alligator_clips/red.jpg": {
+          "Code": "AC-HAC-RED-003",
+          "Name": "Red",
+          "Price": "90",
+          "rating": "4.5",
+          "stock": 8,
+          "isCustomizable": false,
+          "isBestSeller": true
+        },
+		"public/images/collections/alligator_clips/heart_alligator_clips/pink.jpg": {
+          "Code": "AC-HAC-PNK-004",
+          "Name": "Pink",
+          "Price": "90",
+          "rating": "4.8",
+          "stock": 19,
+          "isCustomizable": false,
+          "isBestSeller": true
+        }
+	  },
       "Velvet Stone Bows": {
         "public/images/collections/alligator_clips/velvet_stone_bows/maroon.jpg": {
           "Code": "AC-VSB-MRN-001",
@@ -405,6 +470,15 @@
           "Price": "150",
           "rating": "4.9",
           "stock": 20,
+          "isCustomizable": false,
+          "isBestSeller": true
+	  },
+	  "public/images/collections/alligator_clips/butterfly_long_tail_bows/pink.jpg" : {
+	  "Code": "AC-BLTB-PNK-002",
+          "Name": "Pink",
+          "Price": "150",
+          "rating": "4.6",
+          "stock": 11,
           "isCustomizable": false,
           "isBestSeller": true
 	  }
@@ -732,6 +806,15 @@
         "isCustomizable": false,
         "isBestSeller": true
       },
+	  "public/images/collections/crochet_clips/sweet_blossom_headband.jpg": {
+        "Code": "CC-SBH-001",
+        "Name": "Sweet Blossom Headband",
+        "Price": "100",
+        "rating": "4.6",
+        "stock": 13,
+        "isCustomizable": false,
+        "isBestSeller": true
+      },
       "public/images/collections/crochet_clips/strawberry_clip.jpg": {
         "Code": "CC-CRC-001",
         "Name": "Strawberry Clip",
@@ -759,6 +842,27 @@
         "isCustomizable": false,
         "isBestSeller": true
       },
+	  
+	  "public/images/collections/crochet_clips/pink_flower_tik_tak_pin.jpg": {
+        "Code": "CC-PFTTP-001",
+        "Name": "Pink Flower Tik Tak Pin",
+        "Price": "100",
+        "rating": "4.6",
+        "stock": 13,
+        "isCustomizable": false,
+        "isBestSeller": true
+      },
+	  
+	  "public/images/collections/crochet_clips/off_white_flower_tik_tak_pin.jpg": {
+        "Code": "CC-OFFTTP-001",
+        "Name": "OFF white Tik Tak Pin",
+        "Price": "100",
+        "rating": "4.2",
+        "stock": 10,
+        "isCustomizable": false,
+        "isBestSeller": true
+      },
+	  
       "public/images/collections/crochet_clips/chrochet_daisy_headband.jpg": {
         "Code": "CC-CDH-001",
         "Name": "Crochet Daisy Headband",
