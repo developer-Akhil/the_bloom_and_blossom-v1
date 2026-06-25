@@ -241,6 +241,16 @@
         "isCustomizable": false,
         "isBestSeller": true
       },
+	  "public/images/collections/alligator_clips/navratri_special_clip.jpg": {
+        "Code": "AC-NSC-001",
+        "Name": "Navratri Special Clip",
+        "Price": "130",
+        "rating": "4.3",
+        "stock": 10,
+        "isCustomizable": false,
+        "isBestSeller": true
+      },
+	  
       "Velvet Stone Bows": {
         "public/images/collections/alligator_clips/velvet_stone_bows/maroon.jpg": {
           "Code": "AC-VSB-MRN-001",
@@ -757,54 +767,87 @@
         "stock": 5,
         "isCustomizable": false,
         "isBestSeller": true
-      },
-      "Crochet Clips": {
-        "public/images/collections/crochet_clips/oragne.jpg": {
-          "Code": "CC-CC-ORG-001",
-          "Name": "Orange",
-          "Price": "100",
-          "rating": "4.5",
-          "stock": 30,
+      }, 
+	  
+	  "Flower Clips" : {
+        "public/images/collections/crochet_clips/flower_clips/peach.jpg": {
+          "Code": "CC-FC-PCE-001",
+          "Name": "Peach",
+          "Price": "60",
+          "rating": "4.6",
+          "stock": 20,
           "isCustomizable": false,
           "isBestSeller": true
         },
-        "public/images/collections/crochet_clips/off_white.jpg": {
-          "Code": "CC-CC-OWHT-002",
-          "Name": "OFF White",
-          "Price": "100",
-          "rating": "4.5",
-          "stock": 30,
-          "isCustomizable": false,
-          "isBestSeller": true
-        },
-        "public/images/collections/crochet_clips/red.jpg": {
-          "Code": "CC-CC-RED-003",
-          "Name": "Red",
-          "Price": "100",
-          "rating": "4.2",
-          "stock": 30,
-          "isCustomizable": false,
-          "isBestSeller": true
-        },
-        "public/images/collections/crochet_clips/pink.jpg": {
-          "Code": "CC-CC-PNK-004",
+		
+		"public/images/collections/crochet_clips/flower_clips/pink.jpg": {
+          "Code": "CC-FC-PNK-002",
           "Name": "Pink",
-          "Price": "100",
+          "Price": "60",
           "rating": "4.2",
-          "stock": 30,
+          "stock": 12,
           "isCustomizable": false,
           "isBestSeller": true
         },
-        "public/images/collections/crochet_clips/yellow.jpg": {
-          "Code": "CC-CC-YEL-004",
-          "Name": "Yellow",
-          "Price": "100",
+		"public/images/collections/crochet_clips/flower_clips/purple.jpg": {
+          "Code": "CC-FC-PLE-001",
+          "Name": "Purple",
+          "Price": "60",
           "rating": "4.5",
-          "stock": 30,
+          "stock": 10,
           "isCustomizable": false,
           "isBestSeller": true
         }
-      }
+		
+	},
+	  "Bow Clips" : {
+        "public/images/collections/crochet_clips/bow_clips/oragne.jpg": {
+          "Code": "CC-BC-ORG-001",
+          "Name": "Orange",
+          "Price": "100",
+          "rating": "4.3",
+          "stock": 14,
+          "isCustomizable": false,
+          "isBestSeller": true
+        },
+        "public/images/collections/crochet_clips/bow_clips/off_white.jpg": {
+          "Code": "CC-BC-OWHT-002",
+          "Name": "OFF White",
+          "Price": "100",
+          "rating": "4.6",
+          "stock": 16,
+          "isCustomizable": false,
+          "isBestSeller": true
+        },
+        "public/images/collections/crochet_clips/bow_clips/red.jpg": {
+          "Code": "CC-BC-RED-003",
+          "Name": "Red",
+          "Price": "100",
+          "rating": "4.2",
+          "stock": 12,
+          "isCustomizable": false,
+          "isBestSeller": true
+        },
+        "public/images/collections/crochet_clips/bow_clips/pink.jpg": {
+          "Code": "CC-BC-PNK-004",
+          "Name": "Pink",
+          "Price": "100",
+          "rating": "4.2",
+          "stock": 18,
+          "isCustomizable": false,
+          "isBestSeller": true
+        },
+        "public/images/collections/crochet_clips/bow_clips/yellow.jpg": {
+          "Code": "CC-BC-YEL-005",
+          "Name": "Yellow",
+          "Price": "100",
+          "rating": "4.5",
+          "stock": 20,
+          "isCustomizable": false,
+          "isBestSeller": true
+        }
+		}
+      
     },
 
     "Customised Caps": {
