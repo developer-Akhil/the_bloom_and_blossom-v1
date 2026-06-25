@@ -1,3 +1,5 @@
+
+
 {
   "logo": {
     "public/images/logo/logo.jpeg": { "Name": "Logo" }
@@ -283,7 +285,7 @@
         "public/images/collections/alligator_clips/pearl_hairclips/black.jpg": {
           "Code": "AC-PHC-BLK-001",
           "Name": "Black",
-          "Price": "130",
+          "Price": "100",
           "rating": "4.2",
           "stock": 12,
           "isCustomizable": false,
@@ -292,7 +294,7 @@
         "public/images/collections/alligator_clips/pearl_hairclips/red.jpg": {
           "Code": "AC-PHC-RED-002",
           "Name": "Red",
-          "Price": "130",
+          "Price": "100",
           "rating": "4.5",
           "stock": 8,
           "isCustomizable": false,
@@ -301,7 +303,7 @@
         "public/images/collections/alligator_clips/pearl_hairclips/white.jpg": {
           "Code": "AC-PHC-WHT-003",
           "Name": "White",
-          "Price": "130",
+          "Price": "100",
           "rating": "4.2",
           "stock": 12,
           "isCustomizable": false,
@@ -310,7 +312,7 @@
         "public/images/collections/alligator_clips/pearl_hairclips/pink.jpg": {
           "Code": "AC-PHC-PNK-004",
           "Name": "Pink",
-          "Price": "130",
+          "Price": "100",
           "rating": "4.5",
           "stock": 8,
           "isCustomizable": false,
@@ -320,7 +322,7 @@
 
       "Toffee Clips": {
         "public/images/collections/alligator_clips/toffee_clips/skyblue_toffee_clip.jpg": {
-          "Code": "EC-TC-SKB-001",
+          "Code": "AC-TC-SKB-001",
           "Name": "Skyblue",
           "Price": "90",
           "rating": "4.5",
@@ -329,7 +331,7 @@
           "isBestSeller": true
         },
         "public/images/collections/alligator_clips/toffee_clips/pink_toffee_clip.jpg": {
-          "Code": "EC-TC-PNK-002",
+          "Code": "AC-TC-PNK-002",
           "Name": "Pink",
           "Price": "90",
           "rating": "4.2",
@@ -338,11 +340,23 @@
           "isBestSeller": true
         },
         "public/images/collections/alligator_clips/toffee_clips/orange_toffee_clip.jpg": {
-          "Code": "EC-TC-ORG-003",
+          "Code": "AC-TC-ORG-003",
           "Name": "Orange",
           "Price": "90",
           "rating": "4.8",
           "stock": 14,
+          "isCustomizable": false,
+          "isBestSeller": true
+        }
+      },
+	  
+      "Butterfly Long Tail Bows": {
+        "public/images/collections/alligator_clips/butterfly_long_tail_bow/skyblue.jpg": {
+          "Code": "AC-BLTB-SKB-001",
+          "Name": "Skyblue",
+          "Price": "150",
+          "rating": "4.9",
+          "stock": 20,
           "isCustomizable": false,
           "isBestSeller": true
         }

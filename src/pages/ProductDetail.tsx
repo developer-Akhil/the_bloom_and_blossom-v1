@@ -111,7 +111,7 @@ export function ProductDetail() {
             <OptimizedImage 
               src={product.images[activeImage]} 
               alt={product.name} 
-              className="w-full h-full object-cover" 
+              className="w-full h-full object-contain" 
             />
             
             {product.images.length > 1 && (

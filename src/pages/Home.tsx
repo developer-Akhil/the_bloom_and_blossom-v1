@@ -213,7 +213,7 @@ export function Home() {
           <div className="absolute top-0 right-0 w-1/3 h-full bg-white opacity-10 -skew-x-12 translate-x-1/2" />
           <div className="relative z-10 flex flex-col items-center text-center space-y-8 max-w-3xl mx-auto">
             <h2 className="font-serif text-4xl md:text-6xl font-bold text-white leading-tight">
-              Get 5% Off Your First Order
+              Free Shipping on Orders Above ₹1,500
             </h2>
             <p className="text-pink-100 text-lg">
               Join our Bloom Circle and stay updated with new drops, exclusive offers, and styling tips.
@@ -327,7 +327,7 @@ export function ProductCard({ product, redirectToCategory = false }: { product: 
         <OptimizedImage 
           src={getDisplayImage()} 
           alt={product.name} 
-          className={cn("w-full h-full object-cover transition-transform duration-700 group-hover:scale-110", !product.inStock && "opacity-60")}
+          className={cn("w-full h-full object-contain transition-transform duration-700 group-hover:scale-110", !product.inStock && "opacity-60")}
         />
         
         {/* Badges */}

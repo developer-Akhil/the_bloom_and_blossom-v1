@@ -44,48 +44,7 @@ export function Checkout() {
   const [phoneError, setPhoneError] = useState('');
   const [zipError, setZipError] = useState('');
   const [paymentError, setPaymentError] = useState('');
-  const [isExistingCustomer, setIsExistingCustomer] = useState(false);
 
-  useEffect(() => {
-    const validateCustomer = async () => {
-      const email = shippingData.email.trim().toLowerCase();
-      const phone = shippingData.phone.trim();
-      
-      if (!email && !phone) {
-        setIsExistingCustomer(false);
-        return;
-      }
-
-      // Check user object if authenticated matches inputs
-      if (user && (user.email === email || user.phone === phone) && user.user_metadata?.has_used_first_discount) {
-        setIsExistingCustomer(true);
-        return;
-      }
-
-      // Check DB via local storage mockup proxy (robust for prototype without direct DB backend code)
-      const mockOrdersDB = JSON.parse(localStorage.getItem('bloom_db_orders') || '[]');
-      const hasOrdered = mockOrdersDB.some((o: any) => 
-        (email && o.email === email) || (phone && o.phone === phone)
-      );
-
-      if (hasOrdered) {
-        setIsExistingCustomer(true);
-        return;
-      }
-
-      // We could add an actual supabase fetch here if an actual orders table was structured
-      // await supabase.from('orders').select('id').or(`email.eq.${email},phone.eq.${phone}`).limit(1)
-
-      setIsExistingCustomer(false);
-    };
-
-    // Debounce to avoid validating on every keystroke
-    const timer = setTimeout(validateCustomer, 500);
-    return () => clearTimeout(timer);
-  }, [shippingData.email, shippingData.phone, user]);
-
-  const isFirstOrderEligible = !isExistingCustomer && cartTotal >= 500 && (shippingData.email !== '' || shippingData.phone !== '');
-  
   let discountAmount = 0;
   let shippingCost = 90; // Default shipping
   let discountLabel = "";
@@ -104,12 +63,8 @@ export function Checkout() {
     discountLabel = "Bulk Order Discount (15%)";
   } else {
     // Normal rules
-    if (cartTotal > 2000) {
+    if (cartTotal > 1500) {
       shippingCost = 0;
-    }
-    if (isFirstOrderEligible) {
-      discountAmount = cartTotal * 0.05;
-      discountLabel = "First Order Discount (5%)";
     }
   }
 
@@ -623,9 +578,9 @@ export function Checkout() {
                   <span>-₹{discountAmount.toFixed(2)}</span>
                 </div>
               )}
-              {cartTotal > 0 && cartTotal < 500 && !isExistingCustomer && (
+              {cartTotal > 0 && cartTotal < 1500 && (
                 <div className="text-xs text-gray-400 bg-gray-100 p-2 rounded-lg">
-                  Add ₹{500 - cartTotal} more to unlock 5% off your first order!
+                  Add ₹{1500 - cartTotal} more to get Free Shipping!
                 </div>
               )}
               <div className="flex justify-between text-gray-500">

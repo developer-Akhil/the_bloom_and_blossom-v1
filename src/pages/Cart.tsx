@@ -130,12 +130,31 @@ function CartItemComponent({ item }: { item: any }) {
 export function Cart() {
   const { cart, cartTotal, cartCount } = useCart();
   const { products } = useProductContext();
-  const { user } = useAuth();
   const navigate = useNavigate();
 
-  const isFirstOrderEligible = user && !user.user_metadata?.has_used_first_discount && cartTotal >= 500;
-  const discountAmount = isFirstOrderEligible ? cartTotal * 0.05 : 0;
-  const shippingCost = cartTotal > 2000 ? 0 : 90;
+  let discountAmount = 0;
+  let shippingCost = 90; // Default shipping
+  let discountLabel = "";
+  
+  if (cartTotal > 10000) {
+    discountAmount = cartTotal * 0.30;
+    shippingCost = 400;
+    discountLabel = "Bulk Order Discount (30%)";
+  } else if (cartTotal > 7000) {
+    discountAmount = cartTotal * 0.20;
+    shippingCost = 250;
+    discountLabel = "Bulk Order Discount (20%)";
+  } else if (cartTotal > 5000) {
+    discountAmount = cartTotal * 0.15;
+    shippingCost = 200;
+    discountLabel = "Bulk Order Discount (15%)";
+  } else {
+    // Normal rules
+    if (cartTotal > 1500) {
+      shippingCost = 0;
+    }
+  }
+
   const finalTotal = cartTotal - discountAmount + shippingCost;
 
   const hasOutofStockItems = useMemo(() => {
@@ -190,13 +209,8 @@ export function Cart() {
             </div>
             {discountAmount > 0 && (
               <div className="flex justify-between text-bloom-rose font-medium">
-                <span>First Order Discount (5%)</span>
+                <span>{discountLabel}</span>
                 <span>-₹{discountAmount.toFixed(2)}</span>
-              </div>
-            )}
-            {cartTotal > 0 && cartTotal < 500 && (
-              <div className="text-xs text-gray-400 bg-gray-100 p-2 rounded-lg mt-2">
-                New Customer? Add ₹{500 - cartTotal} more to unlock 5% off your first order at checkout!
               </div>
             )}
             <div className="flex justify-between text-gray-500">
@@ -206,7 +220,7 @@ export function Cart() {
               </span>
             </div>
             {shippingCost > 0 && (
-              <p className="text-[10px] text-gray-400 italic">Free shipping on orders above ₹2000</p>
+              <p className="text-[10px] text-gray-400 italic">Free shipping on orders above ₹1,500</p>
             )}
             <div className="flex justify-between text-gray-500">
               <span>Tax</span>
