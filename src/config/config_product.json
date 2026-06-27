@@ -607,7 +607,19 @@
         "stock": 15,
         "isCustomizable": false,
         "isBestSeller": true
-      }
+      },
+	  
+	  "Pearl Organza Bows": {
+        "public/images/collections/bows/pearl_organza_bows/baby_pink.jpg": {
+          "Code": "BOW-POB-BPNK-001",
+          "Name": "Baby Pink",
+          "Price": "70",
+          "rating": "4.6",
+          "stock": 17,
+          "isCustomizable": false,
+          "isBestSeller": true
+        }
+	}
     },
 
     "Headbands": {
@@ -649,7 +661,19 @@
         "stock": 12,
         "isCustomizable": false,
         "isBestSeller": true
-      }
+      },
+	  
+	  "Pearl Organza Bows": {
+        "public/images/collections/headbands/pearl_headbands/pink.jpg": {
+          "Code": "HDD-PH-PNK-001",
+          "Name": "Pink",
+          "Price": "120",
+          "rating": "4.6",
+          "stock": 11,
+          "isCustomizable": false,
+          "isBestSeller": true
+        }
+	}
     },
     "Hairbands": {
       "public/images/collections/hairbands/cup_cake.jpg": {
