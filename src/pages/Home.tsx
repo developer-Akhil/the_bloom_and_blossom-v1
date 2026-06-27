@@ -2,7 +2,7 @@ import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'motion/react';
 import { ArrowRight, Star, Heart, ShoppingBag } from 'lucide-react';
-import { rawHomeImages, rawProductImages } from '../data/products';
+import { rawHomeImages, rawProductImages, resolveImageUrl } from '../data/products';
 import { useMediaContext } from '../context/MediaContext';
 import { useProductContext } from '../context/ProductContext';
 import { useCart } from '../context/CartContext';
@@ -20,12 +20,12 @@ export function Home() {
   const getHeroBg = () => {
     const customHero = assets.find(a => a.folder_id === 'home_images');
     if (customHero) return customHero.file_url;
-    return homeBgKeys.length > 0 ? homeBgKeys[0].replace('public', '') : 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&q=80&w=1920';
+    return homeBgKeys.length > 0 ? resolveImageUrl(homeBgKeys[0].replace('public', '')) : 'https://images.unsplash.com/photo-1513519245088-0e12902e5a38?q=80&w=1920&auto=format&fit=crop';
   };
 
   const getHomeImage = (index: number) => {
     if (homeBgKeys.length > index) {
-      return homeBgKeys[index].replace('public', '');
+      return resolveImageUrl(homeBgKeys[index].replace('public', ''));
     }
     return '';
   };
@@ -266,7 +266,8 @@ function CategoryCard({ title, index }: { title: string; index: number }) {
     // Final check: if everything else fails, try to construct a direct path based on slug
     const directPathFallback = `/images/product_images/${slug}.jpg`;
     
-    return defaults[title] || directPathFallback || 'https://images.unsplash.com/photo-1596704017254-9b121068fb31?auto=format&fit=crop&q=60&w=600';
+    const imagePath = defaults[title] || directPathFallback;
+    return resolveImageUrl(imagePath);
   };
 
   return (

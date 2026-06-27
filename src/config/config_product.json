@@ -204,7 +204,7 @@
     },
     "Jewelled Bows": {
       "public/images/collections/jewelled_bows/golden.jpg": {
-        "Code": "JB-PJB-GLD-001",
+        "Code": "JB-GLD-001",
         "Name": "Golden Jewelled Bow",
         "Price": "320",
         "rating": "4.8",
@@ -214,12 +214,41 @@
       },
       "public/images/collections/jewelled_bows/pink.jpg": {
         "Name": "Pink Jewelled Bow",
-        "Code": "JB-GJB-GLD-001",
+        "Code": "JB-PNK-002",
         "Price": "320",
-        "rating": "4.3",
+        "rating": "4.6",
         "stock": 15,
         "isCustomizable": false,
         "isBestSeller": true
+      },
+	  "public/images/collections/jewelled_bows/sliver.jpg": {
+        "Name": "Sliver Jewelled Bow",
+        "Code": "JB-SLV-003",
+        "Price": "320",
+        "rating": "4.8",
+        "stock": 15,
+        "isCustomizable": false,
+        "isBestSeller": true
+      },
+	  "Velvet Stone Bows": {
+        "public/images/collections/jewelled_bows/velvet_stone_bows/maroon.jpg": {
+          "Code": "JB-VSB-MRN-001",
+          "Name": "Maroon",
+          "Price": "130",
+          "rating": "4.2",
+          "stock": 4,
+          "isCustomizable": false,
+          "isBestSeller": true
+        },
+        "public/images/collections/jewelled_bows/velvet_stone_bows/black.jpg": {
+          "Code": "JB-VSB-BLK-002",
+          "Name": "Black",
+          "Price": "130",
+          "rating": "4.6",
+          "stock": 10,
+          "isCustomizable": false,
+          "isBestSeller": true
+        }
       }
     },
 
@@ -245,7 +274,7 @@
       "public/images/collections/alligator_clips/rainbow_alligator_clip.jpg": {
         "Code": "AC-RAC-001",
         "Name": "Rainbow Alligator Clip",
-        "Price": "100",
+        "Price": "90",
         "rating": "4.2",
         "stock": 12,
         "isCustomizable": false,
@@ -316,26 +345,6 @@
           "isBestSeller": true
         }
 	  },
-      "Velvet Stone Bows": {
-        "public/images/collections/alligator_clips/velvet_stone_bows/maroon.jpg": {
-          "Code": "AC-VSB-MRN-001",
-          "Name": "Maroon",
-          "Price": "130",
-          "rating": "4.2",
-          "stock": 15,
-          "isCustomizable": false,
-          "isBestSeller": true
-        },
-        "public/images/collections/alligator_clips/velvet_stone_bows/black.jpg": {
-          "Code": "AC-VSB-BLK-002",
-          "Name": "Black",
-          "Price": "130",
-          "rating": "4.2",
-          "stock": 15,
-          "isCustomizable": false,
-          "isBestSeller": true
-        }
-      },
       "Pearl Satin Bows": {
         "public/images/collections/alligator_clips/pearl_satin_bows/red.jpg": {
           "Code": "AC-PSB-RED-001",
