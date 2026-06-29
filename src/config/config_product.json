@@ -147,6 +147,35 @@
           "isBestSeller": true
         }
       },
+	  "Princess Pearl Name Bows": {
+        "public/images/collections/customised_name_bows/princess_pearl_name_bows/pink.jpg": {
+          "Code": "CNB-PPNB-PNK-001",
+          "Name": "Pink",
+          "Price": "180",
+          "stock": 11,
+          "rating": "4.8",
+          "isCustomizable": true,
+          "isBestSeller": true
+        },
+		"public/images/collections/customised_name_bows/princess_pearl_name_bows/black.jpg": {
+          "Code": "CNB-PPNB-BLK-002",
+          "Name": "Black",
+          "Price": "180",
+          "stock": 16,
+          "rating": "4.6",
+          "isCustomizable": true,
+          "isBestSeller": true
+        },
+		"public/images/collections/customised_name_bows/princess_pearl_name_bows/red.jpg": {
+          "Code": "CNB-PPNB-RED-003",
+          "Name": "Red",
+          "Price": "180",
+          "stock": 19,
+          "rating": "4.9",
+          "isCustomizable": true,
+          "isBestSeller": true
+        }
+	 },	
       "Pearl Name Bows": {
         "public/images/collections/customised_name_bows/pearl_name_bows/black.jpg": {
           "Code": "CNB-PNB-BLK-001",
@@ -782,7 +811,7 @@
 	  
 	  "Pearl Bow Hairbands":{
       "public/images/collections/hairbands/pearl_bow_hairbands/red.jpg": {
-        "Code": "HRD-PBH-RBH-001",
+        "Code": "HRD-PBH-RED-001",
         "Name": "Red",
         "Price": "80",
         "rating": "4.6",
