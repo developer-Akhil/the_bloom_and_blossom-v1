@@ -89,7 +89,7 @@
           "isBestSeller": true
         },
         "public/images/collections/customised_name_bows/daisy_name_bows/light_purple.jpg": {
-          "Code": "CNB-DNB-BLK-002",
+          "Code": "CNB-DNB-LPLE-002",
           "Name": "Daisy Light Purple Bow",
           "Price": "200",
           "stock": 9,
@@ -307,6 +307,20 @@
         "isCustomizable": false,
         "isBestSeller": true
       },
+	  
+	  "Butterfly Alligator Clips" : {
+		"public/images/collections/alligator_clips/butterfly_alligator_clips/purple.jpg": {
+          "Code": "AC-BAC-PLE-001",
+          "Name": "Purple",
+          "Price": "120",
+          "rating": "4.9",
+          "stock": 10,
+          "isCustomizable": false,
+          "isBestSeller": true
+        }
+	  
+	  },
+	  
 	  "Heart Alligator Clips": {
         "public/images/collections/alligator_clips/heart_alligator_clips/yellow.jpg": {
           "Code": "AC-HAC-YEL-001",
@@ -902,11 +916,20 @@
         "isBestSeller": true
       },
 	  "public/images/collections/crochet_clips/sweet_blossom_headband.jpg": {
-        "Code": "CC-SBH-001",
+        "Code": "CC-SBHDD-001",
         "Name": "Sweet Blossom Headband",
         "Price": "100",
         "rating": "4.6",
         "stock": 13,
+        "isCustomizable": false,
+        "isBestSeller": true
+      },
+	  "public/images/collections/crochet_clips/sunflower_headband.jpg": {
+        "Code": "CC-SHDD-001",
+        "Name": "Sunflower Headband",
+        "Price": "130",
+        "rating": "4.8",
+        "stock": 4,
         "isCustomizable": false,
         "isBestSeller": true
       },
@@ -930,7 +953,7 @@
       },
       "public/images/collections/crochet_clips/flower_tik_tak_pin.jpg": {
         "Code": "CC-FTTP-001",
-        "Name": "Flower Tik Tak Pin Crochet",
+        "Name": "Flower Tik Tak Pin",
         "Price": "120",
         "rating": "4.5",
         "stock": 30,
@@ -960,7 +983,7 @@
 	  
 	  "public/images/collections/crochet_clips/tik_tak_pins/off_white_with_pink_double_flower.jpg": {
         "Code": "CC-TTP-OFWPDF-003",
-        "Name": "OFF white Tik Tak Pin",
+        "Name": "Off White With Pink Double Flower",
         "Price": "100",
         "rating": "4.2",
         "stock": 10,
