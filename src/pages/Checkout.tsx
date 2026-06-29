@@ -63,7 +63,7 @@ export function Checkout() {
     discountLabel = "Bulk Order Discount (15%)";
   } else {
     // Normal rules
-    if (cartTotal > 1500) {
+    if (cartTotal > 2000) {
       shippingCost = 0;
     }
   }
@@ -578,9 +578,9 @@ export function Checkout() {
                   <span>-₹{discountAmount.toFixed(2)}</span>
                 </div>
               )}
-              {cartTotal > 0 && cartTotal < 1500 && (
+              {cartTotal > 0 && cartTotal < 2000 && (
                 <div className="text-xs text-gray-400 bg-gray-100 p-2 rounded-lg">
-                  Add ₹{1500 - cartTotal} more to get Free Shipping!
+                  Add ₹{2000 - cartTotal} more to get Free Shipping!
                 </div>
               )}
               <div className="flex justify-between text-gray-500">

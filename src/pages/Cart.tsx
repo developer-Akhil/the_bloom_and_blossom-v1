@@ -150,7 +150,7 @@ export function Cart() {
     discountLabel = "Bulk Order Discount (15%)";
   } else {
     // Normal rules
-    if (cartTotal > 1500) {
+    if (cartTotal > 2000) {
       shippingCost = 0;
     }
   }
@@ -220,7 +220,7 @@ export function Cart() {
               </span>
             </div>
             {shippingCost > 0 && (
-              <p className="text-[10px] text-gray-400 italic">Free shipping on orders above ₹1,500</p>
+              <p className="text-[10px] text-gray-400 italic">Free shipping on orders above ₹2,000</p>
             )}
             <div className="flex justify-between text-gray-500">
               <span>Tax</span>
