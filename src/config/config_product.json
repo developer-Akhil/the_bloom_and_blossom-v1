@@ -1,19 +1,27 @@
-
-
 {
   "logo": {
-    "public/images/logo/logo.jpeg": { "Name": "Logo" }
+    "public/images/logo/logo.jpeg": {
+      "Name": "Logo"
+    }
   },
   "home_images": {
-    "public/images/home_images/photo_1.jpg": { "Name": "photo1" },
-    "public/images/home_images/photo_2.jpg": { "Name": "photo2" },
-    "public/images/home_images/photo_3.jpg": { "Name": "photo3" }
+    "public/images/home_images/photo_1.jpg": {
+      "Name": "photo1"
+    },
+    "public/images/home_images/photo_2.jpg": {
+      "Name": "photo2"
+    },
+    "public/images/home_images/photo_3.jpg": {
+      "Name": "photo3"
+    }
   },
   "product_images": {
     "public/images/product_images/alligator_clips.jpg": {
       "Name": "Alligator Clips"
     },
-    "public/images/product_images/bows.jpg": { "Name": "Bows" },
+    "public/images/product_images/bows.jpg": {
+      "Name": "Bows"
+    },
     "public/images/product_images/crochet_clips.jpg": {
       "Name": "Crochet Clips"
     },
@@ -29,15 +37,21 @@
     "public/images/product_images/embroidery_bows.jpg": {
       "Name": "Embroidery Bows"
     },
-    "public/images/product_images/hairbands.jpg": { "Name": "Hairbands" },
-    "public/images/product_images/headbands.jpg": { "Name": "Headbands" },
+    "public/images/product_images/hairbands.jpg": {
+      "Name": "Hairbands"
+    },
+    "public/images/product_images/headbands.jpg": {
+      "Name": "Headbands"
+    },
     "public/images/product_images/jewelled_bows.jpg": {
       "Name": "Jewelled Bows"
     },
     "public/images/product_images/premium_doll_bows.jpg": {
       "Name": "Premium Doll Bows"
     },
-    "public/images/product_images/scrunchies.jpg": { "Name": "Scrunchies" }
+    "public/images/product_images/scrunchies.jpg": {
+      "Name": "Scrunchies"
+    }
   },
   "Collections": {
     "Customised Name Bows": {
@@ -50,7 +64,7 @@
         "isCustomizable": true,
         "isBestSeller": true
       },
-	  "public/images/collections/customised_name_bows/flower_name_headband.jpg": {
+      "public/images/collections/customised_name_bows/flower_name_headband.jpg": {
         "Code": "CNB-FNH-001",
         "Name": "Flower Name Headband",
         "Price": "200",
@@ -59,16 +73,25 @@
         "isCustomizable": true,
         "isBestSeller": true
       },
-	  "public/images/collections/customised_name_bows/candy_cloud_name_bow.jpg": {
-        "Code": "CNB-CCNB-001",
-        "Name": "Candy Cloud Name Bow",
+      "public/images/collections/customised_name_bows/customised_name_hairband.jpg": {
+        "Code": "CNB-CNH-001",
+        "Name": "Customised Name Hairband",
         "Price": "200",
-        "stock": 19,
-        "rating": "4.9",
+        "stock": 5,
+        "rating": "4.7",
         "isCustomizable": true,
         "isBestSeller": true
       },
-	  "public/images/collections/customised_name_bows/golden_dreams_name_bow.jpg": {
+      "public/images/collections/customised_name_bows/candy_cloud_name_bow.jpg": {
+        "Code": "CNB-CCNB-001",
+        "Name": "Candy Cloud Name Bow",
+        "Price": "200",
+        "stock": 14,
+        "rating": "4.6",
+        "isCustomizable": true,
+        "isBestSeller": true
+      },
+      "public/images/collections/customised_name_bows/golden_dreams_name_bow.jpg": {
         "Code": "CNB-GDNB-001",
         "Name": "Golden Dreams Name Bow",
         "Price": "200",
@@ -77,7 +100,6 @@
         "isCustomizable": true,
         "isBestSeller": true
       },
-	  
       "Daisy Name Bows": {
         "public/images/collections/customised_name_bows/daisy_name_bows/black.jpg": {
           "Code": "CNB-DNB-BLK-001",
@@ -221,7 +243,7 @@
         "isCustomizable": false,
         "isBestSeller": true
       },
-	  "public/images/collections/jewelled_bows/sliver.jpg": {
+      "public/images/collections/jewelled_bows/sliver.jpg": {
         "Name": "Sliver Jewelled Bow",
         "Code": "JB-SLV-003",
         "Price": "320",
@@ -230,7 +252,7 @@
         "isCustomizable": false,
         "isBestSeller": true
       },
-	  "Velvet Stone Bows": {
+      "Velvet Stone Bows": {
         "public/images/collections/jewelled_bows/velvet_stone_bows/maroon.jpg": {
           "Code": "JB-VSB-MRN-001",
           "Name": "Maroon",
@@ -251,7 +273,6 @@
         }
       }
     },
-
     "Alligator Clips": {
       "public/images/collections/alligator_clips/popsicle_clip.jpg": {
         "Code": "AC-PC-001",
@@ -280,7 +301,7 @@
         "isCustomizable": false,
         "isBestSeller": true
       },
-	  "public/images/collections/alligator_clips/rainbow_cloud_alligator_clip.jpg": {
+      "public/images/collections/alligator_clips/rainbow_cloud_alligator_clip.jpg": {
         "Code": "AC-RCAC-001",
         "Name": "Rainbow Cloud Alligator Clip",
         "Price": "120",
@@ -289,7 +310,7 @@
         "isCustomizable": false,
         "isBestSeller": true
       },
-	  "public/images/collections/alligator_clips/ice_cream_peach_clip.jpg": {
+      "public/images/collections/alligator_clips/ice_cream_peach_clip.jpg": {
         "Code": "AC-RAC-001",
         "Name": "Ice Cream Peach Clip",
         "Price": "130",
@@ -298,7 +319,7 @@
         "isCustomizable": false,
         "isBestSeller": true
       },
-	  "public/images/collections/alligator_clips/navratri_special_clip.jpg": {
+      "public/images/collections/alligator_clips/navratri_special_clip.jpg": {
         "Code": "AC-NSC-001",
         "Name": "Navratri Special Clip",
         "Price": "130",
@@ -307,9 +328,8 @@
         "isCustomizable": false,
         "isBestSeller": true
       },
-	  
-	  "Butterfly Alligator Clips" : {
-		"public/images/collections/alligator_clips/butterfly_alligator_clips/purple.jpg": {
+      "Butterfly Alligator Clips": {
+        "public/images/collections/alligator_clips/butterfly_alligator_clips/purple.jpg": {
           "Code": "AC-BAC-PLE-001",
           "Name": "Purple",
           "Price": "120",
@@ -318,7 +338,7 @@
           "isCustomizable": false,
           "isBestSeller": true
         },
-		"public/images/collections/alligator_clips/butterfly_alligator_clips/pink.jpg": {
+        "public/images/collections/alligator_clips/butterfly_alligator_clips/pink.jpg": {
           "Code": "AC-BAC-PNK-002",
           "Name": "Pink",
           "Price": "120",
@@ -327,7 +347,7 @@
           "isCustomizable": false,
           "isBestSeller": true
         },
-		"public/images/collections/alligator_clips/butterfly_alligator_clips/white.jpg": {
+        "public/images/collections/alligator_clips/butterfly_alligator_clips/white.jpg": {
           "Code": "AC-BAC-WHT-003",
           "Name": "White",
           "Price": "120",
@@ -336,10 +356,8 @@
           "isCustomizable": false,
           "isBestSeller": true
         }
-	  
-	  },
-	  
-	  "Heart Alligator Clips": {
+      },
+      "Heart Alligator Clips": {
         "public/images/collections/alligator_clips/heart_alligator_clips/yellow.jpg": {
           "Code": "AC-HAC-YEL-001",
           "Name": "Yellow",
@@ -349,7 +367,7 @@
           "isCustomizable": false,
           "isBestSeller": true
         },
-		"public/images/collections/alligator_clips/heart_alligator_clips/white.jpg": {
+        "public/images/collections/alligator_clips/heart_alligator_clips/white.jpg": {
           "Code": "AC-HAC-WHT-002",
           "Name": "White",
           "Price": "90",
@@ -358,7 +376,7 @@
           "isCustomizable": false,
           "isBestSeller": true
         },
-		"public/images/collections/alligator_clips/heart_alligator_clips/red.jpg": {
+        "public/images/collections/alligator_clips/heart_alligator_clips/red.jpg": {
           "Code": "AC-HAC-RED-003",
           "Name": "Red",
           "Price": "90",
@@ -367,7 +385,7 @@
           "isCustomizable": false,
           "isBestSeller": true
         },
-		"public/images/collections/alligator_clips/heart_alligator_clips/pink.jpg": {
+        "public/images/collections/alligator_clips/heart_alligator_clips/pink.jpg": {
           "Code": "AC-HAC-PNK-004",
           "Name": "Pink",
           "Price": "90",
@@ -376,39 +394,48 @@
           "isCustomizable": false,
           "isBestSeller": true
         }
-	  },
+      },
       "Pearl Satin Bows": {
         "public/images/collections/alligator_clips/pearl_satin_bows/red.jpg": {
           "Code": "AC-PSB-RED-001",
           "Name": "Red",
-          "Price": "130",
-          "rating": "4.0",
-          "stock": 10,
+          "Price": "70",
+          "rating": "4.5",
+          "stock": 12,
+          "isCustomizable": false,
+          "isBestSeller": true
+        },
+        "public/images/collections/alligator_clips/pearl_satin_bows/peach_pink.jpg": {
+          "Code": "AC-PSB-PPNK-002",
+          "Name": "Red",
+          "Price": "70",
+          "rating": "4.2",
+          "stock": 5,
           "isCustomizable": false,
           "isBestSeller": true
         },
         "public/images/collections/alligator_clips/pearl_satin_bows/black.jpg": {
-          "Code": "AC-PSB-BLK-002",
+          "Code": "AC-PSB-BLK-003",
           "Name": "Black",
-          "Price": "130",
+          "Price": "70",
           "rating": "4.3",
           "stock": 15,
           "isCustomizable": false,
           "isBestSeller": true
         },
         "public/images/collections/alligator_clips/pearl_satin_bows/pink.jpg": {
-          "Code": "AC-PSB-PNK-003",
+          "Code": "AC-PSB-PNK-004",
           "Name": "Pink",
-          "Price": "130",
+          "Price": "70",
           "rating": "4.2",
           "stock": 15,
           "isCustomizable": false,
           "isBestSeller": true
         },
         "public/images/collections/alligator_clips/pearl_satin_bows/blue.jpg": {
-          "Code": "AC-PSB-BLU-004",
+          "Code": "AC-PSB-BLU-005",
           "Name": "Blue",
-          "Price": "130",
+          "Price": "70",
           "rating": "4.2",
           "stock": 15,
           "isCustomizable": false,
@@ -453,8 +480,8 @@
           "isBestSeller": true
         }
       },
-	  "Pearl Organza Bows":{
-		"public/images/collections/alligator_clips/pearl_organza_bows/black.jpg": {
+      "Pearl Organza Bows": {
+        "public/images/collections/alligator_clips/pearl_organza_bows/black.jpg": {
           "Code": "AC-POB-BLK-001",
           "Name": "Black",
           "Price": "100",
@@ -463,8 +490,7 @@
           "isCustomizable": false,
           "isBestSeller": true
         },
-		
-		"public/images/collections/alligator_clips/pearl_organza_bows/pink.jpg": {
+        "public/images/collections/alligator_clips/pearl_organza_bows/pink.jpg": {
           "Code": "AC-POB-PNK-001",
           "Name": "Pink",
           "Price": "100",
@@ -473,7 +499,7 @@
           "isCustomizable": false,
           "isBestSeller": true
         }
-	  },
+      },
       "Toffee Clips": {
         "public/images/collections/alligator_clips/toffee_clips/skyblue_toffee_clip.jpg": {
           "Code": "AC-TC-SKB-001",
@@ -503,29 +529,27 @@
           "isBestSeller": true
         }
       },
-	  
-	  "Butterfly Long Tail Bows":{
-	  "public/images/collections/alligator_clips/butterfly_long_tail_bows/skyblue.jpg" : {
-	  "Code": "AC-BLTB-SKB-001",
+      "Butterfly Long Tail Bows": {
+        "public/images/collections/alligator_clips/butterfly_long_tail_bows/skyblue.jpg": {
+          "Code": "AC-BLTB-SKB-001",
           "Name": "Skyblue",
           "Price": "150",
           "rating": "4.9",
           "stock": 20,
           "isCustomizable": false,
           "isBestSeller": true
-	  },
-	  "public/images/collections/alligator_clips/butterfly_long_tail_bows/pink.jpg" : {
-	  "Code": "AC-BLTB-PNK-002",
+        },
+        "public/images/collections/alligator_clips/butterfly_long_tail_bows/pink.jpg": {
+          "Code": "AC-BLTB-PNK-002",
           "Name": "Pink",
           "Price": "150",
           "rating": "4.6",
           "stock": 11,
           "isCustomizable": false,
           "isBestSeller": true
-	  }
-	  }
+        }
+      }
     },
-
     "Scrunchies": {
       "Scrunchies": {
         "public/images/collections/scrunchies/red.jpg": {
@@ -611,7 +635,6 @@
         "isBestSeller": true
       }
     },
-
     "Bows": {
       "public/images/collections/bows/mickey_mouse_bow.jpg": {
         "Code": "BOW-MMB-001",
@@ -640,7 +663,7 @@
         "isCustomizable": false,
         "isBestSeller": true
       },
-	  "Pearl Organza Bows": {
+      "Pearl Organza Bows": {
         "public/images/collections/bows/pearl_organza_bows/baby_pink.jpg": {
           "Code": "BOW-POB-BPNK-001",
           "Name": "Baby Pink",
@@ -650,7 +673,7 @@
           "isCustomizable": false,
           "isBestSeller": true
         },
-		"public/images/collections/bows/pearl_organza_bows/green.jpg": {
+        "public/images/collections/bows/pearl_organza_bows/green.jpg": {
           "Code": "BOW-POB-GRN-002",
           "Name": "Green",
           "Price": "70",
@@ -659,7 +682,7 @@
           "isCustomizable": false,
           "isBestSeller": true
         },
-		"public/images/collections/bows/pearl_organza_bows/black.jpg": {
+        "public/images/collections/bows/pearl_organza_bows/black.jpg": {
           "Code": "BOW-POB-BLK-003",
           "Name": "Black",
           "Price": "70",
@@ -668,7 +691,7 @@
           "isCustomizable": false,
           "isBestSeller": true
         },
-		"public/images/collections/bows/pearl_organza_bows/skyblue.jpg": {
+        "public/images/collections/bows/pearl_organza_bows/skyblue.jpg": {
           "Code": "BOW-POB-BPNK-004",
           "Name": "Skyblue",
           "Price": "70",
@@ -677,7 +700,7 @@
           "isCustomizable": false,
           "isBestSeller": true
         },
-		"public/images/collections/bows/pearl_organza_bows/magenta.jpg": {
+        "public/images/collections/bows/pearl_organza_bows/magenta.jpg": {
           "Code": "BOW-POB-MAG-005",
           "Name": "Magenta",
           "Price": "70",
@@ -686,9 +709,8 @@
           "isCustomizable": false,
           "isBestSeller": true
         }
-	}
+      }
     },
-
     "Headbands": {
       "public/images/collections/headbands/white_headband.jpg": {
         "Code": "HDD-WH-001",
@@ -699,8 +721,7 @@
         "isCustomizable": false,
         "isBestSeller": true
       },
-	  
-	  "public/images/collections/headbands/glitter_flower_headband.jpg": {
+      "public/images/collections/headbands/glitter_flower_headband.jpg": {
         "Code": "HDD-GFH-001",
         "Name": "Glitter Flower Headband",
         "Price": "120",
@@ -709,8 +730,7 @@
         "isCustomizable": false,
         "isBestSeller": true
       },
-	  
-	  "public/images/collections/headbands/pink_flower_headband.jpg": {
+      "public/images/collections/headbands/pink_flower_headband.jpg": {
         "Code": "HDD-PFH-001",
         "Name": "Pink Flower Headband",
         "Price": "120",
@@ -719,8 +739,7 @@
         "isCustomizable": false,
         "isBestSeller": true
       },
-	  
-	  "public/images/collections/headbands/navratri_special_headband.jpg": {
+      "public/images/collections/headbands/navratri_special_headband.jpg": {
         "Code": "HDD-NSH-001",
         "Name": "Navratri Special Headband",
         "Price": "100",
@@ -729,7 +748,7 @@
         "isCustomizable": false,
         "isBestSeller": true
       },
-	  "public/images/collections/headbands/purple_flower_headband.jpg": {
+      "public/images/collections/headbands/purple_flower_headband.jpg": {
         "Code": "HDD-PFH-002",
         "Name": "Purple Flower Headband",
         "Price": "120",
@@ -738,8 +757,7 @@
         "isCustomizable": false,
         "isBestSeller": true
       },
-	  
-	  "Pearl Organza Bows": {
+      "Pearl Organza Bows": {
         "public/images/collections/headbands/pearl_headbands/pink.jpg": {
           "Code": "HDD-PH-PNK-001",
           "Name": "Pink",
@@ -749,7 +767,7 @@
           "isCustomizable": false,
           "isBestSeller": true
         }
-	}
+      }
     },
     "Hairbands": {
       "public/images/collections/hairbands/cup_cake.jpg": {
@@ -761,6 +779,27 @@
         "isCustomizable": false,
         "isBestSeller": true
       },
+	  
+	  "Pearl Bow Hairbands":{
+      "public/images/collections/hairbands/pearl_bow_hairbands/red.jpg": {
+        "Code": "HRD-PBH-RBH-001",
+        "Name": "Red",
+        "Price": "80",
+        "rating": "4.6",
+        "stock": 6,
+        "isCustomizable": false,
+        "isBestSeller": true
+      },
+	  "public/images/collections/hairbands/pearl_bow_hairbands/pink.jpg": {
+        "Code": "HRD-PBH-PNK-002",
+        "Name": "Pink",
+        "Price": "80",
+        "rating": "4.8",
+        "stock": 10,
+        "isCustomizable": false,
+        "isBestSeller": true
+      }
+	  },
       "public/images/collections/hairbands/colourful.jpg": {
         "Code": "HRD-CFH-001",
         "Name": "Colourful Hairband",
@@ -771,7 +810,6 @@
         "isBestSeller": true
       }
     },
-
     "Embroidery Bows": {
       "public/images/collections/embroidery_bows/embroidery_name_tail_bow.jpg": {
         "Code": "EB-ETB-RED-001",
@@ -837,7 +875,7 @@
           "isCustomizable": false,
           "isBestSeller": true
         },
-		"public/images/collections/embroidery_bows/embroidery_tail_bows/lavender_purple.jpg": {
+        "public/images/collections/embroidery_bows/embroidery_tail_bows/lavender_purple.jpg": {
           "Code": "EB-ETB-LAV_PLE-007",
           "Name": "Lavender Purple",
           "Price": "170",
@@ -911,7 +949,7 @@
           "isCustomizable": false,
           "isBestSeller": true
         },
-		"public/images/collections/embroidery_bows/embroidery_alligator_clips/baby_pink.jpg": {
+        "public/images/collections/embroidery_bows/embroidery_alligator_clips/baby_pink.jpg": {
           "Code": "EB-EAC-BPNK-002",
           "Name": "Baby Pink",
           "Price": "120",
@@ -922,7 +960,6 @@
         }
       }
     },
-
     "Crochet Clips": {
       "public/images/collections/crochet_clips/crochet_rainbow_clip.jpg": {
         "Code": "CC-CRC-001",
@@ -933,7 +970,7 @@
         "isCustomizable": false,
         "isBestSeller": true
       },
-	  "public/images/collections/crochet_clips/sweet_blossom_headband.jpg": {
+      "public/images/collections/crochet_clips/sweet_blossom_headband.jpg": {
         "Code": "CC-SBHDD-001",
         "Name": "Sweet Blossom Headband",
         "Price": "100",
@@ -942,7 +979,7 @@
         "isCustomizable": false,
         "isBestSeller": true
       },
-	  "public/images/collections/crochet_clips/sunflower_headband.jpg": {
+      "public/images/collections/crochet_clips/sunflower_headband.jpg": {
         "Code": "CC-SHDD-001",
         "Name": "Sunflower Headband",
         "Price": "130",
@@ -978,56 +1015,53 @@
         "isCustomizable": false,
         "isBestSeller": true
       },
-	  "Tik Tak Pins" : {
-	  "public/images/collections/crochet_clips/tik_tak_pins/black_with_pink_double_flower.jpg": {
-        "Code": "CC-TTP-BWPDF-001",
-        "Name": "Black With Pink Double Flower",
-        "Price": "100",
-        "rating": "4.7",
-        "stock": 6,
-        "isCustomizable": false,
-        "isBestSeller": true
+      "Tik Tak Pins": {
+        "public/images/collections/crochet_clips/tik_tak_pins/black_with_pink_double_flower.jpg": {
+          "Code": "CC-TTP-BWPDF-001",
+          "Name": "Black With Pink Double Flower",
+          "Price": "100",
+          "rating": "4.7",
+          "stock": 6,
+          "isCustomizable": false,
+          "isBestSeller": true
+        },
+        "public/images/collections/crochet_clips/tik_tak_pins/off_white_with_black_flower.jpg": {
+          "Code": "CC-TTP-OFWBF-002",
+          "Name": "Off White With Black Flower",
+          "Price": "100",
+          "rating": "4.2",
+          "stock": 10,
+          "isCustomizable": false,
+          "isBestSeller": true
+        },
+        "public/images/collections/crochet_clips/tik_tak_pins/off_white_with_pink_double_flower.jpg": {
+          "Code": "CC-TTP-OFWPDF-003",
+          "Name": "Off White With Pink Double Flower",
+          "Price": "100",
+          "rating": "4.2",
+          "stock": 10,
+          "isCustomizable": false,
+          "isBestSeller": true
+        },
+        "public/images/collections/crochet_clips/tik_tak_pins/off_white_with_pink_flower.jpg": {
+          "Code": "CC-TTP-OFWPF-004",
+          "Name": "Off White With Pink Flower",
+          "Price": "100",
+          "rating": "4.5",
+          "stock": 10,
+          "isCustomizable": false,
+          "isBestSeller": true
+        },
+        "public/images/collections/crochet_clips/tik_tak_pins/pink_with_off_white_flower.jpg": {
+          "Code": "CC-TTP-PWOFF-005",
+          "Name": "Pink With Off White Flower",
+          "Price": "100",
+          "rating": "4.7",
+          "stock": 8,
+          "isCustomizable": false,
+          "isBestSeller": true
+        }
       },
-	  
-	  "public/images/collections/crochet_clips/tik_tak_pins/off_white_with_black_flower.jpg": {
-        "Code": "CC-TTP-OFWBF-002",
-        "Name": "Off White With Black Flower",
-        "Price": "100",
-        "rating": "4.2",
-        "stock": 10,
-        "isCustomizable": false,
-        "isBestSeller": true
-      },
-	  
-	  "public/images/collections/crochet_clips/tik_tak_pins/off_white_with_pink_double_flower.jpg": {
-        "Code": "CC-TTP-OFWPDF-003",
-        "Name": "Off White With Pink Double Flower",
-        "Price": "100",
-        "rating": "4.2",
-        "stock": 10,
-        "isCustomizable": false,
-        "isBestSeller": true
-      },
-	  
-	  "public/images/collections/crochet_clips/tik_tak_pins/off_white_with_pink_flower.jpg": {
-        "Code": "CC-TTP-OFWPF-004",
-        "Name": "Off White With Pink Flower",
-        "Price": "100",
-        "rating": "4.5",
-        "stock": 10,
-        "isCustomizable": false,
-        "isBestSeller": true
-      },
-	  "public/images/collections/crochet_clips/tik_tak_pins/pink_with_off_white_flower.jpg": {
-        "Code": "CC-TTP-PWOFF-005",
-        "Name": "Pink With Off White Flower",
-        "Price": "100",
-        "rating": "4.7",
-        "stock": 8,
-        "isCustomizable": false,
-        "isBestSeller": true
-      }
-	  },
       "public/images/collections/crochet_clips/chrochet_daisy_headband.jpg": {
         "Code": "CC-CDH-001",
         "Name": "Crochet Daisy Headband",
@@ -1036,9 +1070,8 @@
         "stock": 5,
         "isCustomizable": false,
         "isBestSeller": true
-      }, 
-	  
-	  "Flower Clips" : {
+      },
+      "Flower Clips": {
         "public/images/collections/crochet_clips/flower_clips/peach.jpg": {
           "Code": "CC-FC-PCE-001",
           "Name": "Peach",
@@ -1048,8 +1081,7 @@
           "isCustomizable": false,
           "isBestSeller": true
         },
-		
-		"public/images/collections/crochet_clips/flower_clips/pink.jpg": {
+        "public/images/collections/crochet_clips/flower_clips/pink.jpg": {
           "Code": "CC-FC-PNK-002",
           "Name": "Pink",
           "Price": "60",
@@ -1058,7 +1090,7 @@
           "isCustomizable": false,
           "isBestSeller": true
         },
-		"public/images/collections/crochet_clips/flower_clips/purple.jpg": {
+        "public/images/collections/crochet_clips/flower_clips/purple.jpg": {
           "Code": "CC-FC-PLE-001",
           "Name": "Purple",
           "Price": "60",
@@ -1067,9 +1099,8 @@
           "isCustomizable": false,
           "isBestSeller": true
         }
-		
-	},
-	  "Bow Clips" : {
+      },
+      "Bow Clips": {
         "public/images/collections/crochet_clips/bow_clips/oragne.jpg": {
           "Code": "CC-BC-ORG-001",
           "Name": "Orange",
@@ -1115,10 +1146,8 @@
           "isCustomizable": false,
           "isBestSeller": true
         }
-		}
-      
+      }
     },
-
     "Customised Caps": {
       "public/images/collections/customised_caps/red.jpg": {
         "Code": "CNC-RED-001",
