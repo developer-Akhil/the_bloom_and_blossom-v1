@@ -320,7 +320,7 @@
         },
 		"public/images/collections/alligator_clips/butterfly_alligator_clips/pink.jpg": {
           "Code": "AC-BAC-PNK-002",
-          "Name": "Purple",
+          "Name": "Pink",
           "Price": "120",
           "rating": "4.5",
           "stock": 5,
@@ -329,7 +329,7 @@
         },
 		"public/images/collections/alligator_clips/butterfly_alligator_clips/white.jpg": {
           "Code": "AC-BAC-WHT-003",
-          "Name": "Purple",
+          "Name": "White",
           "Price": "120",
           "rating": "4.8",
           "stock": 6,

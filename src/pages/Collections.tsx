@@ -63,6 +63,38 @@ export function Collections() {
           </div>
         </div>
 
+        {/* Mobile Categories Scroll */}
+        <div className="lg:hidden flex flex-col space-y-3">
+          <h3 className="font-bold text-xs uppercase tracking-widest text-gray-400">Categories</h3>
+          <div className="flex overflow-x-auto pb-3 -mx-4 px-4 space-x-2 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+            <button
+              onClick={() => setSearchParams({})}
+              className={cn(
+                "px-5 py-2.5 rounded-full text-sm font-medium whitespace-nowrap transition-all border shrink-0 shadow-sm",
+                currentCategory === 'All'
+                  ? "bg-bloom-rose text-white border-bloom-rose font-semibold"
+                  : "bg-white text-gray-600 border-gray-200 hover:border-bloom-rose/30"
+              )}
+            >
+              All Collections
+            </button>
+            {categories.map(cat => (
+              <button
+                key={cat}
+                onClick={() => setSearchParams({ cat })}
+                className={cn(
+                  "px-5 py-2.5 rounded-full text-sm font-medium whitespace-nowrap transition-all border shrink-0 shadow-sm",
+                  currentCategory === cat
+                    ? "bg-bloom-rose text-white border-bloom-rose font-semibold"
+                    : "bg-white text-gray-600 border-gray-200 hover:border-bloom-rose/30"
+                )}
+              >
+                {cat}
+              </button>
+            ))}
+          </div>
+        </div>
+
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-12">
           {/* Sidebar Filters */}
           <aside className="hidden lg:block space-y-10">
