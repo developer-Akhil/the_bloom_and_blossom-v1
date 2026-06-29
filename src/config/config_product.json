@@ -317,6 +317,24 @@
           "stock": 10,
           "isCustomizable": false,
           "isBestSeller": true
+        },
+		"public/images/collections/alligator_clips/butterfly_alligator_clips/pink.jpg": {
+          "Code": "AC-BAC-PNK-002",
+          "Name": "Purple",
+          "Price": "120",
+          "rating": "4.5",
+          "stock": 5,
+          "isCustomizable": false,
+          "isBestSeller": true
+        },
+		"public/images/collections/alligator_clips/butterfly_alligator_clips/white.jpg": {
+          "Code": "AC-BAC-WHT-003",
+          "Name": "Purple",
+          "Price": "120",
+          "rating": "4.8",
+          "stock": 6,
+          "isCustomizable": false,
+          "isBestSeller": true
         }
 	  
 	  },
