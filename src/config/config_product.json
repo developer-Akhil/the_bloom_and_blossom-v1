@@ -604,18 +604,44 @@
         "Name": "Skyblue Check Bow",
         "Price": "70",
         "rating": "4.8",
-        "stock": 15,
+        "stock": 12,
         "isCustomizable": false,
         "isBestSeller": true
       },
-	  
 	  "Pearl Organza Bows": {
         "public/images/collections/bows/pearl_organza_bows/baby_pink.jpg": {
           "Code": "BOW-POB-BPNK-001",
           "Name": "Baby Pink",
           "Price": "70",
           "rating": "4.6",
-          "stock": 17,
+          "stock": 16,
+          "isCustomizable": false,
+          "isBestSeller": true
+        },
+		"public/images/collections/bows/pearl_organza_bows/green.jpg": {
+          "Code": "BOW-POB-GRN-002",
+          "Name": "Green",
+          "Price": "70",
+          "rating": "4.2",
+          "stock": 8,
+          "isCustomizable": false,
+          "isBestSeller": true
+        },
+		"public/images/collections/bows/pearl_organza_bows/black.jpg": {
+          "Code": "BOW-POB-BLK-001",
+          "Name": "Black",
+          "Price": "70",
+          "rating": "4.5",
+          "stock": 11,
+          "isCustomizable": false,
+          "isBestSeller": true
+        },
+		"public/images/collections/bows/pearl_organza_bows/skyblue.jpg": {
+          "Code": "BOW-POB-BPNK-001",
+          "Name": "Skyblue",
+          "Price": "70",
+          "rating": "4.8",
+          "stock": 9,
           "isCustomizable": false,
           "isBestSeller": true
         }
