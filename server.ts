@@ -96,6 +96,119 @@ async function startServer() {
     res.send("pong");
   });
 
+  // Dynamic XML Sitemap for Google Search Console & SEO
+  app.get("/sitemap.xml", (_req, res) => {
+    const baseUrl = "https://bloomandblossom.in";
+    const staticRoutes = [
+      "",
+      "/collections",
+      "/about",
+      "/contact",
+      "/returns",
+      "/privacy",
+      "/terms",
+      "/faq",
+      "/new-arrivals",
+      "/wishlist"
+    ];
+
+    let autoId = 1000;
+    const productIds: string[] = [];
+    const configPath = path.join(process.cwd(), 'src', 'config', 'config_product.json');
+    
+    if (fs.existsSync(configPath)) {
+      try {
+        const configRaw = JSON.parse(fs.readFileSync(configPath, 'utf-8'));
+        const collectionsObj = configRaw.Collections || configRaw;
+        const processedLocations = new Set<string>();
+
+        for (const [, macroCategoryObj] of Object.entries(collectionsObj)) {
+          if (!macroCategoryObj || typeof macroCategoryObj !== 'object') continue;
+
+          for (const [subKey, subValue] of Object.entries(macroCategoryObj)) {
+            if (!subValue || typeof subValue !== 'object') continue;
+
+            if (subKey.startsWith('public/')) {
+              productIds.push(`prod_${autoId++}`);
+              processedLocations.add(subKey.substring(6));
+            } else {
+              // Grouped product
+              let hasVariants = false;
+              for (const [varLocation] of Object.entries(subValue as object)) {
+                if (varLocation.startsWith('public/')) {
+                  hasVariants = true;
+                  processedLocations.add(varLocation.substring(6));
+                }
+              }
+              if (hasVariants) {
+                productIds.push(`prod_grp_${autoId++}`);
+              }
+            }
+          }
+        }
+
+        // Folder auto-discovery scanner
+        const collectionsDir = path.join(process.cwd(), 'public', 'images', 'collections');
+        if (fs.existsSync(collectionsDir)) {
+          const getFilesRecursively = (dir: string): string[] => {
+            let results: string[] = [];
+            const list = fs.readdirSync(dir);
+            list.forEach(file => {
+              const fullPath = path.join(dir, file);
+              const stat = fs.statSync(fullPath);
+              if (stat && stat.isDirectory()) {
+                results = results.concat(getFilesRecursively(fullPath));
+              } else {
+                if (/\.(jpg|jpeg|png|webp)$/i.test(file) && !file.endsWith('.keep')) {
+                  results.push(fullPath);
+                }
+              }
+            });
+            return results;
+          };
+
+          const diskFiles = getFilesRecursively(collectionsDir);
+          diskFiles.forEach(filePath => {
+            const relativePath = path.relative(path.join(process.cwd(), 'public'), filePath).replace(/\\/g, '/');
+            const cleanUrl = '/' + relativePath;
+            if (!processedLocations.has(cleanUrl)) {
+              productIds.push(`auto_${autoId++}`);
+            }
+          });
+        }
+      } catch (e) {
+        console.error('Error parsing config_product.json for sitemap:', e);
+      }
+    }
+
+    // Build the XML sitemap
+    let sitemapXml = '<?xml version="1.0" encoding="UTF-8"?>\n';
+    sitemapXml += '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n';
+
+    // 1. Add static pages
+    staticRoutes.forEach(route => {
+      sitemapXml += '  <url>\n';
+      sitemapXml += `    <loc>${baseUrl}${route}</loc>\n`;
+      sitemapXml += '    <changefreq>daily</changefreq>\n';
+      sitemapXml += `    <priority>${route === "" ? "1.0" : "0.8"}</priority>\n`;
+      sitemapXml += '  </url>\n';
+    });
+
+    // 2. Add dynamic products pages
+    productIds.forEach(id => {
+      sitemapXml += '  <url>\n';
+      sitemapXml += `    <loc>${baseUrl}/products/${id}</loc>\n`;
+      sitemapXml += '    <changefreq>weekly</changefreq>\n';
+      sitemapXml += '    <priority>0.7</priority>\n';
+      sitemapXml += '  </url>\n';
+    });
+
+    sitemapXml += '</urlset>';
+
+    res.header('Content-Type', 'application/xml');
+    res.send(sitemapXml);
+  });
+
   // Health check endpoint
   app.get("/api/health", (_req, res) => {
     const razorpayKeysSet = !!(process.env.RAZORPAY_KEY_ID && process.env.RAZORPAY_KEY_SECRET);
