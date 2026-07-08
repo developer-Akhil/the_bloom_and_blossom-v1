@@ -402,3 +402,11 @@ CREATE TRIGGER on_auth_user_created
 INSERT INTO bb_ecommerce_sc.admin_users (username, password) 
 VALUES ('admin', 'bloom_admin_2024')
 ON CONFLICT (username) DO NOTHING;
+
+
+-- ==============================================================================
+-- 10. SCHEMA CACHE REFRESH
+-- ==============================================================================
+-- Notify PostgREST to reload its schema cache to immediately expose these tables/views
+NOTIFY pgrst, 'reload schema';
+

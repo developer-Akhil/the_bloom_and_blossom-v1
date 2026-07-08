@@ -3,6 +3,7 @@ import { useEffect } from 'react';
 import { Header } from './Header';
 import { Footer } from './Footer';
 import { WhatsAppButton } from './WhatsAppButton';
+import { ThemeSwitcher } from './ThemeSwitcher';
 import { motion, AnimatePresence } from 'motion/react';
 import { ArrowLeft } from 'lucide-react';
 
@@ -43,6 +44,7 @@ export function Layout() {
       </main>
       <Footer />
       <WhatsAppButton />
+      <ThemeSwitcher />
     </div>
   );
 }

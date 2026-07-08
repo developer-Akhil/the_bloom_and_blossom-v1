@@ -32,6 +32,7 @@ import { AuthProvider } from './context/AuthContext';
 import { AdminAuthProvider } from './context/AdminAuthContext';
 import { MediaProvider } from './context/MediaContext';
 import { ProductProvider } from './context/ProductContext';
+import { ThemeProvider } from './context/ThemeContext';
 
 
 // Placeholder pages for now
@@ -39,44 +40,46 @@ const Wishlist = () => <div className="container py-20">Wishlist Page Coming Soo
 
 export default function App() {
   return (
-    <AuthProvider>
-      <AdminAuthProvider>
-        <MediaProvider>
-          <ProductProvider>
-            <CartProvider>
-              <BrowserRouter>
-                <Routes>
-                  <Route path="/" element={<Layout />}>
-                    <Route index element={<Home />} />
-                    <Route path="collections" element={<Collections />} />
-                    <Route path="products/:id" element={<ProductDetail />} />
-                    <Route path="cart" element={<Cart />} />
-                    <Route path="checkout" element={<Checkout />} />
-                    <Route path="checkout/success" element={<CheckoutSuccess />} />
-                    <Route path="auth" element={<Auth />} />
-                    <Route path="verify-email" element={<VerifyEmail />} />
-                    <Route path="about" element={<About />} />
-                    <Route path="dashboard" element={<Dashboard />} />
-                    <Route path="contact" element={<Contact />} />
-                    <Route path="returns" element={<Returns />} />
-                    <Route path="privacy" element={<Privacy />} />
-                    <Route path="terms" element={<Terms />} />
-                    <Route path="faq" element={<FAQ />} />
-                    <Route path="admin" element={<Admin />} />
-                    <Route path="admin/products" element={<AdminProducts />} />
-                    <Route path="admin/orders" element={<AdminOrders />} />
-                    <Route path="admin/orders/:id" element={<AdminOrderDetail />} />
-                    <Route path="admin/reviews" element={<AdminReviews />} />
-                    <Route path="admin/login" element={<AdminLogin />} />
-                    <Route path="new-arrivals" element={<NewArrivals />} />
-                    <Route path="wishlist" element={<Wishlist />} />
-                  </Route>
-                </Routes>
-              </BrowserRouter>
-            </CartProvider>
-          </ProductProvider>
-        </MediaProvider>
-      </AdminAuthProvider>
-    </AuthProvider>
+    <ThemeProvider>
+      <AuthProvider>
+        <AdminAuthProvider>
+          <MediaProvider>
+            <ProductProvider>
+              <CartProvider>
+                <BrowserRouter>
+                  <Routes>
+                    <Route path="/" element={<Layout />}>
+                      <Route index element={<Home />} />
+                      <Route path="collections" element={<Collections />} />
+                      <Route path="products/:id" element={<ProductDetail />} />
+                      <Route path="cart" element={<Cart />} />
+                      <Route path="checkout" element={<Checkout />} />
+                      <Route path="checkout/success" element={<CheckoutSuccess />} />
+                      <Route path="auth" element={<Auth />} />
+                      <Route path="verify-email" element={<VerifyEmail />} />
+                      <Route path="about" element={<About />} />
+                      <Route path="dashboard" element={<Dashboard />} />
+                      <Route path="contact" element={<Contact />} />
+                      <Route path="returns" element={<Returns />} />
+                      <Route path="privacy" element={<Privacy />} />
+                      <Route path="terms" element={<Terms />} />
+                      <Route path="faq" element={<FAQ />} />
+                      <Route path="admin" element={<Admin />} />
+                      <Route path="admin/products" element={<AdminProducts />} />
+                      <Route path="admin/orders" element={<AdminOrders />} />
+                      <Route path="admin/orders/:id" element={<AdminOrderDetail />} />
+                      <Route path="admin/reviews" element={<AdminReviews />} />
+                      <Route path="admin/login" element={<AdminLogin />} />
+                      <Route path="new-arrivals" element={<NewArrivals />} />
+                      <Route path="wishlist" element={<Wishlist />} />
+                    </Route>
+                  </Routes>
+                </BrowserRouter>
+              </CartProvider>
+            </ProductProvider>
+          </MediaProvider>
+        </AdminAuthProvider>
+      </AuthProvider>
+    </ThemeProvider>
   );
 }

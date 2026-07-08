@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { useCart } from '../../context/CartContext';
 import { useAuth } from '../../context/AuthContext';
 import { useMediaContext } from '../../context/MediaContext';
+import { useTheme } from '../../context/ThemeContext';
 import { rawLogoData } from '../../data/products';
 import { OptimizedImage } from './OptimizedImage';
 
@@ -15,6 +16,7 @@ export function Header() {
   const { cartCount } = useCart();
   const { user } = useAuth();
   const navigate = useNavigate();
+  const { theme } = useTheme();
 
   const { assets } = useMediaContext();
 
@@ -36,7 +38,22 @@ export function Header() {
   };
 
   return (
-    <header className="sticky top-0 z-50 w-full transition-all duration-300 glass-morphism border-b bg-white/80">
+    <header className="sticky top-0 z-50 w-full transition-all duration-300 border-b glass-morphism bg-white/80 text-gray-900">
+      {theme === 'luxury' && (
+        <div className="bg-gradient-to-r from-bloom-rose via-bloom-pink to-bloom-rose text-white text-center py-2 px-4 text-[11px] font-serif tracking-widest font-light flex items-center justify-center gap-1.5">
+          <span>✨ LUXURY BLOSSOM ACTIVE • EMBRACE THE ROMANTIC & ARTISANAL VIBE ✨</span>
+        </div>
+      )}
+      {theme === 'sage' && (
+        <div className="bg-gradient-to-r from-[#556B2F] via-[#F4F6F0] to-[#556B2F] text-[#243026] text-center py-2 px-4 text-[11px] font-serif tracking-widest font-bold flex items-center justify-center gap-1.5">
+          <span>🌿 SAGE MEADOW ACTIVE • EMBRACE THE FRESH & BOTANICAL GARDEN VIBE 🌿</span>
+        </div>
+      )}
+      {theme === 'dahlia' && (
+        <div className="bg-gradient-to-r from-[#D47A55] via-[#FFF8F3] to-[#D47A55] text-[#533325] text-center py-2 px-4 text-[11px] font-serif tracking-widest font-bold flex items-center justify-center gap-1.5">
+          <span>🌅 DAHLIA GLOW ACTIVE • EMBRACE THE WARM SUNSET & ARTISANAL VIBE 🌅</span>
+        </div>
+      )}
       <div className="container mx-auto px-4 md:px-6">
         <div className="flex h-20 items-center justify-between">
           {/* Mobile Menu Button */}
@@ -79,7 +96,7 @@ export function Header() {
                   placeholder="Search products..." 
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full text-sm border-b border-gray-300 focus:border-bloom-rose outline-none py-1 bg-transparent placeholder:text-gray-400"
+                  className="w-full text-sm border-b outline-none py-1 bg-transparent placeholder:text-gray-400 border-gray-300 focus:border-bloom-rose text-gray-900"
                 />
               </form>
               <button onClick={() => setIsSearchOpen(!isSearchOpen)} className="p-2 text-gray-500 hover:text-bloom-rose transition-colors relative z-10">
@@ -112,7 +129,7 @@ export function Header() {
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
-            className="md:hidden border-t bg-white overflow-hidden shadow-2xl"
+            className="md:hidden border-t overflow-hidden shadow-2xl bg-white"
           >
             <div className="flex flex-col space-y-1 p-4 font-medium">
               <MobileNavLink to="/" onClick={() => setIsMenuOpen(false)}>Home</MobileNavLink>
@@ -132,7 +149,7 @@ function NavLink({ to, children }: { to: string; children: React.ReactNode }) {
   return (
     <Link 
       to={to} 
-      className="text-sm font-medium text-gray-600 hover:text-bloom-rose transition-colors relative group"
+      className="text-sm font-medium transition-colors relative group text-gray-600 hover:text-bloom-rose"
     >
       {children}
       <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-bloom-rose transition-all group-hover:w-full" />
@@ -145,7 +162,7 @@ function MobileNavLink({ to, children, onClick }: { to: string; children: React.
     <Link 
       to={to} 
       onClick={onClick}
-      className="text-lg text-gray-700 hover:text-bloom-rose transition-colors py-4 px-2 border-b border-gray-50 flex items-center justify-between group"
+      className="text-lg transition-colors py-4 px-2 border-b flex items-center justify-between group text-gray-700 border-gray-50 hover:text-bloom-rose"
     >
       <span>{children}</span>
       <ArrowRight size={18} className="opacity-0 group-hover:opacity-100 transition-opacity" />
