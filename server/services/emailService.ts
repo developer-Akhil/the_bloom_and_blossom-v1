@@ -254,9 +254,136 @@ export const sendContactEmail = async (name: string, senderEmail: string, subjec
     console.warn(`⚠️ Could not send contact email (SMTP error): ${error?.message || 'Unknown error'}`);
     console.log("--------------------------------------------------------------------------------");
     console.log(`[FALLBACK LOG] CONTACT FORM SUBMISSION FROM ${senderEmail}:`);
-    console.log(`SUBJECT: ${subject}`);
-    console.log(`MESSAGE: ${message}`);
+    `SUBJECT: ${subject}`;
+    `MESSAGE: ${message}`;
     console.log("--------------------------------------------------------------------------------");
     throw new Error("SMTP_AUTH_FAILED");
+  }
+};
+
+export const sendReviewApprovedEmail = async (email: string, name: string, productName: string) => {
+  const mailOptions = {
+    from: `"Bloom & Blossom" <${config.smtp.user}>`,
+    to: email,
+    subject: "Your review has been approved! - Bloom & Blossom",
+    html: `
+      <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; line-height: 1.6;">
+        <h2 style="color: #FFB6C1;">Review Approved!</h2>
+        <p>Dear ${name},</p>
+        <p>We are excited to let you know that your review for <strong>${productName}</strong> has been approved by our moderation team and is now live on our website!</p>
+        <p>Thank you so much for taking the time to share your feedback. It helps us and other customers tremendously.</p>
+        <br/>
+        <p>Warm regards,<br/>The Bloom & Blossom Team</p>
+      </div>
+    `,
+  };
+
+  if (!config.smtp.pass || config.smtp.pass === "YOUR_SMTP_PASSWORD") {
+    console.log(`[TESTING] Review approved email would be sent to ${email} for ${productName}`);
+    return;
+  }
+
+  try {
+    await noreplyTransporter.sendMail(mailOptions);
+    console.log(`Review approved email sent to ${email}`);
+  } catch (error: any) {
+    console.warn(`Could not send review approved email (SMTP error): ${error?.message}`);
+  }
+};
+
+export const sendReviewRejectedEmail = async (email: string, name: string, productName: string) => {
+  const mailOptions = {
+    from: `"Bloom & Blossom" <${config.smtp.user}>`,
+    to: email,
+    subject: "Update on your product review - Bloom & Blossom",
+    html: `
+      <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; line-height: 1.6;">
+        <h2 style="color: #666;">Product Review Update</h2>
+        <p>Dear ${name},</p>
+        <p>Thank you for submitting a review for <strong>${productName}</strong>.</p>
+        <p>Unfortunately, your review did not meet our community guidelines and has been rejected by our moderation team. Common reasons include inappropriate language, off-topic content, or including links/promotions.</p>
+        <p>If you believe this was an error, please feel free to reach out to our support team.</p>
+        <br/>
+        <p>Warm regards,<br/>The Bloom & Blossom Team</p>
+      </div>
+    `,
+  };
+
+  if (!config.smtp.pass || config.smtp.pass === "YOUR_SMTP_PASSWORD") {
+    console.log(`[TESTING] Review rejected email would be sent to ${email} for ${productName}`);
+    return;
+  }
+
+  try {
+    await noreplyTransporter.sendMail(mailOptions);
+    console.log(`Review rejected email sent to ${email}`);
+  } catch (error: any) {
+    console.warn(`Could not send review rejected email (SMTP error): ${error?.message}`);
+  }
+};
+
+export const sendAdminReplyEmail = async (email: string, name: string, productName: string, replyText: string) => {
+  const mailOptions = {
+    from: `"Bloom & Blossom" <${config.smtp.user}>`,
+    to: email,
+    subject: "The Bloom & Blossom team replied to your review!",
+    html: `
+      <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; line-height: 1.6;">
+        <h2 style="color: #FFB6C1;">New Reply to Your Review</h2>
+        <p>Dear ${name},</p>
+        <p>We've responded to your review for <strong>${productName}</strong>:</p>
+        <div style="background-color: #f9f9f9; padding: 15px; border-left: 4px solid #FFB6C1; border-radius: 4px; margin: 20px 0; font-style: italic;">
+          "${replyText}"
+        </div>
+        <p>Thank you again for shopping with us!</p>
+        <br/>
+        <p>Warm regards,<br/>The Bloom & Blossom Team</p>
+      </div>
+    `,
+  };
+
+  if (!config.smtp.pass || config.smtp.pass === "YOUR_SMTP_PASSWORD") {
+    console.log(`[TESTING] Admin reply email would be sent to ${email} for ${productName}`);
+    return;
+  }
+
+  try {
+    await noreplyTransporter.sendMail(mailOptions);
+    console.log(`Admin reply email sent to ${email}`);
+  } catch (error: any) {
+    console.warn(`Could not send admin reply email (SMTP error): ${error?.message}`);
+  }
+};
+
+export const sendReviewReminderEmail = async (email: string, name: string, productName: string, productLink: string) => {
+  const mailOptions = {
+    from: `"Bloom & Blossom" <${config.smtp.user}>`,
+    to: email,
+    subject: "How do you like your purchase? Leave a review! - Bloom & Blossom",
+    html: `
+      <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; line-height: 1.6;">
+        <h2 style="color: #FFB6C1;">How was your experience?</h2>
+        <p>Dear ${name},</p>
+        <p>We hope you are loving your new <strong>${productName}</strong>! We'd love to hear your thoughts on it.</p>
+        <p>Could you please take 1 minute to leave a review? Your feedback helps us improve and helps other customers make choices!</p>
+        <div style="text-align: center; margin: 30px 0;">
+          <a href="${productLink}" style="display:inline-block;padding:12px 24px;color:#fff;background-color:#FFB6C1;text-decoration:none;border-radius:5px;font-weight:bold;box-shadow: 0 2px 4px rgba(0,0,0,0.1);">Leave a Review</a>
+        </div>
+        <br/>
+        <p>Thank you so much!<br/>The Bloom & Blossom Team</p>
+      </div>
+    `,
+  };
+
+  if (!config.smtp.pass || config.smtp.pass === "YOUR_SMTP_PASSWORD") {
+    console.log(`[TESTING] Review reminder email would be sent to ${email} for ${productName}`);
+    return;
+  }
+
+  try {
+    await noreplyTransporter.sendMail(mailOptions);
+    console.log(`Review reminder email sent to ${email}`);
+  } catch (error: any) {
+    console.warn(`Could not send review reminder email (SMTP error): ${error?.message}`);
   }
 };

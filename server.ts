@@ -12,6 +12,7 @@ import paymentRoutes from "./server/routes/paymentRoutes.js";
 import contactRoutes from "./server/routes/contactRoutes.js";
 import orderRoutes from "./server/routes/orderRoutes.js";
 import adminRoutes from "./server/routes/adminRoutes.js";
+import reviewRoutes from "./server/routes/reviewRoutes.js";
 
 const __filename = fileURLToPath(import.meta.url);
 
@@ -229,6 +230,7 @@ async function startServer() {
   app.use("/api/contact", contactRoutes);
   app.use("/api/orders", orderRoutes);
   app.use("/api/admin", adminRoutes);
+  app.use("/api/reviews", reviewRoutes);
 
   // Temporary route to test ENV variables (diagnostics)
   app.get("/api/env-test", (_req, res) => {

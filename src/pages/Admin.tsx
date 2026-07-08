@@ -1,6 +1,6 @@
 import React from 'react';
 import { Navigate, Link } from 'react-router-dom';
-import { Settings, LogOut, Package, ShoppingBag } from 'lucide-react';
+import { Settings, LogOut, Package, ShoppingBag, MessageSquare } from 'lucide-react';
 import { useAdminAuth } from '../context/AdminAuthContext';
 
 export function Admin() {
@@ -38,7 +38,7 @@ export function Admin() {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
           <Link 
             to="/admin/products"
             className="flex flex-col items-center justify-center p-12 bg-white rounded-3xl shadow-sm border border-gray-100 hover:shadow-md hover:-translate-y-1 transition-all group"
@@ -46,8 +46,8 @@ export function Admin() {
             <div className="p-4 bg-gray-50 rounded-full group-hover:bg-bloom-pink transition-colors mb-4 text-gray-400 group-hover:text-bloom-rose">
               <ShoppingBag size={48} />
             </div>
-            <h2 className="text-2xl font-bold font-serif text-gray-900 mb-2">Manage Products</h2>
-            <p className="text-gray-500 text-center">Update prices, stock, best sellers, and new arrivals.</p>
+            <h2 className="text-xl font-bold font-serif text-gray-900 mb-2">Manage Products</h2>
+            <p className="text-gray-500 text-center text-sm">Update prices, stock, best sellers, and new arrivals.</p>
           </Link>
 
           <Link 
@@ -57,8 +57,19 @@ export function Admin() {
             <div className="p-4 bg-gray-50 rounded-full group-hover:bg-bloom-pink transition-colors mb-4 text-gray-400 group-hover:text-bloom-rose">
               <Package size={48} />
             </div>
-            <h2 className="text-2xl font-bold font-serif text-gray-900 mb-2">Manage Orders</h2>
-            <p className="text-gray-500 text-center">View and fulfill customer orders and payments.</p>
+            <h2 className="text-xl font-bold font-serif text-gray-900 mb-2">Manage Orders</h2>
+            <p className="text-gray-500 text-center text-sm">View and fulfill customer orders and payments.</p>
+          </Link>
+
+          <Link 
+            to="/admin/reviews"
+            className="flex flex-col items-center justify-center p-12 bg-white rounded-3xl shadow-sm border border-gray-100 hover:shadow-md hover:-translate-y-1 transition-all group"
+          >
+            <div className="p-4 bg-gray-50 rounded-full group-hover:bg-bloom-pink transition-colors mb-4 text-gray-400 group-hover:text-bloom-rose">
+              <MessageSquare size={48} />
+            </div>
+            <h2 className="text-xl font-bold font-serif text-gray-900 mb-2">Manage Reviews</h2>
+            <p className="text-gray-500 text-center text-sm">Moderate ratings, reply to buyers, and view reports.</p>
           </Link>
         </div>
       </div>

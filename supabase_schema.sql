@@ -1,13 +1,45 @@
 -- ==============================================================================
--- The Bloom & Blossom - Unified Supabase Schema
+-- The Bloom & Blossom - Consolidated Unified Database Schema
 -- Target Schema: bb_ecommerce_sc
 -- ==============================================================================
--- This script contains all necessary tables, triggers, and permissions 
--- to run the storefront safely within your custom schema framework.
+-- This script contains all necessary tables, triggers, indexes, permissions,
+-- and policies to run the entire storefront (including Auth, Reviews, and Payments).
+--
+-- Execute this entire script in your Supabase SQL Editor.
+-- ==============================================================================
 
 CREATE SCHEMA IF NOT EXISTS bb_ecommerce_sc;
 
--- 1. Profiles Table (Automatically synced with auth.users)
+-- Enable required extensions
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+
+-- Grant usage on schema to required roles
+GRANT USAGE ON SCHEMA bb_ecommerce_sc TO postgres, anon, authenticated, service_role;
+
+
+-- ==============================================================================
+-- 1. AUTHENTICATION & USER MANAGEMENT
+-- ==============================================================================
+
+-- 1.1 Custom App Users (Custom Email Verification Flow)
+CREATE TABLE IF NOT EXISTS bb_ecommerce_sc.app_users (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  email TEXT UNIQUE NOT NULL,
+  password TEXT NOT NULL,
+  "isVerified" BOOLEAN DEFAULT FALSE,
+  "verificationToken" TEXT,
+  "tokenExpiry" TIMESTAMPTZ,
+  full_name TEXT,
+  phone TEXT,
+  "createdAt" TIMESTAMPTZ DEFAULT NOW(),
+  "updatedAt" TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- For existing app_users table, ensure columns are added:
+ALTER TABLE bb_ecommerce_sc.app_users ADD COLUMN IF NOT EXISTS full_name TEXT;
+ALTER TABLE bb_ecommerce_sc.app_users ADD COLUMN IF NOT EXISTS phone TEXT;
+
+-- 1.2 Profiles Table (Automatically synced with auth.users)
 CREATE TABLE IF NOT EXISTS bb_ecommerce_sc.profiles (
   id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
   full_name TEXT,
@@ -17,7 +49,7 @@ CREATE TABLE IF NOT EXISTS bb_ecommerce_sc.profiles (
   created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL
 );
 
--- 2. Admin Users Table (Custom quick-fix prototype auth)
+-- 1.3 Admin Users Table (Custom quick-fix prototype auth)
 CREATE TABLE IF NOT EXISTS bb_ecommerce_sc.admin_users (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   username TEXT UNIQUE NOT NULL,
@@ -25,7 +57,12 @@ CREATE TABLE IF NOT EXISTS bb_ecommerce_sc.admin_users (
   created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL
 );
 
--- 3. Categories Table
+
+-- ==============================================================================
+-- 2. STORE CATALOG & PRODUCTS
+-- ==============================================================================
+
+-- 2.1 Categories Table
 CREATE TABLE IF NOT EXISTS bb_ecommerce_sc.categories (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   name TEXT NOT NULL UNIQUE,
@@ -33,7 +70,7 @@ CREATE TABLE IF NOT EXISTS bb_ecommerce_sc.categories (
   created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL
 );
 
--- 4. Products Table
+-- 2.2 Products Table
 CREATE TABLE IF NOT EXISTS bb_ecommerce_sc.products (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   name TEXT NOT NULL,
@@ -48,21 +85,21 @@ CREATE TABLE IF NOT EXISTS bb_ecommerce_sc.products (
   created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL
 );
 
--- 5. Dynamic Pricing Lookup Table (Queried by the real-time context)
+-- 2.3 Dynamic Pricing Lookup Table
 CREATE TABLE IF NOT EXISTS bb_ecommerce_sc.dynamic_prices (
   product_id TEXT PRIMARY KEY,
   price DECIMAL(10, 2) NOT NULL,
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL
 );
 
--- 5b. Product Availability Table
+-- 2.4 Product Availability Table
 CREATE TABLE IF NOT EXISTS bb_ecommerce_sc.product_availability (
   product_id TEXT PRIMARY KEY,
   in_stock BOOLEAN DEFAULT TRUE,
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL
 );
 
--- 5c. Product Attributes Table (For generic attributes like best_seller, new_arrival)
+-- 2.5 Product Attributes Table
 CREATE TABLE IF NOT EXISTS bb_ecommerce_sc.product_attributes (
   product_id TEXT PRIMARY KEY,
   is_best_seller BOOLEAN DEFAULT FALSE,
@@ -73,7 +110,7 @@ CREATE TABLE IF NOT EXISTS bb_ecommerce_sc.product_attributes (
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL
 );
 
--- 6. Wishlist Table
+-- 2.6 Wishlist Table
 CREATE TABLE IF NOT EXISTS bb_ecommerce_sc.wishlist (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
@@ -82,7 +119,12 @@ CREATE TABLE IF NOT EXISTS bb_ecommerce_sc.wishlist (
   UNIQUE(user_id, product_id)
 );
 
--- 7. Orders Table
+
+-- ==============================================================================
+-- 3. ORDERS & SALES
+-- ==============================================================================
+
+-- 3.1 Orders Table
 CREATE TABLE IF NOT EXISTS bb_ecommerce_sc.orders (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id UUID REFERENCES auth.users(id) ON DELETE SET NULL,
@@ -100,7 +142,7 @@ CREATE TABLE IF NOT EXISTS bb_ecommerce_sc.orders (
   created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL
 );
 
--- 8. Order Items Table
+-- 3.2 Order Items Table
 CREATE TABLE IF NOT EXISTS bb_ecommerce_sc.order_items (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   order_id UUID REFERENCES bb_ecommerce_sc.orders(id) ON DELETE CASCADE,
@@ -112,36 +154,190 @@ CREATE TABLE IF NOT EXISTS bb_ecommerce_sc.order_items (
   created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL
 );
 
+
 -- ==============================================================================
--- Schema Permissions & Grants
+-- 4. PRODUCT REVIEW SYSTEM
 -- ==============================================================================
 
--- Crucial: Grant access to the custom schema so the API can reach it
+-- 4.1 Product Reviews Table
+CREATE TABLE IF NOT EXISTS bb_ecommerce_sc.product_reviews (
+  review_id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  product_id TEXT NOT NULL,
+  product_variant_id TEXT,
+  order_id TEXT NOT NULL,
+  order_item_id TEXT,
+  user_id UUID NOT NULL REFERENCES bb_ecommerce_sc.app_users(id) ON DELETE CASCADE,
+  rating INTEGER NOT NULL CHECK (rating >= 1 AND rating <= 5),
+  title TEXT,
+  review TEXT NOT NULL,
+  verified_purchase BOOLEAN DEFAULT FALSE,
+  status TEXT NOT NULL DEFAULT 'pending', -- 'pending', 'approved', 'rejected', 'hidden'
+  helpful_count INTEGER DEFAULT 0,
+  report_count INTEGER DEFAULT 0,
+  admin_reply TEXT,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- 4.2 Review Images Table
+CREATE TABLE IF NOT EXISTS bb_ecommerce_sc.review_images (
+  image_id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  review_id UUID NOT NULL REFERENCES bb_ecommerce_sc.product_reviews(review_id) ON DELETE CASCADE,
+  image_url TEXT NOT NULL,
+  thumbnail_url TEXT
+);
+
+-- 4.3 Review Helpful Table (prevents duplicate voting)
+CREATE TABLE IF NOT EXISTS bb_ecommerce_sc.review_helpful (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  review_id UUID NOT NULL REFERENCES bb_ecommerce_sc.product_reviews(review_id) ON DELETE CASCADE,
+  user_id UUID NOT NULL REFERENCES bb_ecommerce_sc.app_users(id) ON DELETE CASCADE,
+  vote_type TEXT NOT NULL, -- 'helpful' or 'unhelpful'
+  CONSTRAINT unique_review_user_vote UNIQUE (review_id, user_id)
+);
+
+-- 4.4 Review Reports Table
+CREATE TABLE IF NOT EXISTS bb_ecommerce_sc.review_reports (
+  report_id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  review_id UUID NOT NULL REFERENCES bb_ecommerce_sc.product_reviews(review_id) ON DELETE CASCADE,
+  user_id UUID NOT NULL REFERENCES bb_ecommerce_sc.app_users(id) ON DELETE CASCADE,
+  reason TEXT NOT NULL, -- 'Spam', 'Offensive', 'Fake Review', 'Other'
+  comments TEXT,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+
+-- ==============================================================================
+-- 5. PAYMENT & GATEWAY PROCESSING (Razorpay, etc.)
+-- ==============================================================================
+
+-- 5.1 Payment Orders (Intent to pay, Razorpay order)
+CREATE TABLE IF NOT EXISTS bb_ecommerce_sc.payment_orders (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    internal_order_id VARCHAR(100) NOT NULL,
+    gateway_order_id VARCHAR(100) UNIQUE,
+    gateway_provider VARCHAR(50) DEFAULT 'razorpay',
+    amount DECIMAL(10, 2) NOT NULL,
+    currency VARCHAR(10) DEFAULT 'INR',
+    status VARCHAR(50) NOT NULL DEFAULT 'created', -- 'created', 'attempted', 'paid', 'failed'
+    customer_email VARCHAR(255),
+    customer_phone VARCHAR(50),
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+-- 5.2 Payment Transactions (Actual attempts and captures)
+CREATE TABLE IF NOT EXISTS bb_ecommerce_sc.payment_transactions (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    payment_order_id UUID REFERENCES bb_ecommerce_sc.payment_orders(id) ON DELETE CASCADE,
+    gateway_transaction_id VARCHAR(100) UNIQUE,
+    amount DECIMAL(10, 2) NOT NULL,
+    currency VARCHAR(10) DEFAULT 'INR',
+    status VARCHAR(50) NOT NULL,                -- 'created', 'authorized', 'captured', 'refunded', 'failed'
+    method VARCHAR(50),                         -- 'card', 'netbanking', 'wallet', 'emi', 'upi'
+    method_details JSONB,
+    error_code VARCHAR(100),
+    error_description TEXT,
+    gateway_response JSONB,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+-- 5.3 Webhook Events (Idempotency and background reconciliation)
+CREATE TABLE IF NOT EXISTS bb_ecommerce_sc.payment_webhooks (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    gateway_provider VARCHAR(50) DEFAULT 'razorpay',
+    event_type VARCHAR(100) NOT NULL,
+    gateway_event_id VARCHAR(100) UNIQUE,
+    payload JSONB NOT NULL,
+    status VARCHAR(50) DEFAULT 'pending',       -- 'pending', 'processed', 'failed'
+    processing_error TEXT,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    processed_at TIMESTAMP WITH TIME ZONE
+);
+
+-- 5.4 Refunds
+CREATE TABLE IF NOT EXISTS bb_ecommerce_sc.payment_refunds (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    payment_transaction_id UUID REFERENCES bb_ecommerce_sc.payment_transactions(id) ON DELETE CASCADE,
+    gateway_refund_id VARCHAR(100) UNIQUE,
+    amount DECIMAL(10, 2) NOT NULL,
+    currency VARCHAR(10) DEFAULT 'INR',
+    status VARCHAR(50) NOT NULL,                -- 'pending', 'processed', 'failed'
+    reason VARCHAR(255),
+    gateway_response JSONB,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+-- 5.5 Settlements (Gateway bank transfers)
+CREATE TABLE IF NOT EXISTS bb_ecommerce_sc.payment_settlements (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    gateway_settlement_id VARCHAR(100) UNIQUE,
+    amount DECIMAL(10, 2) NOT NULL,
+    currency VARCHAR(10) DEFAULT 'INR',
+    fees DECIMAL(10, 2) NOT NULL DEFAULT 0.00,
+    tax DECIMAL(10, 2) NOT NULL DEFAULT 0.00,
+    status VARCHAR(50) NOT NULL,                -- 'created', 'processed', 'failed'
+    details JSONB,
+    settled_at TIMESTAMP WITH TIME ZONE,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+-- 5.6 Payment Audit Logs (Ledger of actions)
+CREATE TABLE IF NOT EXISTS bb_ecommerce_sc.payment_audit_logs (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    entity_type VARCHAR(50) NOT NULL,
+    entity_id UUID NOT NULL,
+    action VARCHAR(100) NOT NULL,
+    performed_by VARCHAR(100),
+    changes JSONB,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+
+-- ==============================================================================
+-- 6. PERMISSIONS & GRANTS
+-- ==============================================================================
+
+-- General Access
 GRANT USAGE ON SCHEMA bb_ecommerce_sc TO postgres, anon, authenticated, service_role;
 GRANT ALL ON ALL TABLES IN SCHEMA bb_ecommerce_sc TO anon, authenticated, service_role;
 GRANT ALL ON ALL SEQUENCES IN SCHEMA bb_ecommerce_sc TO anon, authenticated, service_role;
 GRANT ALL ON ALL FUNCTIONS IN SCHEMA bb_ecommerce_sc TO anon, authenticated, service_role;
 
--- ==============================================================================
--- App Users Table (Custom email verification flow)
--- ==============================================================================
-CREATE TABLE IF NOT EXISTS bb_ecommerce_sc.app_users (
-  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-  email TEXT UNIQUE NOT NULL,
-  password TEXT NOT NULL,
-  "isVerified" BOOLEAN DEFAULT FALSE,
-  "verificationToken" TEXT,
-  "tokenExpiry" TIMESTAMPTZ,
-  "createdAt" TIMESTAMPTZ DEFAULT NOW(),
-  "updatedAt" TIMESTAMPTZ DEFAULT NOW()
-);
-
+-- Specific Table Grants
 GRANT ALL ON TABLE bb_ecommerce_sc.app_users TO service_role;
-ALTER TABLE bb_ecommerce_sc.app_users ENABLE ROW LEVEL SECURITY;
-CREATE POLICY "Deny all access to app_users from client" ON bb_ecommerce_sc.app_users FOR ALL TO PUBLIC USING (false);
+GRANT ALL ON TABLE bb_ecommerce_sc.product_reviews TO postgres, service_role, anon, authenticated;
+GRANT ALL ON TABLE bb_ecommerce_sc.review_images TO postgres, service_role, anon, authenticated;
+GRANT ALL ON TABLE bb_ecommerce_sc.review_helpful TO postgres, service_role, anon, authenticated;
+GRANT ALL ON TABLE bb_ecommerce_sc.review_reports TO postgres, service_role, anon, authenticated;
+
 
 -- ==============================================================================
--- Row Level Security (RLS) Policies
+-- 7. PERFORMANCE INDEXES
+-- ==============================================================================
+
+-- Reviews System Indexes
+CREATE INDEX IF NOT EXISTS idx_reviews_product_id ON bb_ecommerce_sc.product_reviews(product_id);
+CREATE INDEX IF NOT EXISTS idx_reviews_status ON bb_ecommerce_sc.product_reviews(status);
+CREATE INDEX IF NOT EXISTS idx_reviews_rating ON bb_ecommerce_sc.product_reviews(rating);
+CREATE INDEX IF NOT EXISTS idx_review_images_review_id ON bb_ecommerce_sc.review_images(review_id);
+CREATE INDEX IF NOT EXISTS idx_review_helpful_review_id ON bb_ecommerce_sc.review_helpful(review_id);
+CREATE INDEX IF NOT EXISTS idx_review_reports_review_id ON bb_ecommerce_sc.review_reports(review_id);
+
+-- Payment System Indexes
+CREATE INDEX IF NOT EXISTS idx_payment_orders_gateway_id ON bb_ecommerce_sc.payment_orders(gateway_order_id);
+CREATE INDEX IF NOT EXISTS idx_payment_transactions_order_id ON bb_ecommerce_sc.payment_transactions(payment_order_id);
+CREATE INDEX IF NOT EXISTS idx_payment_transactions_gateway_id ON bb_ecommerce_sc.payment_transactions(gateway_transaction_id);
+CREATE INDEX IF NOT EXISTS idx_payment_webhooks_status ON bb_ecommerce_sc.payment_webhooks(status);
+CREATE INDEX IF NOT EXISTS idx_payment_refunds_gateway_id ON bb_ecommerce_sc.payment_refunds(gateway_refund_id);
+CREATE INDEX IF NOT EXISTS idx_payment_settlements_gateway_id ON bb_ecommerce_sc.payment_settlements(gateway_settlement_id);
+
+
+-- ==============================================================================
+-- 8. ROW LEVEL SECURITY (RLS) POLICIES
 -- ==============================================================================
 
 ALTER TABLE bb_ecommerce_sc.profiles ENABLE ROW LEVEL SECURITY;
@@ -151,33 +347,41 @@ ALTER TABLE bb_ecommerce_sc.product_availability ENABLE ROW LEVEL SECURITY;
 ALTER TABLE bb_ecommerce_sc.product_attributes ENABLE ROW LEVEL SECURITY;
 ALTER TABLE bb_ecommerce_sc.orders ENABLE ROW LEVEL SECURITY;
 ALTER TABLE bb_ecommerce_sc.wishlist ENABLE ROW LEVEL SECURITY;
+ALTER TABLE bb_ecommerce_sc.app_users ENABLE ROW LEVEL SECURITY;
 
--- Dynamic Prices: Anyone can read, only authenticated users (future: admin check) can write
-CREATE POLICY "Dynamic prices are readable by everyone" ON bb_ecommerce_sc.dynamic_prices FOR SELECT USING (true);
-CREATE POLICY "Dynamic prices can be updated by authenticated users in admin board" ON bb_ecommerce_sc.dynamic_prices FOR ALL USING (auth.role() = 'authenticated');
+-- 8.1 Custom App Users Policy
+CREATE POLICY "Deny all access to app_users from client" 
+ON bb_ecommerce_sc.app_users FOR ALL TO PUBLIC USING (false);
 
--- Product Availability
-CREATE POLICY "Product availability is readable by everyone" ON bb_ecommerce_sc.product_availability FOR SELECT USING (true);
-CREATE POLICY "Product availability can be updated by authenticated users" ON bb_ecommerce_sc.product_availability FOR ALL USING (auth.role() = 'authenticated');
-
--- Product Attributes
-CREATE POLICY "Product attributes are readable by everyone" ON bb_ecommerce_sc.product_attributes FOR SELECT USING (true);
-CREATE POLICY "Product attributes can be updated by authenticated users" ON bb_ecommerce_sc.product_attributes FOR ALL USING (auth.role() = 'authenticated');
-
--- Admin Users: Allow anon access for login checks (since it doesn't use auth.uid)
-CREATE POLICY "Admin users check" ON bb_ecommerce_sc.admin_users FOR SELECT USING (true);
+-- 8.2 Profiles Policies
 CREATE POLICY "Users can view own profile" ON bb_ecommerce_sc.profiles FOR SELECT USING (auth.uid() = id);
 CREATE POLICY "Users can update own profile" ON bb_ecommerce_sc.profiles FOR UPDATE USING (auth.uid() = id);
 
--- Orders: Users can only see their own orders
+-- 8.3 Admin Users Policy
+CREATE POLICY "Admin users check" ON bb_ecommerce_sc.admin_users FOR SELECT USING (true);
+
+-- 8.4 Dynamic Prices Policies
+CREATE POLICY "Dynamic prices are readable by everyone" ON bb_ecommerce_sc.dynamic_prices FOR SELECT USING (true);
+CREATE POLICY "Dynamic prices can be updated by authenticated users in admin board" ON bb_ecommerce_sc.dynamic_prices FOR ALL USING (auth.role() = 'authenticated');
+
+-- 8.5 Product Availability Policies
+CREATE POLICY "Product availability is readable by everyone" ON bb_ecommerce_sc.product_availability FOR SELECT USING (true);
+CREATE POLICY "Product availability can be updated by authenticated users" ON bb_ecommerce_sc.product_availability FOR ALL USING (auth.role() = 'authenticated');
+
+-- 8.6 Product Attributes Policies
+CREATE POLICY "Product attributes are readable by everyone" ON bb_ecommerce_sc.product_attributes FOR SELECT USING (true);
+CREATE POLICY "Product attributes can be updated by authenticated users" ON bb_ecommerce_sc.product_attributes FOR ALL USING (auth.role() = 'authenticated');
+
+-- 8.7 Orders Policies
 CREATE POLICY "Users can view own orders" ON bb_ecommerce_sc.orders FOR SELECT USING (auth.uid() = user_id);
 CREATE POLICY "Users can create orders" ON bb_ecommerce_sc.orders FOR INSERT WITH CHECK (auth.uid() = user_id OR user_id IS NULL);
 
+
 -- ==============================================================================
--- Triggers and Functions
+-- 9. TRIGGERS, FUNCTIONS, AND SEED DATA
 -- ==============================================================================
 
--- Automatic Profile Creation on Auth Signup
+-- 9.1 Automatic Profile Creation on Auth Signup
 CREATE OR REPLACE FUNCTION bb_ecommerce_sc.handle_new_user()
 RETURNS trigger AS $$
 BEGIN
@@ -194,7 +398,7 @@ CREATE TRIGGER on_auth_user_created
   AFTER INSERT ON auth.users
   FOR EACH ROW EXECUTE PROCEDURE bb_ecommerce_sc.handle_new_user();
 
--- Insert the default admin user so you can log into the panel out of the box!
+-- 9.2 Seed Default Admin User
 INSERT INTO bb_ecommerce_sc.admin_users (username, password) 
 VALUES ('admin', 'bloom_admin_2024')
 ON CONFLICT (username) DO NOTHING;

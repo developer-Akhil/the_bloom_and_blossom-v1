@@ -9,10 +9,10 @@ const handleError = (error: any) => {
       throw new Error("Invalid API key: Please go to 'Project Settings > API' in Supabase. Copy 'Project URL' to 'VITE_SUPABASE_URL' and 'service_role' secret to 'SUPABASE_SERVICE_ROLE_KEY'.");
     }
     if (error.message?.includes("permission denied for schema")) {
-      throw new Error("Schema permission denied: You must run the SQL in `server/database/migrations.sql` in your Supabase SQL editor to create the schema and grant access to the service_role.");
+      throw new Error("Schema permission denied: You must run the SQL in `supabase_schema.sql` at the root of your project in your Supabase SQL editor to create the schema and grant access to the service_role.");
     }
     if (error.message?.includes("column \"full_name\" of relation \"app_users\" does not exist") || error.message?.includes("column \"phone\" of relation \"app_users\" does not exist")) {
-      throw new Error("Database schema out of date: Please run the SQL in `server/database/migrations.sql` in your Supabase SQL Editor to add the full_name and phone columns to app_users.");
+      throw new Error("Database schema out of date: Please run the SQL in `supabase_schema.sql` in your Supabase SQL Editor to add the full_name and phone columns to app_users.");
     }
     throw error;
   }

@@ -8,6 +8,7 @@ import { motion } from 'motion/react';
 import { cn } from '../lib/utils';
 import { ProductCard } from './Home';
 import { OptimizedImage } from '../components/common/OptimizedImage';
+import { ProductReviews } from '../components/ProductReviews';
 
 export function ProductDetail() {
   const { products } = useProductContext();
@@ -387,6 +388,9 @@ export function ProductDetail() {
           </div>
         </div>
       </div>
+
+      {/* Product Review System */}
+      <ProductReviews productId={product.id} productName={product.name} />
 
       {/* Related Products */}
       {relatedProducts.length > 0 && (
